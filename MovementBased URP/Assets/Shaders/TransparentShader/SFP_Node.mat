@@ -22,7 +22,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: SFP_Node
   m_Shader: {fileID: -6465566751694194690, guid: 8e1d8411a36743c4fb1c00df783b2fee, type: 3}
-  m_Parent: {fileID: 2100000, guid: 8c3fdc90303b6a5469b3f100af6f5f56, type: 2}
+  m_Parent: {fileID: 2100000, guid: 45c21e17288d90443a2f30ce35afb471, type: 2}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -36,12 +36,15 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 10307, guid: 0000000000000000f000000000000000, type: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _BasicOpacity: -0.2
     m_Colors:
     - _Albedo: {r: 1, g: 0.18396229, b: 0.18396229, a: 1}
-    - _EmissiveColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
