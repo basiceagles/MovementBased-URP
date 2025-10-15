@@ -160,6 +160,7 @@ GameObject:
   - component: {fileID: 2048597549353216275}
   - component: {fileID: 5358879609992513335}
   - component: {fileID: 3969415354027356795}
+  - component: {fileID: 4507913966532850761}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -319,7 +320,7 @@ CharacterController:
   serializedVersion: 3
   m_Height: 2
   m_Radius: 0.5
-  m_SlopeLimit: 45
+  m_SlopeLimit: 30
   m_StepOffset: 0.1
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
@@ -383,6 +384,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 2
+--- !u!114 &4507913966532850761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557733885150758004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf44c27c89e715b43abe218a88e320e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkStepDelay: 0.4
+  runStepDelay: 0.2
 --- !u!1 &2114319523268867237
 GameObject:
   m_ObjectHideFlags: 0
@@ -524,6 +539,7 @@ GameObject:
   - component: {fileID: 966115978365545700}
   - component: {fileID: 3443718911904380876}
   - component: {fileID: 4179117009773910126}
+  - component: {fileID: 5878066688842028684}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -658,9 +674,9 @@ MonoBehaviour:
   sens: 1
   slider: {fileID: 0}
   maxYAngle: 90
-  tiltAmount: 5
-  tiltSpeedThreshold: 1
-  tiltSmoothTime: 0.1
+  tiltAmount: 10
+  tiltSpeedThreshold: 2
+  tiltSmoothTime: 0.2
 --- !u!81 &4179117009773910126
 AudioListener:
   m_ObjectHideFlags: 0
@@ -669,3 +685,22 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2905472036208232966}
   m_Enabled: 1
+--- !u!114 &5878066688842028684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2905472036208232966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b90492f157ad8d47bea560c092e8db5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkBobSpeed: 5
+  walkBobAmount: 0.08
+  walkBobAmountX: 0.04
+  runBobSpeed: 20
+  runBobAmount: 0.16
+  runBobAmountX: 0.08
+  playerController: {fileID: 3182194359004442832}

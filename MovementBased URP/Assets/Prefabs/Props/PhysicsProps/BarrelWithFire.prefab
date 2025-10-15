@@ -447,7 +447,7 @@ Rigidbody:
   m_GameObject: {fileID: 1685839358210191130}
   serializedVersion: 5
   m_Mass: 1
-  m_LinearDamping: 1
+  m_LinearDamping: 0
   m_AngularDamping: 1
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -462,7 +462,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 2
   m_Constraints: 0
   m_CollisionDetection: 2
 --- !u!82 &9039294466384180640
@@ -579,7 +579,11 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 57b09ffa430951e47ac7540d7d8ceda0, type: 3}
   - {fileID: 8300000, guid: 9bf8a071c1a20c0448cd6c31babe37ae, type: 3}
   - {fileID: 8300000, guid: 9409c0982b691624ea8b26e7be9916bb, type: 3}
+  - {fileID: 8300000, guid: b616a428e9f74c7479214aae3e05b69f, type: 3}
+  - {fileID: 8300000, guid: 1e3abbc7d3ebe1648ad666df953785cb, type: 3}
+  - {fileID: 8300000, guid: 5c2f319ca3c10af48a76b931aefeb797, type: 3}
   soundPlayInterval: 0.5
+  soundPlayIntervalGround: 1
 --- !u!4 &2030733493017638304 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b77ee07d2e3322e428d970a6c9727a43, type: 3}
