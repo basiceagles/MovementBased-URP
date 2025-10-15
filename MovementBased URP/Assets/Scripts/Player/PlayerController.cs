@@ -1,4 +1,3 @@
-using SmallHedge.SoundManager;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -30,12 +29,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float groundCheckDistance;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask slideLayer;
+    [SerializeField] private LayerMask rampLayer;
 
     [SerializeField] private float initialAirVelocity;
     private CharacterController controller;
     public Vector3 velocity;
     private Vector3 originalScale;
     private bool wasGrounded;
+    private bool wasOnRamp;
     private Vector3 airVelocity;
     
     public bool wallRunning, activeGrappling;
@@ -63,14 +64,24 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         bool previouslyGrounded = wasGrounded;
+        bool previouslyOnRamp = wasOnRamp;
         CheckGround();
         
-        if (previouslyGrounded && !isGrounded && isSliding && !isJumping && velocity.y < 0)
+        if (previouslyOnRamp && !isGrounded && isSliding && !isJumping && velocity.y < 0)
         {
             velocity.y = initialAirVelocity;
         }
+        else if (previouslyGrounded && !previouslyOnRamp && !isGrounded && isSliding && !isJumping && velocity.y < 0)
+        {
+            velocity.y = 0f; 
+        }
+        else if (previouslyGrounded && !isGrounded && !isJumping && !isSliding && velocity.y < 0)
+        {
+            velocity.y = 0f; 
+        }
         
         wasGrounded = isGrounded;
+        wasOnRamp = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, rampLayer);
         
         if (justWallJumped && isGrounded)
         {
@@ -85,7 +96,7 @@ public class PlayerController : MonoBehaviour
     
     private void CheckGround()
     {
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer | slideLayer);
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer | slideLayer | rampLayer);
     }
     
     private void HandleMovement()
@@ -195,7 +206,7 @@ public class PlayerController : MonoBehaviour
     
     private void HandleSlopeSliding(RaycastHit hit)
     {
-        if (!isJumping)
+        if (!isJumping && isGrounded)
         {
             velocity.y = gravity;
         }
@@ -211,9 +222,9 @@ public class PlayerController : MonoBehaviour
     
     private void HandleGroundSliding(RaycastHit hit)
     {
-        if (!isJumping)
+        if (!isJumping && isGrounded)
         {
-            velocity.y = gravity;
+            velocity.y = gravity; 
         }
         
         Vector3 camDir = transform.forward;
@@ -257,5 +268,10 @@ public class PlayerController : MonoBehaviour
     public void SetWallJumped()
     {
         justWallJumped = true;
+    }
+    
+    public void ClearAirVelocity()
+    {
+        airVelocity = Vector3.zero;
     }
 }

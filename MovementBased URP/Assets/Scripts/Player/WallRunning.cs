@@ -21,6 +21,10 @@ public class WallRunning : MonoBehaviour
     private bool isWallRunning;
     private Vector3 wallNormal;
     private float currentTilt;
+    
+    // New variables for camera rotation
+    private Quaternion targetCameraRotation;
+    [SerializeField] private float cameraRotationSpeed = 5f; // Speed of camera rotation
 
     private void Start()
     {
