@@ -851,6 +851,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c72de9a1681b4ed46aaa0ea2a4187dff, type: 3}
   m_PrefabInstance: {fileID: 425264492}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &440153233 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 161657734286466319, guid: 29c1ea787398f75498a0cd0601893bae, type: 3}
+  m_PrefabInstance: {fileID: 649623279}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &473537888
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8690,6 +8695,7 @@ MonoBehaviour:
   wallTiltAngle: 15
   tiltSpeed: 5
   cam: {fileID: 376451022}
+  cameraRotationSpeed: 5
 --- !u!1001 &1843199253
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9255,6 +9261,10 @@ PrefabInstance:
       propertyPath: m_CullingMask.m_Bits
       value: 471
       objectReference: {fileID: 0}
+    - target: {fileID: 2048597549353216275, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 440153233}
     - target: {fileID: 3182194359004442832, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: gravity
       value: -30
