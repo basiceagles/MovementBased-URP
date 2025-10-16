@@ -253,6 +253,7 @@ MonoBehaviour:
   walkSpeed: 4
   runSpeed: 10
   gravity: -30
+  airControlStrength: 25
   isGrounded: 0
   jumpHeight: 1.5
   slideJumpHeight: 1
@@ -266,7 +267,7 @@ MonoBehaviour:
   crouchSpeed: 2
   currentSlideSpeed: 0
   isSliding: 0
-  groundCheckDistance: 0.6
+  groundCheckDistance: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -330,14 +331,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e083a2996d4c34f41aa6078edc7ada77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wallRunSpeed: 10
+  wallRunSpeed: 8
   wallStickForce: 8
   wallJumpHeight: 7
   wallJumpForce: 15
   wallTiltAngle: 15
   tiltSpeed: 5
   cam: {fileID: 4005968262995598657}
-  cameraRotationSpeed: 5
 --- !u!54 &3969415354027356795
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -452,7 +452,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   lr: {fileID: 2513643253022918250}
-  swingKey: 324
+  swingKey: 323
   maxSwingDistance: 25
   swingForce: 3
   swingSpeedBonus: 3
@@ -926,7 +926,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   lr: {fileID: 3566058100906187380}
-  grappleKey: 323
+  grappleKey: 324
   maxGrappleDistance: 25
   grappleSpeed: 15
   grapplingCd: 1

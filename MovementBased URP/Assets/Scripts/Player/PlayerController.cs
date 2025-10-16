@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro; 
 
 public class PlayerController : MonoBehaviour
 {
@@ -6,6 +7,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float walkSpeed;
     [SerializeField] public float runSpeed;
     [SerializeField] public float gravity;
+    [SerializeField] private float airControlStrength = 2f;
     public bool isGrounded;
 
     [Header("Jump")]
@@ -24,6 +26,7 @@ public class PlayerController : MonoBehaviour
     public float currentSlideSpeed;
     public bool isSliding;
     private bool isCrouching;
+    private bool wantsToStandUp;
     
     [Header("Ground Check")]
     [SerializeField] private float groundCheckDistance;
@@ -96,7 +99,17 @@ public class PlayerController : MonoBehaviour
     
     private void CheckGround()
     {
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer | slideLayer | rampLayer);
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, groundCheckDistance))
+        {
+            // Проверяем слои или верхнюю плоскость стены
+            bool isOnLayer = ((1 << hit.collider.gameObject.layer) & (groundLayer | slideLayer | rampLayer)) != 0;
+            bool isOnWallTop = hit.collider.CompareTag("Wall") && Vector3.Dot(hit.normal, Vector3.up) > 0.5f;
+            isGrounded = isOnLayer || isOnWallTop;
+        }
+        else
+        {
+            isGrounded = false;
+        }
     }
     
     private void HandleMovement()
@@ -104,8 +117,17 @@ public class PlayerController : MonoBehaviour
         if (isSliding || wallRunning || justWallJumped || activeGrappling) return;
         
         if (!isGrounded)
-        {
-            if (airVelocity.sqrMagnitude > 0.1f)
+        { 
+            Vector3 inputDir = transform.right * Input.GetAxisRaw("Horizontal") + transform.forward * Input.GetAxisRaw("Vertical");
+            if (inputDir.sqrMagnitude > 0.1f)
+            {
+                Vector3 currentHorizontal = new Vector3(velocity.x, 0, velocity.z);
+                float currentMagnitude = currentHorizontal.magnitude;
+                Vector3 newDir = (currentHorizontal + inputDir * airControlStrength * Time.deltaTime).normalized;
+                velocity.x = newDir.x * currentMagnitude;
+                velocity.z = newDir.z * currentMagnitude;
+            }
+            else if (airVelocity.sqrMagnitude > 0.1f)
             {
                 velocity.x = airVelocity.x;
                 velocity.z = airVelocity.z;
@@ -153,9 +175,13 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                isSliding = true;
-                currentSlideSpeed = slideSpeed;
-                transform.localScale = new Vector3(originalScale.x, originalScale.y * crouchScale, originalScale.z);
+                float forwardInput = Input.GetAxisRaw("Vertical");
+                if (currentSpeed > walkSpeed && forwardInput > 0.1f)
+                {
+                    isSliding = true;
+                    currentSlideSpeed = slideSpeed;
+                    transform.localScale = new Vector3(originalScale.x, originalScale.y * crouchScale, originalScale.z);
+                }
             }
             else
             {
@@ -166,6 +192,11 @@ public class PlayerController : MonoBehaviour
         
         if (Input.GetKeyUp(slideKey))
         {
+            wantsToStandUp = true;
+        }
+        
+        if (wantsToStandUp && !Physics.Raycast(transform.position, Vector3.up, 1f))
+        {
             if (!isGrounded)
             {
                 airVelocity = new Vector3(velocity.x, 0f, velocity.z);
@@ -175,6 +206,7 @@ public class PlayerController : MonoBehaviour
             isCrouching = false;
             currentSlideSpeed = 0f;
             transform.localScale = originalScale;
+            wantsToStandUp = false;
         }
         
         if (isSliding && isGrounded)

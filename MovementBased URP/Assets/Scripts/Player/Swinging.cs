@@ -49,8 +49,14 @@ public class Swinging : MonoBehaviour
         else
         {
             pc = GetComponentInParent<PlayerController>();
-            if (pc == null) pc = GetComponent<PlayerController>();
-            if (pc != null) player = pc.transform;
+            if (pc == null)
+            {
+                pc = GetComponent<PlayerController>();
+            }
+            if (pc != null)
+            {
+                player = pc.transform;
+            }
         }
     }
 

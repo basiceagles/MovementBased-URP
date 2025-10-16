@@ -21,10 +21,6 @@ public class WallRunning : MonoBehaviour
     private bool isWallRunning;
     private Vector3 wallNormal;
     private float currentTilt;
-    
-    // New variables for camera rotation
-    private Quaternion targetCameraRotation;
-    [SerializeField] private float cameraRotationSpeed = 5f; // Speed of camera rotation
 
     private void Start()
     {
@@ -63,6 +59,9 @@ public class WallRunning : MonoBehaviour
         if (hit.gameObject.CompareTag("Wall"))
         {
             float dotUp = Vector3.Dot(hit.normal, Vector3.up);
+            
+            if (dotUp < -0.5f) return;
+            
             if (Mathf.Abs(dotUp) < 0.1f)
             {
                 wallNormal = hit.normal;
