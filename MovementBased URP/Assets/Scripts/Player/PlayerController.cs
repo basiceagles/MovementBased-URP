@@ -1,5 +1,6 @@
 using UnityEngine;
-using TMPro; 
+using TMPro;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -41,6 +42,15 @@ public class PlayerController : MonoBehaviour
     private bool wasGrounded;
     private bool wasOnRamp;
     private Vector3 airVelocity;
+
+    //Для нового инпут контроля
+    public InputActionAsset inputActions;
+    private InputAction m_Jump;
+    private InputAction m_WalkController;
+    private InputAction m_Crouch;
+    private InputAction m_Run;
+    private InputAction m_Swing;
+    private InputAction m_Rope;
     
     public bool wallRunning, activeGrappling;
     private bool justWallJumped;
@@ -62,6 +72,12 @@ public class PlayerController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         originalScale = transform.localScale;
+
+        //Для нового инпут контроля
+        m_Jump = InputSystem.actions.FindAction("Jump");
+        m_WalkController = InputSystem.actions.FindAction("Move");
+        m_Crouch = InputSystem.actions.FindAction("Crouch");
+        m_Run = InputSystem.actions.FindAction("Sprint");
     }
     
     private void Update()
@@ -136,7 +152,7 @@ public class PlayerController : MonoBehaviour
         }
         
         Vector3 direction = transform.right * Input.GetAxisRaw("Horizontal") + transform.forward * Input.GetAxisRaw("Vertical");
-        float speed = isCrouching ? crouchSpeed : (Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed);
+        float speed = isCrouching ? crouchSpeed : (m_Run.IsPressed() ? runSpeed : walkSpeed);
         
         velocity.x = direction.x * speed;
         velocity.z = direction.z * speed;
@@ -145,7 +161,7 @@ public class PlayerController : MonoBehaviour
     
     private void HandleJump()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (m_Jump.WasPressedThisFrame())
         {
             if (isSliding)
             {
@@ -171,9 +187,9 @@ public class PlayerController : MonoBehaviour
     
     private void HandleSlide()
     {
-        if (Input.GetKeyDown(slideKey) && isGrounded)
+        if (m_Crouch.WasPressedThisFrame() && isGrounded)
         {
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (m_Run.IsPressed())
             {
                 float forwardInput = Input.GetAxisRaw("Vertical");
                 if (currentSpeed > walkSpeed && forwardInput > 0.1f)
@@ -190,7 +206,7 @@ public class PlayerController : MonoBehaviour
             }
         }
         
-        if (Input.GetKeyUp(slideKey))
+        if (m_Crouch.WasReleasedThisFrame())
         {
             wantsToStandUp = true;
         }

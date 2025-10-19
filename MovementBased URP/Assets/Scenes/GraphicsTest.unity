@@ -930,6 +930,58 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c72de9a1681b4ed46aaa0ea2a4187dff, type: 3}
   m_PrefabInstance: {fileID: 473537888}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &483703233
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 483703235}
+  - component: {fileID: 483703234}
+  m_Layer: 0
+  m_Name: ProcuderGeneration
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &483703234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 483703233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 235ea4161b81eb54692644d98a0dbc0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startRoomPrefab: {fileID: 2107540477323610301, guid: 375aa3e756856894bb38f2e1438cf65d, type: 3}
+  endRoomPrefab: {fileID: 1453293925830806160, guid: d533af4c1f4c910418822a4e709c1ad9, type: 3}
+  levelPrefabs:
+  - {fileID: 8236729911596466136, guid: 1a2e09503bd510c43a06a9dba8debd5f, type: 3}
+  - {fileID: 8236729911596466136, guid: 1a2e09503bd510c43a06a9dba8debd5f, type: 3}
+  numberOfLevels: 4
+  generateOnStart: 1
+  generatedLevels: []
+--- !u!4 &483703235
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 483703233}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.06723, y: 1.74, z: -14.24938}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &495742351
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8695,7 +8747,6 @@ MonoBehaviour:
   wallTiltAngle: 15
   tiltSpeed: 5
   cam: {fileID: 376451022}
-  cameraRotationSpeed: 5
 --- !u!1001 &1843199253
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10002,3 +10053,4 @@ SceneRoots:
   - {fileID: 2069320506481591752}
   - {fileID: 1432673899}
   - {fileID: 704168464}
+  - {fileID: 483703235}

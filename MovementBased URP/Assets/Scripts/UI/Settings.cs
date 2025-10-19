@@ -1,12 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class Settings : MonoBehaviour
 {
+    public InputActionAsset inputActions;
+    private InputAction m_OpenSettings;
     Resolution[] resolutions;
 
     public TMPro.TMP_Dropdown resolutionDropdown;
+    public GameObject settingsUI;
 
     void Start()
     {
@@ -28,11 +32,26 @@ public class Settings : MonoBehaviour
         resolutionDropdown.AddOptions(options);
         resolutionDropdown.value = currentResolutionindex;
         resolutionDropdown.RefreshShownValue();
+
+        m_OpenSettings = InputSystem.actions.FindAction("OpenSettings");
     }
 
+    public void SaveAndClose()
+    {
+        settingsUI.SetActive(false);
+        //нужно добавить сюда все переменные + плейр перфс, чтобы оно сохраняло все переменное после нажатия этой кнопки
+    }
+
+    public void OpenSettings()
+    {
+        settingsUI.SetActive(true);
+    }
 
     void Update()
     {
-        
+        if (m_OpenSettings.WasPressedThisFrame())
+        {
+            OpenSettings();
+        }
     }
 }
