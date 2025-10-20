@@ -39,6 +39,9 @@ public class Settings : MonoBehaviour
     public void SaveAndClose()
     {
         settingsUI.SetActive(false);
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         //нужно добавить сюда все переменные + плейр перфс, чтобы оно сохраняло все переменное после нажатия этой кнопки
     }
 
@@ -52,6 +55,18 @@ public class Settings : MonoBehaviour
         if (m_OpenSettings.WasPressedThisFrame())
         {
             OpenSettings();
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
+    }
+
+    public void SetResolution(int resolutionIndex)
+    {
+        Resolution resolution = resolutions[resolutionIndex];
+        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+    }
+    public void SetFullscreen (bool isFullScreen)
+    {
+        
     }
 }

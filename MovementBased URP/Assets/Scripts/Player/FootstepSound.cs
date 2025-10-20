@@ -9,8 +9,12 @@ public class FootstepSound : MonoBehaviour
 
     PlayerController playerController;
     private float playerSpeed;
+    private bool isGrounded;
+    public bool currentlySliding;
+    public bool isSliding;
     private float stepDelay; // Current step delay based on the movement mode
     private float nextStepTime = 0f; // Time when the next footstep should play
+    public AudioSource slideSFX;
 
     private void Start()
     {
@@ -20,7 +24,9 @@ public class FootstepSound : MonoBehaviour
     private void Update()
     {
         playerSpeed = playerController.currentSpeed;
-        if (playerSpeed != 0)
+        isGrounded = playerController.isGrounded;
+        isSliding = playerController.isSliding;
+        if (playerSpeed != 0 && isGrounded && !isSliding)
         {
             if (playerSpeed < 5f)
             {
@@ -37,6 +43,18 @@ public class FootstepSound : MonoBehaviour
 
                 nextStepTime = Time.time + stepDelay;
             }
+        }
+
+        if (isSliding && !currentlySliding)
+        {
+
+            slideSFX.Play();
+            currentlySliding = !currentlySliding;
+        }
+        if (!isSliding && currentlySliding)
+        {
+            slideSFX.Stop();
+            currentlySliding = !currentlySliding;
         }
     }
 }

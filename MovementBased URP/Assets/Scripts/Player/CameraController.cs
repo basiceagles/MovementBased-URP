@@ -42,11 +42,11 @@ public class CameraController : MonoBehaviour
 
         // Rotate around the X-axis (up/down) and clamp the rotation
         rotationX = Mathf.Clamp(rotationX - mouseY * sens, -maxYAngle, maxYAngle);
-        
+
         // Set the local rotation based on the clamped X rotation and Y rotation from the parent
         transform.localRotation = Quaternion.Euler(rotationX, 0f, 0f);
 
-        // Get the current rotation speed of the camera
+        // Get the current rotation speed of the camera (X-axis only)
         float rotationSpeed = GetCameraRotationSpeed();
 
         // Determine tilt direction based on rotation speed and direction
@@ -69,7 +69,7 @@ public class CameraController : MonoBehaviour
 
     private float GetCameraRotationSpeed()
     {
-        // Calculate the camera's rotation speed based on mouse input or other input methods
-        return Mathf.Abs(Input.GetAxis("Mouse X")) + Mathf.Abs(Input.GetAxis("Mouse Y"));
+        // Only consider horizontal (X) movement for tilt calculation
+        return Mathf.Abs(Input.GetAxis("Mouse X"));
     }
 }

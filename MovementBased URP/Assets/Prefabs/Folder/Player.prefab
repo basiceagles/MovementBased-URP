@@ -261,7 +261,7 @@ MonoBehaviour:
   isJumping: 0
   slideKey: 99
   slideSpeed: 10
-  slideAcceleration: 10
+  slideAcceleration: 50
   maxSlideSpeed: 50
   crouchScale: 0.5
   crouchSpeed: 2
@@ -279,6 +279,7 @@ MonoBehaviour:
     m_Bits: 0
   initialAirVelocity: 10
   velocity: {x: 0, y: 0, z: 0}
+  inputActions: {fileID: 0}
   wallRunning: 0
   activeGrappling: 0
 --- !u!143 &8998351103753659463
@@ -363,7 +364,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 126
   m_CollisionDetection: 2
 --- !u!114 &4507913966532850761
 MonoBehaviour:
@@ -928,7 +929,7 @@ MonoBehaviour:
   lr: {fileID: 3566058100906187380}
   grappleKey: 324
   maxGrappleDistance: 25
-  grappleSpeed: 15
+  grappleSpeed: 25
   grapplingCd: 1
   ropeSegments: 25
   ropeWaveSpeed: 10
