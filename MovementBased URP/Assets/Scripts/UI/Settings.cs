@@ -11,6 +11,7 @@ public class Settings : MonoBehaviour
 
     public TMPro.TMP_Dropdown resolutionDropdown;
     public GameObject settingsUI;
+    public bool isMainMenu;
 
     void Start()
     {
@@ -40,8 +41,11 @@ public class Settings : MonoBehaviour
     {
         settingsUI.SetActive(false);
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (!isMainMenu)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
         //нужно добавить сюда все переменные + плейр перфс, чтобы оно сохраняло все переменное после нажатия этой кнопки
     }
 
@@ -52,7 +56,7 @@ public class Settings : MonoBehaviour
 
     void Update()
     {
-        if (m_OpenSettings.WasPressedThisFrame())
+        if (m_OpenSettings.WasPressedThisFrame() && !isMainMenu)
         {
             OpenSettings();
             Cursor.lockState = CursorLockMode.None;
@@ -65,8 +69,9 @@ public class Settings : MonoBehaviour
         Resolution resolution = resolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
     }
+
     public void SetFullscreen (bool isFullScreen)
     {
-        
+        Screen.fullScreen = isFullScreen;
     }
 }

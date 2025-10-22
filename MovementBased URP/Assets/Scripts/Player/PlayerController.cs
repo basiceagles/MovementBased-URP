@@ -65,6 +65,7 @@ public class PlayerController : MonoBehaviour
         get => velocity.y;
         set => velocity.y = value;
     }
+    [Header("Current Speed")]
     public float currentSpeed => new Vector3(velocity.x, 0, velocity.z).magnitude;
     public float maxSpeed => runSpeed;
     
