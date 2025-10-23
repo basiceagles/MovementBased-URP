@@ -1,15 +1,17 @@
 using UnityEngine;
 using System.Collections.Generic;
-
+//Данный скрипт ищет все рычаги в своем триггере
+//Также методом GetCollectedState проверяет, активированы ли все рычаги, если да, то открывает дверь
+//Также данный скрипт использует свой коллайд, чтобы проверять, зашел ли игрок в или нет, чтобы активировать UI на рычагах
 public class LeverSearcher : MonoBehaviour
 {
     [Header("Lever Settings")]
     public string leverTag = "Lever";
-    
+
     [Header("Debug")]
     public bool showGizmos = true;
     public Color gizmoColor = Color.cyan;
-    
+
     [Header("Door Reference")]
     public GameObject doorTarget;
 
@@ -24,10 +26,11 @@ public class LeverSearcher : MonoBehaviour
         // Get reference to existing collider
         triggerCollider = GetComponent<Collider>();
 
-        // Search for Lever objects at the end of the frame
+        // Инвок чтобы не глючило ебат
         Invoke("SearchForLevers", 0.1f); // Small delay to ensure all objects are loaded
     }
 
+    //Ищем рычаги и суем их в массив
     void SearchForLevers()
     {
         if (triggerCollider == null) return;
@@ -49,16 +52,16 @@ public class LeverSearcher : MonoBehaviour
             if (collider.CompareTag(leverTag))
             {
                 leverObjects.Add(collider.gameObject);
-                
+
                 Lever leverScript = collider.GetComponent<Lever>();
                 if (leverScript != null)
                 {
                     leverScripts.Add(leverScript);
-                    
+
                     // Get the collected bool from the Lever script
                     bool collectedState = GetCollectedState(leverScript);
                     leverCollectedStates.Add(collectedState);
-                    
+
                     Debug.Log("Found Lever: " + collider.gameObject.name + " - Collected: " + collectedState);
                 }
                 else
@@ -69,18 +72,19 @@ public class LeverSearcher : MonoBehaviour
         }
 
         Debug.Log("Found " + leverScripts.Count + " Lever scripts in range");
-        
+
         // Initial check of lever status
         CheckLeverStatus();
     }
 
+    //Тут мы ищем переменную collected внутри скрипта Lever
     bool GetCollectedState(Lever leverScript)
     {
         // Use reflection to get the collected field/property
         System.Type leverType = leverScript.GetType();
         var collectedField = leverType.GetField("collected");
         var collectedProperty = leverType.GetProperty("collected");
-        
+
         if (collectedField != null)
         {
             return (bool)collectedField.GetValue(leverScript);
@@ -96,12 +100,15 @@ public class LeverSearcher : MonoBehaviour
         }
     }
 
+    //Этот метод вызвается только тогда, когда активируется кнопка
+    //Этот метод проверяет состояние всех булевых во всех кнопках
+    //Если булевая collected во всех кнопках true (значит что все кнопки активированы), то метод активирует дверь
     public void CheckLeverStatus()
     {
         if (leverScripts.Count == 0) return;
 
         bool allCollected = true;
-        
+
         // Update collected states and check if all are true
         for (int i = 0; i < leverScripts.Count; i++)
         {
@@ -109,7 +116,7 @@ public class LeverSearcher : MonoBehaviour
             {
                 bool currentCollected = GetCollectedState(leverScripts[i]);
                 leverCollectedStates[i] = currentCollected;
-                
+
                 if (!currentCollected)
                 {
                     allCollected = false;
@@ -120,7 +127,7 @@ public class LeverSearcher : MonoBehaviour
         if (allCollected)
         {
             Debug.Log("All lever bools are true");
-            
+
             // Optional: Do something with the door target
             if (doorTarget != null)
             {

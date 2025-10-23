@@ -1,5 +1,5 @@
 using UnityEngine;
-
+//УДАЛИ НАХУЙ
 public class LeverCollectManager : MonoBehaviour
 {
     [Header("Settings")]
