@@ -10,6 +10,7 @@ namespace SmallHedge.SoundManager
         SLIDE,
         JUMP,
         FALL,
-        FOOTSTEP
+        FOOTSTEP,
+        LEVER
     }
 }
