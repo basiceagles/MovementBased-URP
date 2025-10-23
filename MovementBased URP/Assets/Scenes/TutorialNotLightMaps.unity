@@ -898,11 +898,11 @@ Transform:
   m_GameObject: {fileID: 32558664}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
-  m_LocalPosition: {x: -3.092001, y: 0.895, z: -0.538002}
+  m_LocalPosition: {x: -5.1850014, y: 0.41799974, z: 0.8999996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 208082643}
+  m_Father: {fileID: 502478811}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &32558666
 MonoBehaviour:
@@ -4560,63 +4560,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4815938656673095427, guid: c2252fc865f78fb42a07a26d8eaf77ae, type: 3}
   m_PrefabInstance: {fileID: 203615424}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &208082642
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 208082643}
-  - component: {fileID: 208082644}
-  m_Layer: 0
-  m_Name: LeverSpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &208082643
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 208082642}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -29.01, y: -5.992, z: -20.96}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1227231171}
-  - {fileID: 916293778}
-  - {fileID: 526985404}
-  - {fileID: 1592284892}
-  - {fileID: 32558665}
-  m_Father: {fileID: 1835032901}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &208082644
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 208082642}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
-  spawnPoints:
-  - {fileID: 1227231170}
-  - {fileID: 916293777}
-  - {fileID: 526985403}
-  - {fileID: 1592284891}
-  - {fileID: 32558664}
 --- !u!1001 &214532417
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15734,9 +15677,10 @@ GameObject:
   - component: {fileID: 502478811}
   - component: {fileID: 502478812}
   - component: {fileID: 502478813}
+  - component: {fileID: 502478814}
   m_Layer: 0
   m_Name: LeverUITrigger
-  m_TagString: Untagged
+  m_TagString: LeverManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -15753,7 +15697,12 @@ Transform:
   m_LocalPosition: {x: -26.917, y: -5.515, z: -22.398}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1227231171}
+  - {fileID: 916293778}
+  - {fileID: 526985404}
+  - {fileID: 1592284892}
+  - {fileID: 32558665}
   m_Father: {fileID: 1835032901}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &502478812
@@ -15792,6 +15741,27 @@ MonoBehaviour:
   leverTag: Lever
   showGizmos: 0
   gizmoColor: {r: 0, g: 1, b: 1, a: 1}
+  doorTarget: {fileID: 0}
+--- !u!114 &502478814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 502478810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
+  maxLeversToSpawn: 2
+  spawnPoints:
+  - {fileID: 1227231170}
+  - {fileID: 916293777}
+  - {fileID: 526985403}
+  - {fileID: 1592284891}
+  - {fileID: 32558664}
 --- !u!1001 &504237403
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16411,11 +16381,11 @@ Transform:
   m_GameObject: {fileID: 526985403}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.0269985, y: 0.895, z: -1.8230019}
+  m_LocalPosition: {x: -3.119999, y: 0.41799974, z: -0.38500023}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 208082643}
+  m_Father: {fileID: 502478811}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &526985405
 MonoBehaviour:
@@ -24125,11 +24095,11 @@ Transform:
   m_GameObject: {fileID: 916293777}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2, y: 0.895, z: -1.8230019}
+  m_LocalPosition: {x: -0.09300232, y: 0.41799974, z: -0.38500023}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 208082643}
+  m_Father: {fileID: 502478811}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &916293779
 MonoBehaviour:
@@ -29197,11 +29167,11 @@ Transform:
   m_GameObject: {fileID: 1227231170}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.8900013, y: 0.895, z: -1.8230019}
+  m_LocalPosition: {x: -1.2029991, y: 0.41799974, z: -0.38500023}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 208082643}
+  m_Father: {fileID: 502478811}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1227231172
 MonoBehaviour:
@@ -35231,11 +35201,11 @@ Transform:
   m_GameObject: {fileID: 1592284891}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.2450008, y: 0.895, z: -1.8230019}
+  m_LocalPosition: {x: -4.3380013, y: 0.41799974, z: -0.38500023}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 208082643}
+  m_Father: {fileID: 502478811}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1592284893
 MonoBehaviour:
@@ -39520,7 +39490,6 @@ Transform:
   - {fileID: 830534160}
   - {fileID: 1278933498}
   - {fileID: 502478811}
-  - {fileID: 208082643}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1835297513
