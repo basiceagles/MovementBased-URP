@@ -14,6 +14,7 @@ public class LeverSearcher : MonoBehaviour
 
     [Header("Door Reference")]
     public GameObject doorTarget;
+    private SlideMetalDoorManager slideMetalDoorManager;
 
     private List<GameObject> leverObjects = new List<GameObject>();
     private List<Lever> leverScripts = new List<Lever>();
@@ -26,8 +27,12 @@ public class LeverSearcher : MonoBehaviour
         // Get reference to existing collider
         triggerCollider = GetComponent<Collider>();
 
+        //Ищем скрипт который задает анимации металлической двери
+        slideMetalDoorManager = doorTarget.GetComponent<SlideMetalDoorManager>();
+
         // Инвок чтобы не глючило ебат
         Invoke("SearchForLevers", 0.1f); // Small delay to ensure all objects are loaded
+        
     }
 
     //Ищем рычаги и суем их в массив
@@ -131,9 +136,8 @@ public class LeverSearcher : MonoBehaviour
             // Optional: Do something with the door target
             if (doorTarget != null)
             {
-                // Example: Open the door
-                // doorTarget.SetActive(false);
-                // Or trigger an animation, etc.
+                //Открываем дверку вызовом метода
+                slideMetalDoorManager.OpenSlideDoor();
                 Debug.Log("Door should open now!");
             }
         }
