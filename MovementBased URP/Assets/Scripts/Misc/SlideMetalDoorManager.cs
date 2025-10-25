@@ -8,6 +8,8 @@ public class SlideMetalDoorManager : MonoBehaviour
     [Header("Animation Triggers")]
     public string normalAnimationTrigger = "MetalSlideOpen";
     public string brokenAnimationTrigger = "MetalSlideOpenBroken";
+    public string spawnOpenAnimationTrigger = "MetalSlideSpawnOpen";
+    public string closeAnimationTrigger = "MetalSlideClose";
     
     [Header("Animation Chances")]
     [Range(0, 100)]
@@ -17,15 +19,18 @@ public class SlideMetalDoorManager : MonoBehaviour
 
     [Header("Debug")]
     public bool showDebug = false;
+    public bool spawnOpen = false;
     
     [Header("Audio Sources")]
     public AudioSource normalAudioSource;
     public AudioSource brokenAudioSource;
+    public AudioSource closeAudioSource;
 
     void Start()
     {
         // Validate chances
         ValidateChances();
+        SpawnOpenDoor();
     }
 
     public void OpenSlideDoor()
@@ -83,7 +88,7 @@ public class SlideMetalDoorManager : MonoBehaviour
     {
         // Ensure chances don't exceed 100%
         float totalChance = normalAnimationChance + brokenAnimationChance;
-        
+
         if (totalChance > 100f)
         {
             float normalizationFactor = 100f / totalChance;
@@ -91,4 +96,21 @@ public class SlideMetalDoorManager : MonoBehaviour
             brokenAnimationChance *= normalizationFactor;
         }
     }
+
+    public void SpawnOpenDoor()
+    {
+        if (spawnOpen)
+        {
+            doorAnimator.SetBool("MetalSlideSpawnOpen", true);
+        }
+    }
+
+    public void CloseDoor()
+    {
+        doorAnimator.SetBool("MetalSlideSpawnOpen", false);
+        doorAnimator.SetBool("MetalSlideClose", true);
+        Debug.LogWarning("DOOR CLOSED NIGGA");
+        closeAudioSource.Play();
+    }
+    
 }

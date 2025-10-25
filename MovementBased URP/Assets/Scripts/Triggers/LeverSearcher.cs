@@ -14,7 +14,9 @@ public class LeverSearcher : MonoBehaviour
 
     [Header("Door Reference")]
     public GameObject doorTarget;
+    public GameObject doorCloseTarget;
     private SlideMetalDoorManager slideMetalDoorManager;
+    private SlideMetalDoorManager slideMetalDoorManagerCloseState;
 
     private List<GameObject> leverObjects = new List<GameObject>();
     private List<Lever> leverScripts = new List<Lever>();
@@ -30,6 +32,11 @@ public class LeverSearcher : MonoBehaviour
         //Ищем скрипт который задает анимации металлической двери
         slideMetalDoorManager = doorTarget.GetComponent<SlideMetalDoorManager>();
 
+        if (doorCloseTarget != null)
+        {
+            slideMetalDoorManagerCloseState = doorCloseTarget.GetComponent<SlideMetalDoorManager>();
+        }
+        
         // Инвок чтобы не глючило ебат
         Invoke("SearchForLevers", 0.1f); // Small delay to ensure all objects are loaded
         
@@ -131,14 +138,17 @@ public class LeverSearcher : MonoBehaviour
 
         if (allCollected)
         {
-            Debug.Log("All lever bools are true");
-
             // Optional: Do something with the door target
             if (doorTarget != null)
             {
                 //Открываем дверку вызовом метода
                 slideMetalDoorManager.OpenSlideDoor();
                 Debug.Log("Door should open now!");
+            }
+            if (doorCloseTarget !=null)
+            {
+                slideMetalDoorManagerCloseState.CloseDoor();
+                Debug.LogWarning("DOOR CLOSED NIGGA22");
             }
         }
     }

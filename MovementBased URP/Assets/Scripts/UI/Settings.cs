@@ -15,6 +15,13 @@ public class Settings : MonoBehaviour
 
     void Start()
     {
+        //багфикс чтобы не пропадала мышка при заходе в главное меню
+        if (isMainMenu)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        
         //Для работы дропдаун меню с разрешениями экрана
         resolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
@@ -33,6 +40,8 @@ public class Settings : MonoBehaviour
         resolutionDropdown.AddOptions(options);
         resolutionDropdown.value = currentResolutionindex;
         resolutionDropdown.RefreshShownValue();
+
+        //
 
         m_OpenSettings = InputSystem.actions.FindAction("OpenSettings");
     }
