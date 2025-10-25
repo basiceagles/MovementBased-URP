@@ -8,7 +8,7 @@ public class FootstepSound : MonoBehaviour
     [SerializeField] private float runStepDelay = 0.3f; // Delay for running footsteps
 
     PlayerController playerController;
-    private float playerSpeed;
+    public float playerSpeed;
     private bool isGrounded;
     public bool currentlySliding;
     public bool isSliding;

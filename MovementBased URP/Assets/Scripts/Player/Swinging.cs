@@ -24,11 +24,13 @@ public class Swinging : MonoBehaviour
     private bool swinging;
     private float currentRopeLength;
     private PlayerController pc;
-    private bool hookFlying; 
+    private bool hookFlying;
     private float hookFlyProgress;
+    private Grappling grappling;
 
     void Start()
     {
+        grappling = FindObjectOfType<Grappling>();
         if (swingGunTip == null) 
         {
             swingGunTip = transform;
@@ -130,10 +132,11 @@ public class Swinging : MonoBehaviour
 
     void StartSwing()
     {
-        if (cam == null || swinging || !Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, maxSwingDistance, whatIsGrappleable)) 
+        if (cam == null || swinging || !Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, maxSwingDistance, whatIsGrappleable))
         {
             return;
         }
+        grappling.enabled = false;
         swingPoint = hit.point; swinging = true; pc.activeGrappling = true;
         currentRopeLength = Vector3.Distance(player.position, swingPoint);
         lr.positionCount = ropeSegments; lr.enabled = true; currentGrapplePosition = swingGunTip.position;
@@ -165,6 +168,7 @@ public class Swinging : MonoBehaviour
         
         swinging = false; 
         pc.activeGrappling = false;
+        grappling.enabled = true;
         hookFlying = false;
         lr.positionCount = 0; 
         lr.enabled = false;

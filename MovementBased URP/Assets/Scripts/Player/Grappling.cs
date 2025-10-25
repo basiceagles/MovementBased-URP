@@ -27,7 +27,7 @@ public class Grappling : MonoBehaviour
     private bool hookFlying;
     private float hookFlyProgress;
     private Soul targetSoul;
-    private Lever targetLever;
+    private Swinging swinging;
 
     void Start()
     {
@@ -37,6 +37,7 @@ public class Grappling : MonoBehaviour
         
         pc = player.GetComponent<PlayerController>();
         player = pc.transform;
+        swinging = FindObjectOfType<Swinging>();
     }
 
     bool IsValidVector(Vector3 vector)
@@ -91,16 +92,16 @@ public class Grappling : MonoBehaviour
 
     private void StartGrapple()
     {
-        if (cam == null || pc == null || grapplingCdTimer > 0 || grappling) 
+        if (cam == null || pc == null || grapplingCdTimer > 0 || grappling)
         {
             return;
         }
+        swinging.enabled = false;
         grappling = true;
         bool hit = Physics.Raycast(cam.position, cam.forward, out RaycastHit hitInfo, maxGrappleDistance);
         grapplePoint = hit ? hitInfo.point : cam.position + cam.forward * maxGrappleDistance;
-
+        
         targetSoul = null;
-        targetLever = null;
         if (hit)
         {
             Soul soul = hitInfo.collider.GetComponent<Soul>();
@@ -108,23 +109,14 @@ public class Grappling : MonoBehaviour
             {
                 targetSoul = soul;
             }
-            Lever lever = hitInfo.collider.GetComponent<Lever>();
-            if (lever != null)
-            {
-                targetLever = lever;
-            }
         }
         
         lr.enabled = true; lr.positionCount = ropeSegments;
         currentGrapplePosition = grappleGunTip.position;
         hookFlying = true;
         hookFlyProgress = 0f;
-
+        
         if (targetSoul != null)
-        {
-            Invoke(nameof(StopGrapple), 0.5f);
-        }
-        else if (targetLever != null)
         {
             Invoke(nameof(StopGrapple), 0.5f);
         }
@@ -149,6 +141,7 @@ public class Grappling : MonoBehaviour
         pc.activeGrappling = false;
         grappling = false; 
         grapplingCdTimer = grapplingCd;
+        swinging.enabled = true;
         hookFlying = false;
         lr.enabled = false; 
         lr.positionCount = 0;
@@ -176,16 +169,11 @@ public class Grappling : MonoBehaviour
             {
                 hookFlyProgress = 1f;
                 hookFlying = false;
-
+                
                 if (targetSoul != null)
                 {
                     targetSoul.Collect();
                     targetSoul = null;
-                }
-                if (targetLever != null)
-                {
-                    targetLever.Collect();
-                    targetLever = null;
                 }
             }
             currentGrapplePosition = Vector3.Lerp(startPos, endPos, hookFlyProgress);

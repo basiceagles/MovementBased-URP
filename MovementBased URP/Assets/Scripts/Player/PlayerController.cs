@@ -1,11 +1,9 @@
-using UnityEngine;
-using TMPro;
-using UnityEngine.InputSystem;
+using UnityEngine; 
 
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float walkSpeed;
+    [SerializeField] public float walkSpeed;
     [SerializeField] public float runSpeed;
     [SerializeField] public float gravity;
     [SerializeField] private float airControlStrength = 2f;
@@ -28,9 +26,12 @@ public class PlayerController : MonoBehaviour
     public bool isSliding;
     private bool isCrouching;
     private bool wantsToStandUp;
+    private bool wantsToSlide;
     
     [Header("Ground Check")]
     [SerializeField] private float groundCheckDistance;
+    [SerializeField] private float groundCheckRadius = 0.9f;
+    [SerializeField] private int gizmoLineCount = 8;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask slideLayer;
     [SerializeField] private LayerMask rampLayer;
@@ -42,15 +43,6 @@ public class PlayerController : MonoBehaviour
     private bool wasGrounded;
     private bool wasOnRamp;
     private Vector3 airVelocity;
-
-    //Для нового инпут контроля
-    public InputActionAsset inputActions;
-    private InputAction m_Jump;
-    private InputAction m_WalkController;
-    private InputAction m_Crouch;
-    private InputAction m_Run;
-    private InputAction m_Swing;
-    private InputAction m_Rope;
     
     public bool wallRunning, activeGrappling;
     private bool justWallJumped;
@@ -65,20 +57,13 @@ public class PlayerController : MonoBehaviour
         get => velocity.y;
         set => velocity.y = value;
     }
-    [Header("Current Speed")]
-    public float currentSpeed => new Vector3(velocity.x, 0, velocity.z).magnitude;
+    public float currentSpeed => horizontalVelocity.magnitude;
     public float maxSpeed => runSpeed;
     
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         originalScale = transform.localScale;
-
-        //Для нового инпут контроля
-        m_Jump = InputSystem.actions.FindAction("Jump");
-        m_WalkController = InputSystem.actions.FindAction("Move");
-        m_Crouch = InputSystem.actions.FindAction("Crouch");
-        m_Run = InputSystem.actions.FindAction("Sprint");
     }
     
     private void Update()
@@ -87,18 +72,7 @@ public class PlayerController : MonoBehaviour
         bool previouslyOnRamp = wasOnRamp;
         CheckGround();
         
-        if (previouslyOnRamp && !isGrounded && isSliding && !isJumping && velocity.y < 0)
-        {
-            velocity.y = initialAirVelocity;
-        }
-        else if (previouslyGrounded && !previouslyOnRamp && !isGrounded && isSliding && !isJumping && velocity.y < 0)
-        {
-            velocity.y = 0f; 
-        }
-        else if (previouslyGrounded && !isGrounded && !isJumping && !isSliding && velocity.y < 0)
-        {
-            velocity.y = 0f; 
-        }
+        HandleAirTransitions(previouslyGrounded, previouslyOnRamp);
         
         wasGrounded = isGrounded;
         wasOnRamp = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, rampLayer);
@@ -114,65 +88,81 @@ public class PlayerController : MonoBehaviour
         ApplyMovement();
     }
     
+    private void HandleAirTransitions(bool previouslyGrounded, bool previouslyOnRamp)
+    {
+        if (isJumping || velocity.y >= 0) return;
+        
+        if (previouslyOnRamp && !isGrounded && isSliding)
+        {
+            velocity.y = initialAirVelocity;
+        }
+        else if (previouslyGrounded && !isGrounded)
+        {
+            velocity.y = 0f;
+        }
+    }
+    
     private void CheckGround()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, groundCheckDistance))
-        {
-            // Проверяем слои или верхнюю плоскость стены
-            bool isOnLayer = ((1 << hit.collider.gameObject.layer) & (groundLayer | slideLayer | rampLayer)) != 0;
-            bool isOnWallTop = hit.collider.CompareTag("Wall") && Vector3.Dot(hit.normal, Vector3.up) > 0.5f;
-            isGrounded = isOnLayer || isOnWallTop;
-        }
-        else
-        {
-            isGrounded = false;
-        }
+        Vector3 origin = transform.position + Vector3.up * (controller.radius * 0.5f);
+        float checkDist = groundCheckDistance + controller.radius * 0.5f;
+        float sphereRadius = controller.radius * groundCheckRadius;
+        
+        isGrounded = Physics.SphereCast(origin, sphereRadius, Vector3.down, out RaycastHit hit, checkDist) &&
+                     ((1 << hit.collider.gameObject.layer) & (groundLayer | slideLayer | rampLayer)) != 0;
     }
     
     private void HandleMovement()
     {
         if (isSliding || wallRunning || justWallJumped || activeGrappling) return;
         
+        Vector3 inputDir = GetInputDirection();
+        
         if (!isGrounded)
-        { 
-            Vector3 inputDir = transform.right * Input.GetAxisRaw("Horizontal") + transform.forward * Input.GetAxisRaw("Vertical");
-            if (inputDir.sqrMagnitude > 0.1f)
-            {
-                Vector3 currentHorizontal = new Vector3(velocity.x, 0, velocity.z);
-                float currentMagnitude = currentHorizontal.magnitude;
-                Vector3 newDir = (currentHorizontal + inputDir * airControlStrength * Time.deltaTime).normalized;
-                velocity.x = newDir.x * currentMagnitude;
-                velocity.z = newDir.z * currentMagnitude;
-            }
-            else if (airVelocity.sqrMagnitude > 0.1f)
-            {
-                velocity.x = airVelocity.x;
-                velocity.z = airVelocity.z;
-            }
+        {
+            HandleAirMovement(inputDir);
             return;
         }
         
-        Vector3 direction = transform.right * Input.GetAxisRaw("Horizontal") + transform.forward * Input.GetAxisRaw("Vertical");
-        float speed = isCrouching ? crouchSpeed : (m_Run.IsPressed() ? runSpeed : walkSpeed);
-        
-        velocity.x = direction.x * speed;
-        velocity.z = direction.z * speed;
+        float speed = GetMovementSpeed();
+        velocity.x = inputDir.x * speed;
+        velocity.z = inputDir.z * speed;
         airVelocity = Vector3.zero;
+    }
+    
+    private Vector3 GetInputDirection()
+    {
+        return transform.right * Input.GetAxisRaw("Horizontal") + transform.forward * Input.GetAxisRaw("Vertical");
+    }
+    
+    private void HandleAirMovement(Vector3 inputDir)
+    {
+        if (inputDir.sqrMagnitude > 0.1f)
+        {
+            Vector3 currentHorizontal = horizontalVelocity;
+            float currentMagnitude = currentHorizontal.magnitude;
+            Vector3 newDir = (currentHorizontal + inputDir * airControlStrength * Time.deltaTime).normalized;
+            velocity.x = newDir.x * currentMagnitude;
+            velocity.z = newDir.z * currentMagnitude;
+        }
+        else if (airVelocity.sqrMagnitude > 0.1f)
+        {
+            velocity.x = airVelocity.x;
+            velocity.z = airVelocity.z;
+        }
+    }
+    
+    private float GetMovementSpeed()
+    {
+        return isCrouching ? crouchSpeed : (Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed);
     }
     
     private void HandleJump()
     {
-        if (m_Jump.WasPressedThisFrame())
-        {
-            if (isSliding)
-            {
-                SlideJump();
-            }
-            else if (isGrounded)
-            {
-                NormalJump();
-            }
-        }
+        if (!Input.GetKeyDown(KeyCode.Space) || !isGrounded) return;
+        
+        if (isSliding) SlideJump();
+        else NormalJump();
     }
     
     private void NormalJump()
@@ -188,109 +178,107 @@ public class PlayerController : MonoBehaviour
     
     private void HandleSlide()
     {
-        if (m_Crouch.WasPressedThisFrame() && isGrounded)
-        {
-            if (m_Run.IsPressed())
-            {
-                float forwardInput = Input.GetAxisRaw("Vertical");
-                if (currentSpeed > walkSpeed && forwardInput > 0.1f)
-                {
-                    isSliding = true;
-                    currentSlideSpeed = slideSpeed;
-                    transform.localScale = new Vector3(originalScale.x, originalScale.y * crouchScale, originalScale.z);
-                }
-            }
-            else
-            {
-                isCrouching = true;
-                transform.localScale = new Vector3(originalScale.x, originalScale.y * crouchScale, originalScale.z);
-            }
-        }
+        if (Input.GetKeyDown(slideKey)) HandleSlideInput();
+        if (Input.GetKeyUp(slideKey)) wantsToStandUp = true;
         
-        if (m_Crouch.WasReleasedThisFrame())
-        {
-            wantsToStandUp = true;
-        }
+        if (wantsToStandUp && CanStandUp()) StandUp();
+        if (wantsToSlide && isGrounded && currentSpeed > walkSpeed) { StartSlide(); wantsToSlide = false; }
+        if (isSliding && isGrounded) UpdateSlide();
+    }
+    
+    private void HandleSlideInput()
+    {
+        if (!isGrounded) wantsToSlide = true;
+        else if (CanStartSlide()) StartSlide();
+        else StartCrouch();
+    }
+    
+    private bool CanStartSlide()
+    {
+        return Input.GetKey(KeyCode.LeftShift) && currentSpeed > walkSpeed && Input.GetAxisRaw("Vertical") > 0.1f;
+    }
+    
+    private bool CanStandUp()
+    {
+        return !Physics.Raycast(transform.position, Vector3.up, 1f);
+    }
+    
+    private void StandUp()
+    {
+        if (!isGrounded) airVelocity = horizontalVelocity;
         
-        if (wantsToStandUp && !Physics.Raycast(transform.position, Vector3.up, 1f))
-        {
-            if (!isGrounded)
-            {
-                airVelocity = new Vector3(velocity.x, 0f, velocity.z);
-            }
-            
-            isSliding = false;
-            isCrouching = false;
-            currentSlideSpeed = 0f;
-            transform.localScale = originalScale;
-            wantsToStandUp = false;
-        }
-        
-        if (isSliding && isGrounded)
-        {
-            UpdateSlide();
-        }
+        isSliding = false;
+        isCrouching = false;
+        currentSlideSpeed = 0f;
+        transform.localScale = originalScale;
+        wantsToStandUp = false;
+        wantsToSlide = false;
+    }
+    
+    private void StartCrouch()
+    {
+        isCrouching = true;
+        SetCrouchScale();
+    }
+    
+    private void SetCrouchScale()
+    {
+        transform.localScale = new Vector3(originalScale.x, originalScale.y * crouchScale, originalScale.z);
+    }
+    
+    private void StartSlide()
+    {
+        isSliding = true;
+        currentSlideSpeed = slideSpeed;
+        SetCrouchScale();
     }
     
     private void UpdateSlide()
     {
-        Vector3 origin = transform.position + Vector3.up * 0.1f;
-        bool onSlope = Physics.Raycast(origin, Vector3.down, out RaycastHit slopeHit, groundCheckDistance, slideLayer);
-        bool onGround = Physics.Raycast(origin, Vector3.down, out RaycastHit groundHit, groundCheckDistance, groundLayer);
+        Vector3 origin = transform.position + Vector3.up * (controller.radius * 0.5f);
+        float checkDist = groundCheckDistance + controller.radius * 0.5f;
+        float sphereRadius = controller.radius * groundCheckRadius;
         
-        if (!onGround && !onSlope)
-        {
-            return;
-        }
+        bool onSlope = Physics.SphereCast(origin, sphereRadius, Vector3.down, out RaycastHit slopeHit, checkDist, slideLayer);
         
         if (onSlope)
         {
             HandleSlopeSliding(slopeHit);
         }
-        else
+        else if (Physics.SphereCast(origin, sphereRadius, Vector3.down, out RaycastHit groundHit, checkDist, groundLayer))
         {
-            HandleGroundSliding(groundHit);
+            HandleGroundSliding();
         }
     }
     
     private void HandleSlopeSliding(RaycastHit hit)
     {
-        if (!isJumping && isGrounded)
-        {
-            velocity.y = gravity;
-        }
+        if (!isJumping && velocity.y <= 0) velocity.y = -30f;
         
         Vector3 camDir = transform.forward;
         camDir.y = 0;
         Vector3 slopeDir = Vector3.ProjectOnPlane(camDir.normalized, hit.normal).normalized;
         
         currentSlideSpeed = Mathf.Min(currentSlideSpeed + slideAcceleration * Time.deltaTime, maxSlideSpeed);
-        velocity.x = slopeDir.x * currentSlideSpeed;
-        velocity.z = slopeDir.z * currentSlideSpeed;
+        ApplySlideVelocity(slopeDir);
     }
     
-    private void HandleGroundSliding(RaycastHit hit)
+    private void HandleGroundSliding()
     {
-        if (!isJumping && isGrounded)
-        {
-            velocity.y = gravity; 
-        }
-        
         Vector3 camDir = transform.forward;
         camDir.y = 0;
         camDir.Normalize();
         
-        if (currentSlideSpeed > slideSpeed)
-        {
-            currentSlideSpeed = Mathf.Max(currentSlideSpeed - slideAcceleration * 0.5f * Time.deltaTime, slideSpeed);
-        }
-        else
-        {
-            currentSlideSpeed = slideSpeed;
-        }
+        currentSlideSpeed = currentSlideSpeed > slideSpeed ?
+            Mathf.Max(currentSlideSpeed - slideAcceleration * 0.5f * Time.deltaTime, slideSpeed) : slideSpeed;
         
-        velocity.x = camDir.x * currentSlideSpeed;
-        velocity.z = camDir.z * currentSlideSpeed;
+        ApplySlideVelocity(camDir);
+    }
+    
+    private void ApplySlideVelocity(Vector3 direction)
+    {
+        velocity.x = direction.x * currentSlideSpeed;
+        velocity.z = direction.z * currentSlideSpeed;
     }
     
     private void ApplyMovement()
@@ -298,15 +286,25 @@ public class PlayerController : MonoBehaviour
         if (!wallRunning && !activeGrappling)
         {
             velocity.y += gravity * Time.deltaTime;
+            velocity.y = Mathf.Max(velocity.y, gravity);
         }
         
-        if (isGrounded && velocity.y <= 0)
-        {
-            isJumping = false;            
-        }
+        if (isGrounded && velocity.y <= 0) isJumping = false;
         
+        Vector3 previousPosition = transform.position;
         controller.Move(velocity * Time.deltaTime);
         
+        CheckCeilingCollision(previousPosition);
+    }
+    
+    private void CheckCeilingCollision(Vector3 previousPosition)
+    {
+        if (velocity.y > 3f && !isJumping && Mathf.Abs(transform.position.y - previousPosition.y) < 0.01f)
+        {
+            velocity.y = 0;
+            velocity.x *= 0.7f;
+            velocity.z *= 0.7f;
+        }
     }
     
     public void SetWallRunning(bool value)
@@ -322,5 +320,34 @@ public class PlayerController : MonoBehaviour
     public void ClearAirVelocity()
     {
         airVelocity = Vector3.zero;
+    }
+    
+    private void OnDrawGizmos()
+    {
+        if (controller == null)
+        {
+            controller = GetComponent<CharacterController>();
+            if (controller == null) return;
+        }
+        
+        Vector3 origin = transform.position + Vector3.up * (controller.radius * 0.5f);
+        float checkDist = groundCheckDistance + controller.radius * 0.5f;
+        float sphereRadius = controller.radius * groundCheckRadius;
+        
+        Gizmos.color = isGrounded ? Color.green : Color.red;
+        Gizmos.DrawWireSphere(origin, sphereRadius);
+        
+        Vector3 endPos = origin + Vector3.down * checkDist;
+        Gizmos.DrawWireSphere(endPos, sphereRadius);
+        
+        int lineCount = Mathf.Max(3, gizmoLineCount);
+        float angleStep = 360f / lineCount;
+        
+        for (int i = 0; i < lineCount; i++)
+        {
+            float angle = i * angleStep * Mathf.Deg2Rad;
+            Vector3 offset = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * sphereRadius;
+            Gizmos.DrawLine(origin + offset, endPos + offset);
+        }
     }
 }

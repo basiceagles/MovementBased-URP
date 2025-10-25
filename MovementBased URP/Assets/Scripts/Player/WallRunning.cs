@@ -3,8 +3,11 @@ using UnityEngine;
 public class WallRunning : MonoBehaviour
 {
     [Header("Wall Run Settings")]
-    [SerializeField] private float wallRunSpeed;
     [SerializeField] private float wallStickForce;
+    
+    [Header("Wall Detection")]
+    [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private float sphereRadius = 0.6f;
     
     [Header("Wall Jump Settings")]
     [SerializeField] private float wallJumpHeight;
@@ -45,7 +48,12 @@ public class WallRunning : MonoBehaviour
         }
     }
 
-    private void OnControllerColliderHit(ControllerColliderHit hit)
+    private void FixedUpdate()
+    {
+        CheckForWalls();
+    }
+    
+    private void CheckForWalls()
     {
         if (pc.grounded)
         {
@@ -56,21 +64,46 @@ public class WallRunning : MonoBehaviour
             return;
         }
         
-        if (hit.gameObject.CompareTag("Wall"))
+        if (isWallRunning && (!Input.GetKey(KeyCode.LeftShift) || pc.currentSpeed <= 0.1f))
         {
-            float dotUp = Vector3.Dot(hit.normal, Vector3.up);
-            
-            if (dotUp < -0.5f) return;
-            
-            if (Mathf.Abs(dotUp) < 0.1f)
+            StopWallRun();
+            return;
+        }
+        
+        Vector3 origin = transform.position;
+        Collider[] wallColliders = Physics.OverlapSphere(origin, sphereRadius, wallLayer);
+        bool wallFound = false;
+        
+        foreach (Collider wallCollider in wallColliders)
+        {
+            Vector3 closestPoint = wallCollider.ClosestPoint(origin);
+            Vector3 directionToWall = (closestPoint - origin).normalized;
+            if (Mathf.Abs(Vector3.Dot(directionToWall, Vector3.up)) < 0.3f)
             {
-                wallNormal = hit.normal;
-                if (!isWallRunning)
+                wallNormal = -directionToWall; 
+                wallFound = true;
+                
+                if (!isWallRunning && CanStartWallRun())
                 {
                     StartWallRun();
                 }
+                break;
             }
         }
+        
+        if (!wallFound && isWallRunning)
+        {
+            StopWallRun();
+        }
+    }
+    
+    private bool CanStartWallRun()
+    {
+        bool isSprinting = Input.GetKey(KeyCode.LeftShift);
+        bool isMoving = pc.currentSpeed > 0.1f;
+        bool notGrounded = !pc.grounded;
+        
+        return isSprinting && isMoving && notGrounded;
     }
 
     private void StartWallRun()
@@ -83,6 +116,12 @@ public class WallRunning : MonoBehaviour
     {
         isWallRunning = false;
         pc.SetWallRunning(false);
+        
+        currentTilt = 0f;
+        Vector3 rotation = transform.localEulerAngles;
+        rotation.x = 0f;
+        rotation.z = 0f;
+        transform.localEulerAngles = rotation;
     }
 
     private void HandleWallRun()
@@ -94,13 +133,27 @@ public class WallRunning : MonoBehaviour
         inputDir.y = 0;
         inputDir.Normalize();
         
+        if (inputDir.magnitude <= 0.1f)
+        {
+            StopWallRun();
+            return;
+        }
+        
         Vector3 wallForward = Vector3.Cross(wallNormal, Vector3.up);
         Vector3 movement = -wallNormal * wallStickForce; 
         
         if (inputDir.magnitude > 0.1f)
         {
             float forwardInput = Vector3.Dot(inputDir, wallForward);
-            movement += wallForward * forwardInput * wallRunSpeed;
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                movement += wallForward * forwardInput * pc.runSpeed;
+            }
+            else
+            {
+                StopWallRun();
+                return;
+            }
         }
         
         pc.horizontalVelocity = new Vector3(movement.x, 0f, movement.z);
@@ -127,17 +180,35 @@ public class WallRunning : MonoBehaviour
         
         currentTilt = Mathf.Lerp(currentTilt, targetTilt, tiltSpeed * Time.deltaTime);
         
-        Vector3 rotation = transform.eulerAngles;
-        rotation.z = currentTilt;
-        transform.eulerAngles = rotation;
+        Vector3 rotation = transform.localEulerAngles;
+        rotation.x = 0f;  
+        rotation.z = currentTilt;  
+        transform.localEulerAngles = rotation;
     }
     
     private void ResetTilt()
     {
-        currentTilt = Mathf.Lerp(currentTilt, 0f, tiltSpeed * Time.deltaTime);
+        if (Mathf.Abs(currentTilt) < 0.01f)
+        {
+            currentTilt = 0f;
+        }
+        else
+        {
+            currentTilt = Mathf.Lerp(currentTilt, 0f, tiltSpeed * Time.deltaTime);
+        }
         
-        Vector3 rotation = transform.eulerAngles;
-        rotation.z = currentTilt;
-        transform.eulerAngles = rotation;
+        Vector3 rotation = transform.localEulerAngles;
+        rotation.x = 0f;  
+        rotation.z = currentTilt;  
+        transform.localEulerAngles = rotation;
+    }
+    
+    private void OnDrawGizmos()
+    {
+        Vector3 origin = transform.position;
+        Collider[] wallColliders = Physics.OverlapSphere(origin, sphereRadius, wallLayer);
+        bool wallDetected = wallColliders.Length > 0;
+        Gizmos.color = wallDetected ? Color.red : Color.gray;
+        Gizmos.DrawWireSphere(origin, sphereRadius);
     }
 }
