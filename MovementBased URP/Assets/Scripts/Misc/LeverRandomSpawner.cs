@@ -26,18 +26,22 @@ public class LeverRandomSpawner : MonoBehaviour
         // If we have more spawn points than max levers, select random points
         List<GameObject> selectedSpawnPoints = GetRandomSpawnPoints(actualSpawnCount);
         
-        // Spawn levers at selected points
+        // Spawn levers at selected points as children
         foreach (GameObject spawnPoint in selectedSpawnPoints)
         {
             if (spawnPoint != null)
             {
-                GameObject spawnedLever = Instantiate(leverPrefab, spawnPoint.transform.position, spawnPoint.transform.rotation);
+                // Spawn lever as child of the spawn point
+                GameObject spawnedLever = Instantiate(leverPrefab, spawnPoint.transform.position, spawnPoint.transform.rotation, spawnPoint.transform);
                 spawnedLever.name = "Lever_" + spawnPoint.name;
                 spawnedLevers.Add(spawnedLever);
                 
+                // Debug to verify parenting
+                Debug.Log($"Spawned lever '{spawnedLever.name}' as child of '{spawnPoint.name}'");
             }
         }
         
+        Debug.Log($"Spawned {spawnedLevers.Count} levers as children of spawn points");
     }
     
     List<GameObject> GetRandomSpawnPoints(int count)
@@ -65,5 +69,51 @@ public class LeverRandomSpawner : MonoBehaviour
         }
         
         return selectedPoints;
+    }
+    
+    // Method to clear spawned levers
+    public void ClearSpawnedLevers()
+    {
+        foreach (GameObject lever in spawnedLevers)
+        {
+            if (lever != null)
+            {
+                if (Application.isPlaying)
+                {
+                    Destroy(lever);
+                }
+                else
+                {
+                    DestroyImmediate(lever);
+                }
+            }
+        }
+        spawnedLevers.Clear();
+    }
+    
+    // Method to respawn levers
+    public void RespawnLevers()
+    {
+        ClearSpawnedLevers();
+        SpawnLevers();
+    }
+    
+    // Editor convenience methods
+    [ContextMenu("Spawn Levers Now")]
+    private void SpawnLeversEditor()
+    {
+        SpawnLevers();
+    }
+    
+    [ContextMenu("Clear Spawned Levers")]
+    private void ClearLeversEditor()
+    {
+        ClearSpawnedLevers();
+    }
+    
+    [ContextMenu("Respawn Levers")]
+    private void RespawnLeversEditor()
+    {
+        RespawnLevers();
     }
 }

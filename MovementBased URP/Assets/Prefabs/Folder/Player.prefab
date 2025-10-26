@@ -156,12 +156,13 @@ GameObject:
   - component: {fileID: 5394684420575802497}
   - component: {fileID: 3182194359004442832}
   - component: {fileID: 8998351103753659463}
-  - component: {fileID: 2048597549353216275}
   - component: {fileID: 5358879609992513335}
   - component: {fileID: 3969415354027356795}
   - component: {fileID: 4507913966532850761}
   - component: {fileID: 2818587151192942589}
   - component: {fileID: 7541385963763542813}
+  - component: {fileID: 8183506799080964795}
+  - component: {fileID: 5863817201986159063}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -262,13 +263,15 @@ MonoBehaviour:
   isJumping: 0
   slideKey: 99
   slideSpeed: 10
-  slideAcceleration: 15
-  maxSlideSpeed: 20
+  slideAcceleration: 10
+  maxSlideSpeed: 50
   crouchScale: 0.5
   crouchSpeed: 2
   currentSlideSpeed: 0
   isSliding: 0
-  groundCheckDistance: 1
+  groundCheckDistance: 0.2
+  groundCheckRadius: 0.9
+  gizmoLineCount: 8
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -280,7 +283,6 @@ MonoBehaviour:
     m_Bits: 0
   initialAirVelocity: 10
   velocity: {x: 0, y: 0, z: 0}
-  inputActions: {fileID: 0}
   wallRunning: 0
   activeGrappling: 0
 --- !u!143 &8998351103753659463
@@ -308,19 +310,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2048597549353216275
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1557733885150758004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6be07c7e79c57d940ad9514304ac7cec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 0}
 --- !u!114 &5358879609992513335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -333,8 +322,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e083a2996d4c34f41aa6078edc7ada77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wallRunSpeed: 8
   wallStickForce: 8
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  sphereRadius: 0.6
   wallJumpHeight: 7
   wallJumpForce: 15
   wallTiltAngle: 15
@@ -381,6 +373,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkStepDelay: 0.4
   runStepDelay: 0.2
+  playerSpeed: 0
   currentlySliding: 0
   isSliding: 0
   slideSFX: {fileID: 7541385963763542813}
@@ -502,6 +495,41 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8183506799080964795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557733885150758004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6be07c7e79c57d940ad9514304ac7cec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 0}
+--- !u!114 &5863817201986159063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557733885150758004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e083a2996d4c34f41aa6078edc7ada77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wallStickForce: 8
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  sphereRadius: 0.6
+  wallJumpHeight: 7
+  wallJumpForce: 15
+  wallTiltAngle: 15
+  tiltSpeed: 5
+  cam: {fileID: 4005968262995598657}
 --- !u!1 &1786397657753048215
 GameObject:
   m_ObjectHideFlags: 0
@@ -849,7 +877,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.3584906, g: 0.3584906, b: 0.3584906, a: 0}
+  m_BackGroundColor: {r: 0.35686275, g: 0.35686275, b: 0.35686275, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
