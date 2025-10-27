@@ -7,11 +7,16 @@ public class EndLevelTrigger : MonoBehaviour
     private SlideMetalDoorManager slideMetalDoorManager;
     private GameObject targetProcuderalGeneration;
     private LevelGenerator levelGenerator;
+    private GameObject targetMusicManager;
+    private MusicManager musicManagerScript;
+
     void Start()
     {
         slideMetalDoorManager = targetDoor.GetComponent<SlideMetalDoorManager>();
         targetProcuderalGeneration = GameObject.Find("ProcuderalGeneration");
         levelGenerator = targetProcuderalGeneration.GetComponent<LevelGenerator>();
+        targetMusicManager = GameObject.Find("MusicManager");
+        musicManagerScript = targetMusicManager.GetComponent<MusicManager>();
     }
 
     void OnTriggerEnter(Collider other)
@@ -20,6 +25,7 @@ public class EndLevelTrigger : MonoBehaviour
         
         slideMetalDoorManager.CloseDoor();
         levelGenerator.RestartGeneration();
+        musicManagerScript.StopPlayingMusic();
         Destroy(gameObject);
     }
 }
