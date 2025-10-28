@@ -162,11 +162,17 @@ public class WallRunning : MonoBehaviour
 
     private void WallJump()
     {
-        Vector3 jumpDir = cam.forward;
-        jumpDir.y = 0;
-        jumpDir.Normalize();
+        Vector3 lookDir = cam.forward;
+        lookDir.y = 0;
+        lookDir.Normalize();
         
-        pc.horizontalVelocity = jumpDir * wallJumpForce;
+        float dotToWall = Vector3.Dot(lookDir, wallNormal);
+        if (dotToWall < -0.3f)
+        {
+            return; 
+        }
+        
+        pc.horizontalVelocity = lookDir * wallJumpForce;
         pc.verticalVelocity = wallJumpHeight;
         
         pc.SetWallJumped();

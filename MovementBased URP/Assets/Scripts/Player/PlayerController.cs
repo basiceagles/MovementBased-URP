@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
     private bool wasGrounded;
     private bool wasOnRamp;
     private Vector3 airVelocity;
+    private float previousYPosition;
+    private bool isOnSlideLayer;
     
     public bool wallRunning, activeGrappling;
     private bool justWallJumped;
@@ -84,7 +86,16 @@ public class PlayerController : MonoBehaviour
         
         HandleMovement();
         HandleJump();
+        
+        bool wasOnSlideLayer = isOnSlideLayer;
         HandleSlide();
+        
+        if (wasOnSlideLayer && !isOnSlideLayer && velocity.y < -5f)
+        {
+            velocity.y = -2f;
+        }
+        
+        previousYPosition = transform.position.y;
         ApplyMovement();
     }
     
@@ -95,10 +106,6 @@ public class PlayerController : MonoBehaviour
         if (previouslyOnRamp && !isGrounded && isSliding)
         {
             velocity.y = initialAirVelocity;
-        }
-        else if (previouslyGrounded && !isGrounded)
-        {
-            velocity.y = 0f;
         }
     }
     
@@ -114,7 +121,10 @@ public class PlayerController : MonoBehaviour
     
     private void HandleMovement()
     {
-        if (isSliding || wallRunning || justWallJumped || activeGrappling) return;
+        if (isSliding || wallRunning || justWallJumped || activeGrappling)
+        {
+            return;
+        }
         
         Vector3 inputDir = GetInputDirection();
         
@@ -127,7 +137,7 @@ public class PlayerController : MonoBehaviour
         float speed = GetMovementSpeed();
         velocity.x = inputDir.x * speed;
         velocity.z = inputDir.z * speed;
-        airVelocity = Vector3.zero;
+        airVelocity = horizontalVelocity;
     }
     
     private Vector3 GetInputDirection()
@@ -145,11 +155,6 @@ public class PlayerController : MonoBehaviour
             velocity.x = newDir.x * currentMagnitude;
             velocity.z = newDir.z * currentMagnitude;
         }
-        else if (airVelocity.sqrMagnitude > 0.1f)
-        {
-            velocity.x = airVelocity.x;
-            velocity.z = airVelocity.z;
-        }
     }
     
     private float GetMovementSpeed()
@@ -161,8 +166,14 @@ public class PlayerController : MonoBehaviour
     {
         if (!Input.GetKeyDown(KeyCode.Space) || !isGrounded) return;
         
-        if (isSliding) SlideJump();
-        else NormalJump();
+        if (isSliding)
+        {
+            SlideJump();
+        }
+        else
+        {
+            NormalJump();
+        }
     }
     
     private void NormalJump()
@@ -178,19 +189,48 @@ public class PlayerController : MonoBehaviour
     
     private void HandleSlide()
     {
-        if (Input.GetKeyDown(slideKey)) HandleSlideInput();
-        if (Input.GetKeyUp(slideKey)) wantsToStandUp = true;
+        if (Input.GetKeyDown(slideKey))
+        {
+            HandleSlideInput();
+        }
+        if (Input.GetKeyUp(slideKey))
+        {
+            wantsToStandUp = true;
+        }
         
-        if (wantsToStandUp && CanStandUp()) StandUp();
-        if (wantsToSlide && isGrounded && currentSpeed > walkSpeed) { StartSlide(); wantsToSlide = false; }
-        if (isSliding && isGrounded) UpdateSlide();
+        if (wantsToStandUp && CanStandUp()) 
+        {
+            StandUp();
+        }
+        if (wantsToSlide && isGrounded && currentSpeed > walkSpeed)
+        {
+            StartSlide();
+            wantsToSlide = false; 
+        }
+        if (isSliding && isGrounded)
+        {
+            UpdateSlide();
+        }
+        else if (!isGrounded)
+        {
+            isOnSlideLayer = false;
+        }
     }
     
     private void HandleSlideInput()
     {
-        if (!isGrounded) wantsToSlide = true;
-        else if (CanStartSlide()) StartSlide();
-        else StartCrouch();
+        if (!isGrounded)
+        {
+            wantsToSlide = true;
+        }
+        else if (CanStartSlide())
+        {
+            StartSlide();
+        }
+        else
+        {
+            StartCrouch();
+        }
     }
     
     private bool CanStartSlide()
@@ -210,6 +250,7 @@ public class PlayerController : MonoBehaviour
         isSliding = false;
         isCrouching = false;
         currentSlideSpeed = 0f;
+        isOnSlideLayer = false;
         transform.localScale = originalScale;
         wantsToStandUp = false;
         wantsToSlide = false;
@@ -240,6 +281,7 @@ public class PlayerController : MonoBehaviour
         float sphereRadius = controller.radius * groundCheckRadius;
         
         bool onSlope = Physics.SphereCast(origin, sphereRadius, Vector3.down, out RaycastHit slopeHit, checkDist, slideLayer);
+        isOnSlideLayer = onSlope;
         
         if (onSlope)
         {
@@ -253,7 +295,14 @@ public class PlayerController : MonoBehaviour
     
     private void HandleSlopeSliding(RaycastHit hit)
     {
-        if (!isJumping && velocity.y <= 0) velocity.y = -30f;
+        if (transform.position.y > previousYPosition + 0.01f && !isJumping)
+        {
+            if (CanStandUp())
+            {
+                StandUp();
+                return;
+            }
+        }
         
         Vector3 camDir = transform.forward;
         camDir.y = 0;
@@ -289,7 +338,18 @@ public class PlayerController : MonoBehaviour
             velocity.y = Mathf.Max(velocity.y, gravity);
         }
         
-        if (isGrounded && velocity.y <= 0) isJumping = false;
+        if (isGrounded && velocity.y <= 0)
+        {
+            if (isSliding && isOnSlideLayer)
+            {
+                velocity.y = -30f;
+            }
+            else
+            {
+                velocity.y = -2f;
+            }
+            isJumping = false;
+        }
         
         Vector3 previousPosition = transform.position;
         controller.Move(velocity * Time.deltaTime);

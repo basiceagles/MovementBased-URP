@@ -1,15 +1,24 @@
 using UnityEngine;
 
-public class PerkSelector : MonoBehaviour
+public class PerkSelectorScript : MonoBehaviour
 {
     [Header("Object Settings")]
     public GameObject[] objectsArray; // Assign your GameObjects here in inspector
     public int amountToActivate = 2; // Adjustable amount of objects to activate
+    private GameObject mainCamera;
+    private CameraController cameraController;
+
+    void Start()
+    {
+        mainCamera = GameObject.Find("Main Camera");
+        cameraController = mainCamera.GetComponent<CameraController>();
+    }
 
     public void OpenPerkMenu()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        cameraController.enabled = false;
         ActivateRandomObjects();
     }
     
@@ -17,6 +26,7 @@ public class PerkSelector : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        cameraController.enabled = true;
     }
     
     // Call this method to activate random objects

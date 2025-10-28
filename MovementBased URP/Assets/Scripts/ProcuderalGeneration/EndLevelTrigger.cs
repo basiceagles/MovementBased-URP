@@ -9,31 +9,37 @@ public class EndLevelTrigger : MonoBehaviour
     private LevelGenerator levelGenerator;
     private GameObject targetMusicManager;
     private MusicManager musicManagerScript;
-    private GameObject targetPerkSelector;
-    private PerkSelector perkSelector;
-    private Animator perkSelectorAnimator;
+    public GameObject targetPerkSelectorManager;
+    public GameObject targetPerkSelector;
+    public PerkSelectorScript perkSelector;
+    public Animator perkSelectorAnimator;
 
     void Start()
     {
         slideMetalDoorManager = targetDoor.GetComponent<SlideMetalDoorManager>();
         targetProcuderalGeneration = GameObject.Find("ProcuderalGeneration");
         levelGenerator = targetProcuderalGeneration.GetComponent<LevelGenerator>();
+
         targetMusicManager = GameObject.Find("MusicManager");
         musicManagerScript = targetMusicManager.GetComponent<MusicManager>();
+
+        targetPerkSelectorManager = GameObject.Find("PerkSelectorManager");
+        perkSelector = targetPerkSelectorManager.GetComponent<PerkSelectorScript>();
         targetPerkSelector = GameObject.Find("PerkSelector");
-        perkSelector = targetPerkSelector.GetComponent<PerkSelector>();
         perkSelectorAnimator = targetPerkSelector.GetComponent<Animator>();
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (!other.gameObject.CompareTag(tagFilter)) return;
+
+        perkSelector.OpenPerkMenu();
+        perkSelectorAnimator.Play("PerkSelectorMenu");
         
         slideMetalDoorManager.CloseDoor();
         levelGenerator.RestartGeneration();
         musicManagerScript.StopPlayingMusic();
-        perkSelector.OpenPerkMenu();
-        perkSelectorAnimator.Play("PerkSelectorMenu");
+
         Destroy(gameObject);
     }
 }

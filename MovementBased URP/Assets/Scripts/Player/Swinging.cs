@@ -86,14 +86,19 @@ public class Swinging : MonoBehaviour
     
     void UpdateSwing()
     {
+        Vector3 ropeDir = (swingPoint - player.position).normalized;
+        Vector3 vel = pc.horizontalVelocity + Vector3.up * pc.verticalVelocity;
+        
         float currentDist = Vector3.Distance(player.position, swingPoint);
         if (currentDist > currentRopeLength)
         {
-            player.position = swingPoint + (player.position - swingPoint).normalized * currentRopeLength;
+            Vector3 toSwingPoint = (swingPoint - player.position).normalized;
+            float radialVel = Vector3.Dot(vel, toSwingPoint);
+            if (radialVel < 0) 
+            {
+                vel -= toSwingPoint * radialVel; 
+            }
         }
-        
-        Vector3 ropeDir = (swingPoint - player.position).normalized;
-        Vector3 vel = pc.horizontalVelocity + Vector3.up * pc.verticalVelocity;
         
         Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         if (input.magnitude > 0.1f)
@@ -137,9 +142,31 @@ public class Swinging : MonoBehaviour
             return;
         }
         grappling.enabled = false;
-        swingPoint = hit.point; swinging = true; pc.activeGrappling = true;
+        swingPoint = hit.point; 
+        swinging = true; 
+        pc.activeGrappling = true;
         currentRopeLength = Vector3.Distance(player.position, swingPoint);
-        lr.positionCount = ropeSegments; lr.enabled = true; currentGrapplePosition = swingGunTip.position;
+        
+        Vector3 currentVel = pc.horizontalVelocity;
+        float initialSpeed = currentVel.magnitude; 
+        currentVel.y = pc.verticalVelocity;
+        
+        Vector3 ropeDir = (swingPoint - player.position).normalized;
+        currentVel = Vector3.ProjectOnPlane(currentVel, ropeDir);
+        
+        float projectedMagnitude = currentVel.magnitude;
+        if (projectedMagnitude > 0.1f && initialSpeed > 0.1f)
+        {
+            float finalSpeed = Mathf.Max(initialSpeed, projectedMagnitude);
+            currentVel = currentVel.normalized * finalSpeed;
+        }
+        
+        pc.horizontalVelocity = new Vector3(currentVel.x, 0f, currentVel.z);
+        pc.verticalVelocity = currentVel.y;
+        
+        lr.positionCount = ropeSegments; 
+        lr.enabled = true; 
+        currentGrapplePosition = swingGunTip.position;
         hookFlying = true;
         hookFlyProgress = 0f;
     }
@@ -152,19 +179,11 @@ public class Swinging : MonoBehaviour
         }
         
         Vector3 horizontalVel = pc.horizontalVelocity;
-        float horizontalSpeed = horizontalVel.magnitude;
-        float verticalSpeed = pc.verticalVelocity; 
+        float verticalSpeed = pc.verticalVelocity;
         
-        if (horizontalSpeed > 0.1f)
-        {
-            Vector3 camDir = cam.forward;
-            camDir.y = 0; 
-            camDir.Normalize();
-            
-            pc.horizontalVelocity = camDir * horizontalSpeed;
-            pc.verticalVelocity = verticalSpeed; 
-            pc.ClearAirVelocity(); 
-        }
+        pc.horizontalVelocity = horizontalVel;
+        pc.verticalVelocity = verticalSpeed; 
+        pc.ClearAirVelocity(); 
         
         swinging = false; 
         pc.activeGrappling = false;

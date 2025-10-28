@@ -677,7 +677,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4019927785479490648}
   - component: {fileID: 3236274154749832967}
-  - component: {fileID: 8672242393665629682}
+  - component: {fileID: 5891207176758124168}
   m_Layer: 2
   m_Name: EndLevelTrigger
   m_TagString: Untagged
@@ -721,7 +721,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.2586141, y: 2.0136313, z: 4.1903276}
   m_Center: {x: 0.5497327, y: 1.0293701, z: -0.0052952766}
---- !u!114 &8672242393665629682
+--- !u!114 &5891207176758124168
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -735,6 +735,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetDoor: {fileID: 6058002952944028881}
   tagFilter: Player
+  targetPerkSelector: {fileID: 0}
+  perkSelector: {fileID: 0}
+  perkSelectorAnimator: {fileID: 0}
 --- !u!1 &6999912867395604079
 GameObject:
   m_ObjectHideFlags: 0
