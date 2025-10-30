@@ -264,7 +264,7 @@ MonoBehaviour:
   slideKey: 99
   slideSpeed: 10
   slideAcceleration: 10
-  maxSlideSpeed: 50
+  maxSlideSpeed: 40
   crouchScale: 0.5
   crouchSpeed: 2
   currentSlideSpeed: 0
@@ -842,6 +842,8 @@ GameObject:
   - component: {fileID: 9022997794924464721}
   - component: {fileID: 5926005001605050568}
   - component: {fileID: 7699568560211617907}
+  - component: {fileID: 644219066281572498}
+  - component: {fileID: 9165080168708793763}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1163,6 +1165,43 @@ MonoBehaviour:
   pickupRange: 2
   interactKey: 101
   throwForce: 10
+--- !u!95 &644219066281572498
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2905472036208232966}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0e62ee2a8af812241b45a0aa02c6dd14, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &9165080168708793763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2905472036208232966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68f69a0f05536a849af70455422ce8af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shakeDuration: 0.5
+  shakeMagnitude: 0.1
+  dampingSpeed: 1
 --- !u!1 &5901046440723327766
 GameObject:
   m_ObjectHideFlags: 0
@@ -1248,10 +1287,10 @@ MonoBehaviour:
   lr: {fileID: 3566058100906187380}
   grappleKey: 324
   maxGrappleDistance: 25
-  grappleSpeed: 15
+  grappleSpeed: 20
   grapplingCd: 0.5
   ropeSegments: 25
-  ropeWaveSpeed: 10
+  ropeWaveSpeed: 20
   ropeWaveHeight: 0.5
 --- !u!120 &3566058100906187380
 LineRenderer:

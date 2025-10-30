@@ -29,7 +29,7 @@ public class Soul : MonoBehaviour
         Timer timer = FindObjectOfType<Timer>();
         if (timer != null)
         {
-            timer.AddTime(timeToAdd);
+            //timer.AddTime(timeToAdd);
         }
         
         if (collectSound != null)

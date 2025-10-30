@@ -6,14 +6,44 @@ public class LevelGenerator : MonoBehaviour
     [Header("Level Prefabs")]
     public GameObject startRoomPrefab; // Reference to the existing start prefab in scene
     public GameObject endRoomPrefab;
-    public List<GameObject> levelPrefabs = new List<GameObject>();
+    
+    [Header("Level Arrays")]
+    public List<GameObject> easyLevels = new List<GameObject>();
+    public List<GameObject> mediumLevels = new List<GameObject>();
+    public List<GameObject> hardLevels = new List<GameObject>();
+    public List<GameObject> closedLevels = new List<GameObject>();
+    public GameObject startClosedRoom;
+    public GameObject endClosedRoom;
+
+    [Header("Spawn Chances")]
+    [Range(0, 100)]
+    public int easyChance = 25;
+    [Range(0, 100)]
+    public int mediumChance = 25;
+    [Range(0, 100)]
+    public int hardChance = 25;
+    [Range(0, 100)]
+    public int closedChance = 25;
+
+    [Header("Cycle Requirements")]
+    public int easyCycleRequired = 0;
+    public int mediumCycleRequired = 3;
+    public int hardCycleRequired = 5;
+    public int closedCycleRequired = 0;
 
     [Header("Generation Settings")]
     public int numberOfLevels = 4;
     public bool generateOnStart = true;
+    public int cycle = 0;
+    public int maxClosedRooms = 3;
 
     [Header("Generated Levels")]
     public List<GameObject> generatedLevels = new List<GameObject>();
+
+    // Private variables for closed room tracking
+    private bool isInClosedSection = false;
+    private int closedRoomsSpawned = 0;
+    private int currentLevelIndex = 0;
 
     private void Start()
     {
@@ -28,11 +58,16 @@ public class LevelGenerator : MonoBehaviour
         // Clear existing levels (but keep the start room if it exists)
         ClearGeneratedLevels();
 
-        if (startRoomPrefab == null || endRoomPrefab == null || levelPrefabs.Count == 0)
+        if (startRoomPrefab == null || endRoomPrefab == null)
         {
             Debug.LogError("Missing required prefabs!");
             return;
         }
+
+        // Reset closed room tracking
+        isInClosedSection = false;
+        closedRoomsSpawned = 0;
+        currentLevelIndex = 0;
 
         // Use existing Start Room instead of instantiating a new one
         GameObject startRoom = startRoomPrefab;
@@ -51,11 +86,17 @@ public class LevelGenerator : MonoBehaviour
         // Generate Random Levels
         for (int i = 0; i < numberOfLevels; i++)
         {
-            if (levelPrefabs.Count == 0) break;
+            currentLevelIndex = i;
 
-            // Select random level prefab
-            GameObject randomLevelPrefab = levelPrefabs[Random.Range(0, levelPrefabs.Count)];
+            // Select random level prefab based on cycle and chances
+            GameObject randomLevelPrefab = GetRandomLevelPrefab();
             
+            if (randomLevelPrefab == null)
+            {
+                Debug.LogWarning("No suitable level prefab found, skipping level generation.");
+                break;
+            }
+
             // Get the Start point of the level prefab to use as reference
             Transform levelStartPoint = FindStartPoint(randomLevelPrefab);
             
@@ -71,6 +112,12 @@ public class LevelGenerator : MonoBehaviour
             currentSpawnPosition = FindEndPoint(level).position;
         }
 
+        // If we're still in a closed section at the end, close it
+        if (isInClosedSection)
+        {
+            SpawnEndClosedRoom(ref currentSpawnPosition);
+        }
+
         // Generate End Room
         GameObject endRoomPrefabInstance = Instantiate(endRoomPrefab, Vector3.zero, Quaternion.identity);
         endRoomPrefabInstance.name = "EndRoom";
@@ -83,6 +130,202 @@ public class LevelGenerator : MonoBehaviour
         generatedLevels.Add(endRoomPrefabInstance);
 
         Debug.Log($"Generated {generatedLevels.Count - 1} levels: Using existing StartRoom + {numberOfLevels} levels + EndRoom");
+    }
+
+    private GameObject GetRandomLevelPrefab()
+    {
+        // Check if we're in a closed section and need to continue spawning closed rooms
+        if (isInClosedSection)
+        {
+            return GetClosedRoomPrefab();
+        }
+
+        // Calculate available level types based on cycle and build weighted list
+        List<string> availableTypes = new List<string>();
+        List<int> weights = new List<int>();
+
+        // Easy levels - check cycle requirement
+        if (cycle >= easyCycleRequired && easyLevels.Count > 0)
+        {
+            availableTypes.Add("Easy");
+            weights.Add(easyChance);
+        }
+        
+        // Medium levels - check cycle requirement
+        if (cycle >= mediumCycleRequired && mediumLevels.Count > 0)
+        {
+            availableTypes.Add("Medium");
+            weights.Add(mediumChance);
+        }
+            
+        // Hard levels - check cycle requirement
+        if (cycle >= hardCycleRequired && hardLevels.Count > 0)
+        {
+            availableTypes.Add("Hard");
+            weights.Add(hardChance);
+        }
+            
+        // Closed levels - check cycle requirement and special prefabs
+        if (cycle >= closedCycleRequired && closedLevels.Count > 0 && startClosedRoom != null && endClosedRoom != null)
+        {
+            availableTypes.Add("Closed");
+            weights.Add(closedChance);
+        }
+
+        if (availableTypes.Count == 0)
+        {
+            Debug.LogError("No available level types!");
+            return null;
+        }
+
+        // Select random level type based on weights
+        string selectedType = GetWeightedRandomType(availableTypes, weights);
+        
+        // Handle closed levels separately
+        if (selectedType == "Closed")
+        {
+            return StartClosedSection();
+        }
+
+        // Return random level from the selected type
+        return GetRandomLevelFromType(selectedType);
+    }
+
+    private string GetWeightedRandomType(List<string> types, List<int> weights)
+    {
+        int totalWeight = 0;
+        foreach (int weight in weights)
+        {
+            totalWeight += weight;
+        }
+
+        // If total weight is 0, distribute equally
+        if (totalWeight == 0)
+        {
+            return types[Random.Range(0, types.Count)];
+        }
+
+        int randomValue = Random.Range(0, totalWeight);
+        int currentWeight = 0;
+
+        for (int i = 0; i < types.Count; i++)
+        {
+            currentWeight += weights[i];
+            if (randomValue < currentWeight)
+            {
+                return types[i];
+            }
+        }
+
+        return types[0]; // Fallback
+    }
+
+    private GameObject GetRandomLevelFromType(string type)
+    {
+        List<GameObject> levelList = null;
+        
+        switch (type)
+        {
+            case "Easy":
+                levelList = easyLevels;
+                break;
+            case "Medium":
+                levelList = mediumLevels;
+                break;
+            case "Hard":
+                levelList = hardLevels;
+                break;
+        }
+
+        if (levelList == null || levelList.Count == 0)
+        {
+            Debug.LogError($"No levels available in {type} category!");
+            // Fallback to first available type
+            if (easyLevels.Count > 0) return easyLevels[0];
+            if (mediumLevels.Count > 0) return mediumLevels[0];
+            if (hardLevels.Count > 0) return hardLevels[0];
+            return null;
+        }
+
+        return levelList[Random.Range(0, levelList.Count)];
+    }
+
+    private GameObject StartClosedSection()
+    {
+        // Check if we can start a closed section based on remaining levels
+        int remainingLevels = numberOfLevels - currentLevelIndex;
+        
+        // If this is the last level, don't start a closed section
+        if (remainingLevels <= 1)
+        {
+            Debug.Log("Cannot start closed section on last level, falling back to easy level");
+            return GetRandomLevelFromType("Easy");
+        }
+
+        // Calculate how many closed rooms we can actually spawn
+        int availableClosedRooms = Mathf.Min(maxClosedRooms, remainingLevels - 1); // -1 for the end closed room
+        
+        if (availableClosedRooms <= 0)
+        {
+            Debug.Log("Not enough space for closed section, falling back to easy level");
+            return GetRandomLevelFromType("Easy");
+        }
+
+        // Start closed section
+        isInClosedSection = true;
+        closedRoomsSpawned = 0;
+        
+        Debug.Log($"Starting closed section at level {currentLevelIndex + 1}, will spawn up to {availableClosedRooms} closed rooms");
+        
+        // Return the start closed room
+        return startClosedRoom;
+    }
+
+    private GameObject GetClosedRoomPrefab()
+    {
+        closedRoomsSpawned++;
+        
+        int remainingLevels = numberOfLevels - currentLevelIndex;
+        
+        // Check if we need to end the closed section
+        bool shouldEnd = closedRoomsSpawned >= maxClosedRooms || remainingLevels <= 1;
+        
+        if (shouldEnd)
+        {
+            Debug.Log($"Ending closed section after {closedRoomsSpawned} rooms, remaining levels: {remainingLevels}");
+            isInClosedSection = false;
+            return endClosedRoom;
+        }
+        
+        // Return a random closed level
+        if (closedLevels.Count > 0)
+        {
+            return closedLevels[Random.Range(0, closedLevels.Count)];
+        }
+        else
+        {
+            // If no closed levels available, end the section
+            Debug.Log("No closed levels available, ending closed section");
+            isInClosedSection = false;
+            return endClosedRoom;
+        }
+    }
+
+    private void SpawnEndClosedRoom(ref Vector3 currentSpawnPosition)
+    {
+        if (endClosedRoom != null)
+        {
+            Transform endRoomStart = FindStartPoint(endClosedRoom);
+            Vector3 spawnPosition = currentSpawnPosition - endRoomStart.localPosition;
+            GameObject level = Instantiate(endClosedRoom, spawnPosition, Quaternion.identity);
+            level.name = $"Level_ClosedEnd_{currentLevelIndex}";
+            generatedLevels.Add(level);
+            
+            // Update spawn position using the existing waypoints from the prefab
+            currentSpawnPosition = FindEndPoint(level).position;
+        }
+        
+        isInClosedSection = false;
     }
 
     public void RestartGeneration()
@@ -110,20 +353,6 @@ public class LevelGenerator : MonoBehaviour
         // Rename End to Start
         currentEndRoom.name = "StartRoom";
         
-        // Find and rename the End child to Start if it exists
-        Transform endPoint = FindChildByName(currentEndRoom.transform, "End");
-        if (endPoint != null)
-        {
-            endPoint.name = "Start";
-        }
-
-        // Find and rename the Start child to End if it exists (swap the markers)
-        Transform startPoint = FindChildByName(currentEndRoom.transform, "Start");
-        if (startPoint != null)
-        {
-            startPoint.name = "End";
-        }
-
         // Update the startRoomPrefab reference to the renamed object
         startRoomPrefab = currentEndRoom;
 
@@ -131,16 +360,20 @@ public class LevelGenerator : MonoBehaviour
         GenerateLevels();
     }
 
-    // Alternative simpler approach - uncomment this method and call it instead if you prefer
     public void GenerateLevelsSimple()
     {
         ClearGeneratedLevels();
 
-        if (startRoomPrefab == null || endRoomPrefab == null || levelPrefabs.Count == 0)
+        if (startRoomPrefab == null || endRoomPrefab == null)
         {
             Debug.LogError("Missing required prefabs!");
             return;
         }
+
+        // Reset closed room tracking
+        isInClosedSection = false;
+        closedRoomsSpawned = 0;
+        currentLevelIndex = 0;
 
         // Use existing StartRoom
         GameObject currentLevel = startRoomPrefab;
@@ -154,8 +387,15 @@ public class LevelGenerator : MonoBehaviour
         // Add random levels
         for (int i = 0; i < numberOfLevels; i++)
         {
-            GameObject randomPrefab = levelPrefabs[Random.Range(0, levelPrefabs.Count)];
+            currentLevelIndex = i;
+            GameObject randomPrefab = GetRandomLevelPrefab();
             
+            if (randomPrefab == null)
+            {
+                Debug.LogWarning("No suitable level prefab found, skipping level generation.");
+                break;
+            }
+
             // Get the End point of the current level
             Transform currentEnd = FindEndPoint(currentLevel);
             
@@ -173,34 +413,39 @@ public class LevelGenerator : MonoBehaviour
             currentLevel = newLevel;
         }
 
+        // If we're still in a closed section at the end, close it
+        if (isInClosedSection)
+        {
+            Transform lastEnd = FindEndPoint(currentLevel);
+            if (endClosedRoom != null)
+            {
+                Transform endRoomStart = FindStartPoint(endClosedRoom);
+                Vector3 closedEndPosition = lastEnd.position - endRoomStart.localPosition;
+                GameObject closedEnd = Instantiate(endClosedRoom, closedEndPosition, Quaternion.identity);
+                closedEnd.name = "Level_ClosedEnd_Final";
+                generatedLevels.Add(closedEnd);
+                currentLevel = closedEnd;
+            }
+        }
+
         // Add EndRoom
-        Transform lastEnd = FindEndPoint(currentLevel);
-        GameObject endRoom = Instantiate(endRoomPrefab, Vector3.zero, Quaternion.identity);
-        endRoom.name = "EndRoom";
+        Transform finalEnd = FindEndPoint(currentLevel);
+        GameObject finalEndRoom = Instantiate(endRoomPrefab, Vector3.zero, Quaternion.identity);
+        finalEndRoom.name = "EndRoom";
         
         // Position EndRoom so its Start aligns with the last level's End
-        Transform endRoomStart = FindStartPoint(endRoom);
-        Vector3 endRoomPosition = lastEnd.position - endRoomStart.localPosition;
-        endRoom.transform.position = endRoomPosition;
+        Transform endRoomStartPoint = FindStartPoint(finalEndRoom);
+        Vector3 finalEndRoomPosition = finalEnd.position - endRoomStartPoint.localPosition;
+        finalEndRoom.transform.position = finalEndRoomPosition;
         
-        generatedLevels.Add(endRoom);
+        generatedLevels.Add(finalEndRoom);
 
         Debug.Log($"Generated {generatedLevels.Count - 1} levels: Using existing StartRoom + {numberOfLevels} levels + EndRoom");
     }
 
     private Transform FindStartPoint(GameObject levelObject)
     {
-        // Handle both prefabs and scene objects
-        Transform startPoint = null;
-        if (levelObject.scene.name != null) // It's a scene object
-        {
-            startPoint = FindChildByName(levelObject.transform, "Start");
-        }
-        else // It's a prefab
-        {
-            // For prefabs, we need to search in the prefab's transform
-            startPoint = FindChildByName(levelObject.transform, "Start");
-        }
+        Transform startPoint = FindChildByName(levelObject.transform, "Start");
         
         if (startPoint == null)
         {
@@ -212,17 +457,7 @@ public class LevelGenerator : MonoBehaviour
 
     private Transform FindEndPoint(GameObject levelObject)
     {
-        // Handle both prefabs and scene objects
-        Transform endPoint = null;
-        if (levelObject.scene.name != null) // It's a scene object
-        {
-            endPoint = FindChildByName(levelObject.transform, "End");
-        }
-        else // It's a prefab
-        {
-            // For prefabs, we need to search in the prefab's transform
-            endPoint = FindChildByName(levelObject.transform, "End");
-        }
+        Transform endPoint = FindChildByName(levelObject.transform, "End");
         
         if (endPoint == null)
         {
@@ -241,7 +476,6 @@ public class LevelGenerator : MonoBehaviour
                 return child;
             }
             
-            // Search recursively in children
             Transform found = FindChildByName(child, name);
             if (found != null)
                 return found;
@@ -256,7 +490,6 @@ public class LevelGenerator : MonoBehaviour
 
     private void ClearGeneratedLevels(bool keepEndRoom = false)
     {
-        // Create a list to avoid modification during iteration
         List<GameObject> levelsToDestroy = new List<GameObject>();
         List<GameObject> levelsToKeep = new List<GameObject>();
 
@@ -264,7 +497,6 @@ public class LevelGenerator : MonoBehaviour
         {
             if (level != null)
             {
-                // Keep the original start room prefab and optionally the end room
                 bool shouldKeep = (level == startRoomPrefab) || (keepEndRoom && level.name == "EndRoom");
                 
                 if (shouldKeep)
@@ -296,7 +528,6 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    // Editor button for easy testing
     [ContextMenu("Generate Levels Now")]
     private void GenerateLevelsEditor()
     {
@@ -320,4 +551,5 @@ public class LevelGenerator : MonoBehaviour
     {
         RestartGeneration();
     }
+    //dd
 }

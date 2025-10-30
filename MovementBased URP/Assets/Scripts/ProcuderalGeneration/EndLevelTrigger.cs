@@ -13,6 +13,8 @@ public class EndLevelTrigger : MonoBehaviour
     public GameObject targetPerkSelector;
     public PerkSelectorScript perkSelector;
     public Animator perkSelectorAnimator;
+    private GameObject targetTimerManager;
+    private Timer targetTimer;
 
     void Start()
     {
@@ -27,6 +29,9 @@ public class EndLevelTrigger : MonoBehaviour
         perkSelector = targetPerkSelectorManager.GetComponent<PerkSelectorScript>();
         targetPerkSelector = GameObject.Find("PerkSelector");
         perkSelectorAnimator = targetPerkSelector.GetComponent<Animator>();
+
+        targetTimerManager = GameObject.Find("TimerManager");
+        targetTimer = targetTimerManager.GetComponent<Timer>();
     }
 
     void OnTriggerEnter(Collider other)
@@ -39,6 +44,8 @@ public class EndLevelTrigger : MonoBehaviour
         slideMetalDoorManager.CloseDoor();
         levelGenerator.RestartGeneration();
         musicManagerScript.StopPlayingMusic();
+
+        targetTimer.StopAndReset();
 
         Destroy(gameObject);
     }
