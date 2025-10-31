@@ -157,11 +157,9 @@ GameObject:
   - component: {fileID: 3182194359004442832}
   - component: {fileID: 8998351103753659463}
   - component: {fileID: 5358879609992513335}
-  - component: {fileID: 3969415354027356795}
   - component: {fileID: 4507913966532850761}
   - component: {fileID: 2818587151192942589}
   - component: {fileID: 7541385963763542813}
-  - component: {fileID: 8183506799080964795}
   - component: {fileID: 5863817201986159063}
   m_Layer: 0
   m_Name: Player
@@ -332,33 +330,6 @@ MonoBehaviour:
   wallTiltAngle: 15
   tiltSpeed: 5
   cam: {fileID: 4005968262995598657}
---- !u!54 &3969415354027356795
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1557733885150758004}
-  serializedVersion: 5
-  m_Mass: 100
-  m_LinearDamping: 0
-  m_AngularDamping: 0
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 2
 --- !u!114 &4507913966532850761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,7 +365,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 2, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -495,19 +466,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &8183506799080964795
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1557733885150758004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6be07c7e79c57d940ad9514304ac7cec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 0}
 --- !u!114 &5863817201986159063
 MonoBehaviour:
   m_ObjectHideFlags: 0

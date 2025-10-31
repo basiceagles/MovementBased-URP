@@ -185,6 +185,8 @@ public class Swinging : MonoBehaviour
         pc.verticalVelocity = verticalSpeed; 
         pc.ClearAirVelocity(); 
         
+        pc.currentSlideSpeed = currentSwingSpeed;
+        
         swinging = false; 
         pc.activeGrappling = false;
         grappling.enabled = true;

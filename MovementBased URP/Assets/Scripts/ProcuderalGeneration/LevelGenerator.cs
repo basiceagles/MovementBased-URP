@@ -6,7 +6,7 @@ public class LevelGenerator : MonoBehaviour
     [Header("Level Prefabs")]
     public GameObject startRoomPrefab; // Reference to the existing start prefab in scene
     public GameObject endRoomPrefab;
-    
+
     [Header("Level Arrays")]
     public List<GameObject> easyLevels = new List<GameObject>();
     public List<GameObject> mediumLevels = new List<GameObject>();
@@ -73,7 +73,7 @@ public class LevelGenerator : MonoBehaviour
     private void Start()
     {
         InitializeBatchingSettings();
-        
+
         if (generateOnStart)
         {
             GenerateLevels();
@@ -112,13 +112,13 @@ public class LevelGenerator : MonoBehaviour
         // Use existing Start Room instead of instantiating a new one
         GameObject startRoom = startRoomPrefab;
         startRoom.name = "StartRoom";
-        
+
         // Optimize existing start room for batching
         if (enableDynamicBatching)
         {
             OptimizeForBatching(startRoom);
         }
-        
+
         // Only add to generated levels if it's not already there
         if (!generatedLevels.Contains(startRoom))
         {
@@ -136,7 +136,7 @@ public class LevelGenerator : MonoBehaviour
 
             // Select random level prefab based on cycle and chances
             GameObject randomLevelPrefab = GetRandomLevelPrefab();
-            
+
             if (randomLevelPrefab == null)
             {
                 Debug.LogWarning("No suitable level prefab found, skipping level generation.");
@@ -145,20 +145,20 @@ public class LevelGenerator : MonoBehaviour
 
             // Get the Start point of the level prefab to use as reference
             Transform levelStartPoint = FindStartPoint(randomLevelPrefab);
-            
+
             // Calculate spawn position so the level's Start point aligns with previous End point
             Vector3 spawnPosition = currentSpawnPosition - levelStartPoint.localPosition;
-            
+
             // Instantiate the level at the calculated spawn position
             GameObject level = Instantiate(randomLevelPrefab, spawnPosition, Quaternion.identity);
             level.name = $"Level_{i + 1}";
-            
+
             // Optimize for dynamic batching
             if (enableDynamicBatching)
             {
                 OptimizeForBatching(level);
             }
-            
+
             generatedLevels.Add(level);
 
             // Update the current spawn position to be the End point of this level
@@ -180,22 +180,22 @@ public class LevelGenerator : MonoBehaviour
         // Generate End Room
         GameObject endRoomPrefabInstance = Instantiate(endRoomPrefab, Vector3.zero, Quaternion.identity);
         endRoomPrefabInstance.name = "EndRoom";
-        
+
         // Optimize end room for batching
         if (enableDynamicBatching)
         {
             OptimizeForBatching(endRoomPrefabInstance);
         }
-        
+
         // Get the Start point of the EndRoom and position it correctly
         Transform endRoomStart = FindStartPoint(endRoomPrefabInstance);
         Vector3 endRoomPosition = currentSpawnPosition - endRoomStart.localPosition;
         endRoomPrefabInstance.transform.position = endRoomPosition;
-        
+
         generatedLevels.Add(endRoomPrefabInstance);
 
         Debug.Log($"Generated {generatedLevels.Count - 1} levels: Using existing StartRoom + {numberOfLevels} levels + EndRoom");
-        
+
         // Log batching statistics
         if (enableDynamicBatching)
         {
@@ -285,7 +285,7 @@ public class LevelGenerator : MonoBehaviour
                 if (renderer == null) continue;
 
                 totalRenderers++;
-                
+
                 // Count material usage
                 if (renderer.sharedMaterial != null)
                 {
@@ -310,7 +310,7 @@ public class LevelGenerator : MonoBehaviour
 
         Debug.Log($"Batching Statistics: {batchedRenderers}/{totalRenderers} renderers optimized for batching");
         Debug.Log($"Material usage: {materialUsage.Count} unique materials");
-        
+
         foreach (var kvp in materialUsage)
         {
             if (kvp.Value > 1)
@@ -345,21 +345,21 @@ public class LevelGenerator : MonoBehaviour
             availableTypes.Add("Easy");
             weights.Add(easyChance);
         }
-        
+
         // Medium levels - check cycle requirement
         if (cycle >= mediumCycleRequired && mediumLevels.Count > 0)
         {
             availableTypes.Add("Medium");
             weights.Add(mediumChance);
         }
-            
+
         // Hard levels - check cycle requirement
         if (cycle >= hardCycleRequired && hardLevels.Count > 0)
         {
             availableTypes.Add("Hard");
             weights.Add(hardChance);
         }
-            
+
         // Closed levels - check cycle requirement and special prefabs
         if (cycle >= closedCycleRequired && closedLevels.Count > 0 && startClosedRoom != null && endClosedRoom != null)
         {
@@ -375,7 +375,7 @@ public class LevelGenerator : MonoBehaviour
 
         // Select random level type based on weights
         string selectedType = GetWeightedRandomType(availableTypes, weights);
-        
+
         // Handle closed levels separately
         if (selectedType == "Closed")
         {
@@ -418,7 +418,7 @@ public class LevelGenerator : MonoBehaviour
     private GameObject GetRandomLevelFromType(string type)
     {
         List<GameObject> levelList = null;
-        
+
         switch (type)
         {
             case "Easy":
@@ -449,7 +449,7 @@ public class LevelGenerator : MonoBehaviour
     {
         // Check if we can start a closed section based on remaining levels
         int remainingLevels = numberOfLevels - currentLevelIndex;
-        
+
         // If this is the last level, don't start a closed section
         if (remainingLevels <= 1)
         {
@@ -459,7 +459,7 @@ public class LevelGenerator : MonoBehaviour
 
         // Calculate how many closed rooms we can actually spawn
         int availableClosedRooms = Mathf.Min(maxClosedRooms, remainingLevels - 1); // -1 for the end closed room
-        
+
         if (availableClosedRooms <= 0)
         {
             Debug.Log("Not enough space for closed section, falling back to easy level");
@@ -470,9 +470,9 @@ public class LevelGenerator : MonoBehaviour
         isInClosedSection = true;
         closedRoomsSpawned = 0;
         hasSpawnedStartClosedRoom = false; // Reset for new closed section
-        
+
         Debug.Log($"Starting closed section at level {currentLevelIndex + 1}, will spawn up to {availableClosedRooms} closed rooms");
-        
+
         // Return the start closed room
         hasSpawnedStartClosedRoom = true;
         return startClosedRoom;
@@ -487,12 +487,12 @@ public class LevelGenerator : MonoBehaviour
         }
 
         closedRoomsSpawned++;
-        
+
         int remainingLevels = numberOfLevels - currentLevelIndex;
-        
+
         // Check if we need to end the closed section
         bool shouldEnd = closedRoomsSpawned >= maxClosedRooms || remainingLevels <= 1;
-        
+
         if (shouldEnd)
         {
             Debug.Log($"Ending closed section after {closedRoomsSpawned} rooms, remaining levels: {remainingLevels}");
@@ -500,7 +500,7 @@ public class LevelGenerator : MonoBehaviour
             hasSpawnedStartClosedRoom = false;
             return endClosedRoom;
         }
-        
+
         // Return a random closed level
         if (closedLevels.Count > 0)
         {
@@ -533,7 +533,7 @@ public class LevelGenerator : MonoBehaviour
         // Check if we have enough space left for a runner section
         int remainingLevels = numberOfLevels - currentLevelIndex;
         int requiredSpace = runnerMinRooms + 2; // +2 for start and end prefabs
-        
+
         if (remainingLevels < requiredSpace)
         {
             return false;
@@ -542,7 +542,7 @@ public class LevelGenerator : MonoBehaviour
         // Check if we're approaching the end (don't start runner if we're too close to maxClosedRooms)
         int levelsUsed = currentLevelIndex;
         int maxAllowedForRunner = maxClosedRooms - 1; // Leave room for at least one non-runner level
-        
+
         if (levelsUsed >= maxAllowedForRunner)
         {
             return false;
@@ -556,12 +556,12 @@ public class LevelGenerator : MonoBehaviour
     {
         isInRunnerSection = true;
         runnerRoomsSpawned = 0;
-        
+
         // Determine how many closed rooms to spawn between start and end
         runnerRoomsRequired = Random.Range(runnerMinRooms, runnerMaxRooms + 1);
-        
+
         Debug.Log($"Starting runner section at level {currentLevelIndex + 1}, will spawn {runnerRoomsRequired} closed rooms before end");
-        
+
         return runnerStartPrefab;
     }
 
@@ -599,19 +599,19 @@ public class LevelGenerator : MonoBehaviour
             Vector3 spawnPosition = currentSpawnPosition - endRoomStart.localPosition;
             GameObject level = Instantiate(endClosedRoom, spawnPosition, Quaternion.identity);
             level.name = $"Level_ClosedEnd_{currentLevelIndex}";
-            
+
             // Optimize for batching
             if (enableDynamicBatching)
             {
                 OptimizeForBatching(level);
             }
-            
+
             generatedLevels.Add(level);
-            
+
             // Update spawn position using the existing waypoints from the prefab
             currentSpawnPosition = FindEndPoint(level).position;
         }
-        
+
         isInClosedSection = false;
         hasSpawnedStartClosedRoom = false;
     }
@@ -624,19 +624,19 @@ public class LevelGenerator : MonoBehaviour
             Vector3 spawnPosition = currentSpawnPosition - endRoomStart.localPosition;
             GameObject level = Instantiate(runnerEndPrefab, spawnPosition, Quaternion.identity);
             level.name = $"Level_RunnerEnd_{currentLevelIndex}";
-            
+
             // Optimize for batching
             if (enableDynamicBatching)
             {
                 OptimizeForBatching(level);
             }
-            
+
             generatedLevels.Add(level);
-            
+
             // Update spawn position using the existing waypoints from the prefab
             currentSpawnPosition = FindEndPoint(level).position;
         }
-        
+
         isInRunnerSection = false;
     }
 
@@ -667,7 +667,7 @@ public class LevelGenerator : MonoBehaviour
 
         // Rename End to Start
         currentEndRoom.name = "StartRoom";
-        
+
         // Update the startRoomPrefab reference to the renamed object
         startRoomPrefab = currentEndRoom;
 
@@ -697,13 +697,13 @@ public class LevelGenerator : MonoBehaviour
         // Use existing StartRoom
         GameObject currentLevel = startRoomPrefab;
         currentLevel.name = "StartRoom";
-        
+
         // Optimize existing start room
         if (enableDynamicBatching)
         {
             OptimizeForBatching(currentLevel);
         }
-        
+
         if (!generatedLevels.Contains(currentLevel))
         {
             generatedLevels.Add(currentLevel);
@@ -714,7 +714,7 @@ public class LevelGenerator : MonoBehaviour
         {
             currentLevelIndex = i;
             GameObject randomPrefab = GetRandomLevelPrefab();
-            
+
             if (randomPrefab == null)
             {
                 Debug.LogWarning("No suitable level prefab found, skipping level generation.");
@@ -723,23 +723,23 @@ public class LevelGenerator : MonoBehaviour
 
             // Get the End point of the current level
             Transform currentEnd = FindEndPoint(currentLevel);
-            
+
             // Get the Start point of the new level prefab
             Transform newLevelStart = FindStartPoint(randomPrefab);
-            
+
             // Calculate spawn position so new level's Start aligns with current level's End
             Vector3 spawnPosition = currentEnd.position - newLevelStart.localPosition;
-            
+
             // Instantiate new level at the calculated position
             GameObject newLevel = Instantiate(randomPrefab, spawnPosition, Quaternion.identity);
             newLevel.name = $"Level_{i + 1}";
-            
+
             // Optimize for batching
             if (enableDynamicBatching)
             {
                 OptimizeForBatching(newLevel);
             }
-            
+
             generatedLevels.Add(newLevel);
 
             currentLevel = newLevel;
@@ -755,12 +755,12 @@ public class LevelGenerator : MonoBehaviour
                 Vector3 closedEndPosition = lastEnd.position - endRoomStart.localPosition;
                 GameObject closedEnd = Instantiate(endClosedRoom, closedEndPosition, Quaternion.identity);
                 closedEnd.name = "Level_ClosedEnd_Final";
-                
+
                 if (enableDynamicBatching)
                 {
                     OptimizeForBatching(closedEnd);
                 }
-                
+
                 generatedLevels.Add(closedEnd);
                 currentLevel = closedEnd;
             }
@@ -776,12 +776,12 @@ public class LevelGenerator : MonoBehaviour
                 Vector3 runnerEndPosition = lastEnd.position - runnerEndStart.localPosition;
                 GameObject runnerEnd = Instantiate(runnerEndPrefab, runnerEndPosition, Quaternion.identity);
                 runnerEnd.name = "Level_RunnerEnd_Final";
-                
+
                 if (enableDynamicBatching)
                 {
                     OptimizeForBatching(runnerEnd);
                 }
-                
+
                 generatedLevels.Add(runnerEnd);
                 currentLevel = runnerEnd;
             }
@@ -791,22 +791,22 @@ public class LevelGenerator : MonoBehaviour
         Transform finalEnd = FindEndPoint(currentLevel);
         GameObject finalEndRoom = Instantiate(endRoomPrefab, Vector3.zero, Quaternion.identity);
         finalEndRoom.name = "EndRoom";
-        
+
         // Optimize end room
         if (enableDynamicBatching)
         {
             OptimizeForBatching(finalEndRoom);
         }
-        
+
         // Position EndRoom so its Start aligns with the last level's End
         Transform endRoomStartPoint = FindStartPoint(finalEndRoom);
         Vector3 finalEndRoomPosition = finalEnd.position - endRoomStartPoint.localPosition;
         finalEndRoom.transform.position = finalEndRoomPosition;
-        
+
         generatedLevels.Add(finalEndRoom);
 
         Debug.Log($"Generated {generatedLevels.Count - 1} levels: Using existing StartRoom + {numberOfLevels} levels + EndRoom");
-        
+
         // Log batching statistics
         if (enableDynamicBatching)
         {
@@ -817,7 +817,7 @@ public class LevelGenerator : MonoBehaviour
     private Transform FindStartPoint(GameObject levelObject)
     {
         Transform startPoint = FindChildByName(levelObject.transform, "Start");
-        
+
         if (startPoint == null)
         {
             Debug.LogError($"No 'Start' GameObject found in {levelObject.name}!");
@@ -829,7 +829,7 @@ public class LevelGenerator : MonoBehaviour
     private Transform FindEndPoint(GameObject levelObject)
     {
         Transform endPoint = FindChildByName(levelObject.transform, "End");
-        
+
         if (endPoint == null)
         {
             Debug.LogError($"No 'End' GameObject found in {levelObject.name}!");
@@ -846,7 +846,7 @@ public class LevelGenerator : MonoBehaviour
             {
                 return child;
             }
-            
+
             Transform found = FindChildByName(child, name);
             if (found != null)
                 return found;
@@ -870,7 +870,7 @@ public class LevelGenerator : MonoBehaviour
             if (level != null)
             {
                 bool shouldKeep = (level == startRoomPrefab) || (keepEndRoom && level.name == "EndRoom");
-                
+
                 if (shouldKeep)
                 {
                     levelsToKeep.Add(level);

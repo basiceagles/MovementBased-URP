@@ -76,6 +76,12 @@ public class PlayerController : MonoBehaviour
         
         HandleAirTransitions(previouslyGrounded, previouslyOnRamp);
         
+        // Сброс currentSlideSpeed при приземлении, если не слайдим
+        if (!previouslyGrounded && isGrounded && !isSliding && !wantsToSlide)
+        {
+            currentSlideSpeed = 0f;
+        }
+        
         wasGrounded = isGrounded;
         wasOnRamp = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, rampLayer);
         
@@ -202,7 +208,7 @@ public class PlayerController : MonoBehaviour
         {
             StandUp();
         }
-        if (wantsToSlide && isGrounded && currentSpeed > walkSpeed)
+        if (wantsToSlide && isGrounded && (currentSpeed > walkSpeed || currentSlideSpeed > 0))
         {
             StartSlide();
             wantsToSlide = false; 
@@ -270,7 +276,10 @@ public class PlayerController : MonoBehaviour
     private void StartSlide()
     {
         isSliding = true;
-        currentSlideSpeed = slideSpeed;
+        if (currentSlideSpeed <= slideSpeed)
+        {
+            currentSlideSpeed = slideSpeed;
+        }
         SetCrouchScale();
     }
     
