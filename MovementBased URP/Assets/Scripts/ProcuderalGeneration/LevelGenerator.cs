@@ -15,6 +15,10 @@ public class LevelGenerator : MonoBehaviour
     public GameObject startClosedRoom;
     public GameObject endClosedRoom;
 
+    [Header("Runner Prefabs")]
+    public GameObject runnerStartPrefab;
+    public GameObject runnerEndPrefab;
+
     [Header("Spawn Chances")]
     [Range(0, 100)]
     public int easyChance = 25;
@@ -24,6 +28,8 @@ public class LevelGenerator : MonoBehaviour
     public int hardChance = 25;
     [Range(0, 100)]
     public int closedChance = 25;
+    [Range(0, 100)]
+    public int runnerStartChance = 25;
 
     [Header("Cycle Requirements")]
     public int easyCycleRequired = 0;
@@ -37,6 +43,16 @@ public class LevelGenerator : MonoBehaviour
     public int cycle = 0;
     public int maxClosedRooms = 3;
 
+    [Header("Runner Settings")]
+    public int runnerMinRooms = 2;
+    public int runnerMaxRooms = 4;
+
+    [Header("Dynamic Batching Optimization")]
+    public bool enableDynamicBatching = true;
+    public bool enableGPUInstancing = true;
+    public bool useSharedMaterials = true;
+    public Material overrideMaterial; // Optional: Force all levels to use this material
+
     [Header("Generated Levels")]
     public List<GameObject> generatedLevels = new List<GameObject>();
 
@@ -45,11 +61,31 @@ public class LevelGenerator : MonoBehaviour
     private int closedRoomsSpawned = 0;
     private int currentLevelIndex = 0;
 
+    // Private variables for runner section tracking
+    private bool isInRunnerSection = false;
+    private int runnerRoomsSpawned = 0;
+    private int runnerRoomsRequired = 0;
+    private bool hasSpawnedStartClosedRoom = false; // Track if we've spawned the start closed room
+
+    // Material cache for batching optimization
+    private Dictionary<string, Material> materialCache = new Dictionary<string, Material>();
+
     private void Start()
     {
+        InitializeBatchingSettings();
+        
         if (generateOnStart)
         {
             GenerateLevels();
+        }
+    }
+
+    private void InitializeBatchingSettings()
+    {
+
+        if (enableGPUInstancing)
+        {
+            Debug.Log("GPU Instancing optimization enabled");
         }
     }
 
@@ -64,14 +100,24 @@ public class LevelGenerator : MonoBehaviour
             return;
         }
 
-        // Reset closed room tracking
+        // Reset room tracking
         isInClosedSection = false;
+        isInRunnerSection = false;
         closedRoomsSpawned = 0;
+        runnerRoomsSpawned = 0;
+        runnerRoomsRequired = 0;
+        hasSpawnedStartClosedRoom = false;
         currentLevelIndex = 0;
 
         // Use existing Start Room instead of instantiating a new one
         GameObject startRoom = startRoomPrefab;
         startRoom.name = "StartRoom";
+        
+        // Optimize existing start room for batching
+        if (enableDynamicBatching)
+        {
+            OptimizeForBatching(startRoom);
+        }
         
         // Only add to generated levels if it's not already there
         if (!generatedLevels.Contains(startRoom))
@@ -106,6 +152,13 @@ public class LevelGenerator : MonoBehaviour
             // Instantiate the level at the calculated spawn position
             GameObject level = Instantiate(randomLevelPrefab, spawnPosition, Quaternion.identity);
             level.name = $"Level_{i + 1}";
+            
+            // Optimize for dynamic batching
+            if (enableDynamicBatching)
+            {
+                OptimizeForBatching(level);
+            }
+            
             generatedLevels.Add(level);
 
             // Update the current spawn position to be the End point of this level
@@ -118,9 +171,21 @@ public class LevelGenerator : MonoBehaviour
             SpawnEndClosedRoom(ref currentSpawnPosition);
         }
 
+        // If we're still in a runner section at the end, end it
+        if (isInRunnerSection)
+        {
+            SpawnRunnerEndRoom(ref currentSpawnPosition);
+        }
+
         // Generate End Room
         GameObject endRoomPrefabInstance = Instantiate(endRoomPrefab, Vector3.zero, Quaternion.identity);
         endRoomPrefabInstance.name = "EndRoom";
+        
+        // Optimize end room for batching
+        if (enableDynamicBatching)
+        {
+            OptimizeForBatching(endRoomPrefabInstance);
+        }
         
         // Get the Start point of the EndRoom and position it correctly
         Transform endRoomStart = FindStartPoint(endRoomPrefabInstance);
@@ -130,10 +195,140 @@ public class LevelGenerator : MonoBehaviour
         generatedLevels.Add(endRoomPrefabInstance);
 
         Debug.Log($"Generated {generatedLevels.Count - 1} levels: Using existing StartRoom + {numberOfLevels} levels + EndRoom");
+        
+        // Log batching statistics
+        if (enableDynamicBatching)
+        {
+            LogBatchingStatistics();
+        }
     }
 
+    private void OptimizeForBatching(GameObject level)
+    {
+        if (level == null) return;
+
+        MeshRenderer[] renderers = level.GetComponentsInChildren<MeshRenderer>(true);
+        int optimizedCount = 0;
+
+        foreach (MeshRenderer renderer in renderers)
+        {
+            if (renderer == null) continue;
+
+            // Ensure uniform scale for dynamic batching
+            if (renderer.transform.lossyScale != Vector3.one)
+            {
+                Debug.LogWarning($"Non-uniform scale on {renderer.name} may prevent batching: {renderer.transform.lossyScale}");
+            }
+
+            // Material optimization
+            if (useSharedMaterials && renderer.sharedMaterial != null)
+            {
+                string materialKey = renderer.sharedMaterial.name;
+
+                // Use override material if specified
+                if (overrideMaterial != null)
+                {
+                    renderer.sharedMaterial = overrideMaterial;
+                    materialKey = "OverrideMaterial";
+                }
+
+                // Cache and share materials
+                if (!materialCache.ContainsKey(materialKey))
+                {
+                    materialCache[materialKey] = renderer.sharedMaterial;
+                }
+                else
+                {
+                    renderer.sharedMaterial = materialCache[materialKey];
+                }
+
+                // Enable GPU instancing on materials
+                if (enableGPUInstancing)
+                {
+                    renderer.sharedMaterial.enableInstancing = true;
+                }
+            }
+
+            // Check mesh vertex count for dynamic batching
+            MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
+            if (meshFilter != null && meshFilter.sharedMesh != null)
+            {
+                int vertexCount = meshFilter.sharedMesh.vertexCount;
+                if (vertexCount > 300)
+                {
+                    Debug.LogWarning($"Mesh {meshFilter.sharedMesh.name} has {vertexCount} vertices (>300), may not batch dynamically");
+                }
+            }
+
+            optimizedCount++;
+        }
+
+        if (optimizedCount > 0)
+        {
+            Debug.Log($"Optimized {optimizedCount} renderers in {level.name} for batching");
+        }
+    }
+
+    private void LogBatchingStatistics()
+    {
+        int totalRenderers = 0;
+        int batchedRenderers = 0;
+        Dictionary<string, int> materialUsage = new Dictionary<string, int>();
+
+        foreach (GameObject level in generatedLevels)
+        {
+            if (level == null) continue;
+
+            MeshRenderer[] renderers = level.GetComponentsInChildren<MeshRenderer>(true);
+            foreach (MeshRenderer renderer in renderers)
+            {
+                if (renderer == null) continue;
+
+                totalRenderers++;
+                
+                // Count material usage
+                if (renderer.sharedMaterial != null)
+                {
+                    string matName = renderer.sharedMaterial.name;
+                    if (materialUsage.ContainsKey(matName))
+                    {
+                        materialUsage[matName]++;
+                    }
+                    else
+                    {
+                        materialUsage[matName] = 1;
+                    }
+
+                    // Consider renderer as "batchable" if it uses a shared material
+                    if (useSharedMaterials && materialUsage[matName] > 1)
+                    {
+                        batchedRenderers++;
+                    }
+                }
+            }
+        }
+
+        Debug.Log($"Batching Statistics: {batchedRenderers}/{totalRenderers} renderers optimized for batching");
+        Debug.Log($"Material usage: {materialUsage.Count} unique materials");
+        
+        foreach (var kvp in materialUsage)
+        {
+            if (kvp.Value > 1)
+            {
+                Debug.Log($"  {kvp.Key}: used {kvp.Value} times (batchable)");
+            }
+        }
+    }
+
+    // Rest of your existing methods remain unchanged...
     private GameObject GetRandomLevelPrefab()
     {
+        // Check if we're in a runner section
+        if (isInRunnerSection)
+        {
+            return GetRunnerRoomPrefab();
+        }
+
         // Check if we're in a closed section and need to continue spawning closed rooms
         if (isInClosedSection)
         {
@@ -274,15 +469,23 @@ public class LevelGenerator : MonoBehaviour
         // Start closed section
         isInClosedSection = true;
         closedRoomsSpawned = 0;
+        hasSpawnedStartClosedRoom = false; // Reset for new closed section
         
         Debug.Log($"Starting closed section at level {currentLevelIndex + 1}, will spawn up to {availableClosedRooms} closed rooms");
         
         // Return the start closed room
+        hasSpawnedStartClosedRoom = true;
         return startClosedRoom;
     }
 
     private GameObject GetClosedRoomPrefab()
     {
+        // Check if we should start a runner section (only after startClosedRoom has been spawned)
+        if (hasSpawnedStartClosedRoom && ShouldStartRunnerSection())
+        {
+            return StartRunnerSection();
+        }
+
         closedRoomsSpawned++;
         
         int remainingLevels = numberOfLevels - currentLevelIndex;
@@ -294,6 +497,7 @@ public class LevelGenerator : MonoBehaviour
         {
             Debug.Log($"Ending closed section after {closedRoomsSpawned} rooms, remaining levels: {remainingLevels}");
             isInClosedSection = false;
+            hasSpawnedStartClosedRoom = false;
             return endClosedRoom;
         }
         
@@ -307,7 +511,83 @@ public class LevelGenerator : MonoBehaviour
             // If no closed levels available, end the section
             Debug.Log("No closed levels available, ending closed section");
             isInClosedSection = false;
+            hasSpawnedStartClosedRoom = false;
             return endClosedRoom;
+        }
+    }
+
+    private bool ShouldStartRunnerSection()
+    {
+        // Check if runner prefabs are available
+        if (runnerStartPrefab == null || runnerEndPrefab == null)
+        {
+            return false;
+        }
+
+        // Check if we're in a closed section (runner can only spawn inside closed section)
+        if (!isInClosedSection)
+        {
+            return false;
+        }
+
+        // Check if we have enough space left for a runner section
+        int remainingLevels = numberOfLevels - currentLevelIndex;
+        int requiredSpace = runnerMinRooms + 2; // +2 for start and end prefabs
+        
+        if (remainingLevels < requiredSpace)
+        {
+            return false;
+        }
+
+        // Check if we're approaching the end (don't start runner if we're too close to maxClosedRooms)
+        int levelsUsed = currentLevelIndex;
+        int maxAllowedForRunner = maxClosedRooms - 1; // Leave room for at least one non-runner level
+        
+        if (levelsUsed >= maxAllowedForRunner)
+        {
+            return false;
+        }
+
+        // Random chance to start runner section
+        return Random.Range(0, 100) < runnerStartChance;
+    }
+
+    private GameObject StartRunnerSection()
+    {
+        isInRunnerSection = true;
+        runnerRoomsSpawned = 0;
+        
+        // Determine how many closed rooms to spawn between start and end
+        runnerRoomsRequired = Random.Range(runnerMinRooms, runnerMaxRooms + 1);
+        
+        Debug.Log($"Starting runner section at level {currentLevelIndex + 1}, will spawn {runnerRoomsRequired} closed rooms before end");
+        
+        return runnerStartPrefab;
+    }
+
+    private GameObject GetRunnerRoomPrefab()
+    {
+        runnerRoomsSpawned++;
+
+        // Check if we've spawned enough closed rooms to end the runner section
+        if (runnerRoomsSpawned > runnerRoomsRequired)
+        {
+            Debug.Log($"Ending runner section after {runnerRoomsSpawned - 1} closed rooms");
+            isInRunnerSection = false;
+            return runnerEndPrefab;
+        }
+
+        // Return a random closed level for the middle rooms
+        if (closedLevels.Count > 0)
+        {
+            return closedLevels[Random.Range(0, closedLevels.Count)];
+        }
+        else
+        {
+            // If no closed levels available, end the runner section early
+            Debug.Log("No closed levels available, ending runner section early");
+            isInRunnerSection = false;
+            return runnerEndPrefab;
         }
     }
 
@@ -319,6 +599,13 @@ public class LevelGenerator : MonoBehaviour
             Vector3 spawnPosition = currentSpawnPosition - endRoomStart.localPosition;
             GameObject level = Instantiate(endClosedRoom, spawnPosition, Quaternion.identity);
             level.name = $"Level_ClosedEnd_{currentLevelIndex}";
+            
+            // Optimize for batching
+            if (enableDynamicBatching)
+            {
+                OptimizeForBatching(level);
+            }
+            
             generatedLevels.Add(level);
             
             // Update spawn position using the existing waypoints from the prefab
@@ -326,7 +613,35 @@ public class LevelGenerator : MonoBehaviour
         }
         
         isInClosedSection = false;
+        hasSpawnedStartClosedRoom = false;
     }
+
+    private void SpawnRunnerEndRoom(ref Vector3 currentSpawnPosition)
+    {
+        if (runnerEndPrefab != null)
+        {
+            Transform endRoomStart = FindStartPoint(runnerEndPrefab);
+            Vector3 spawnPosition = currentSpawnPosition - endRoomStart.localPosition;
+            GameObject level = Instantiate(runnerEndPrefab, spawnPosition, Quaternion.identity);
+            level.name = $"Level_RunnerEnd_{currentLevelIndex}";
+            
+            // Optimize for batching
+            if (enableDynamicBatching)
+            {
+                OptimizeForBatching(level);
+            }
+            
+            generatedLevels.Add(level);
+            
+            // Update spawn position using the existing waypoints from the prefab
+            currentSpawnPosition = FindEndPoint(level).position;
+        }
+        
+        isInRunnerSection = false;
+    }
+
+    // ... Rest of your existing methods (RestartGeneration, GenerateLevelsSimple, FindStartPoint, FindEndPoint, etc.)
+    // These remain exactly as you had them, just make sure to call OptimizeForBatching where appropriate
 
     public void RestartGeneration()
     {
@@ -370,14 +685,24 @@ public class LevelGenerator : MonoBehaviour
             return;
         }
 
-        // Reset closed room tracking
+        // Reset room tracking
         isInClosedSection = false;
+        isInRunnerSection = false;
         closedRoomsSpawned = 0;
+        runnerRoomsSpawned = 0;
+        runnerRoomsRequired = 0;
+        hasSpawnedStartClosedRoom = false;
         currentLevelIndex = 0;
 
         // Use existing StartRoom
         GameObject currentLevel = startRoomPrefab;
         currentLevel.name = "StartRoom";
+        
+        // Optimize existing start room
+        if (enableDynamicBatching)
+        {
+            OptimizeForBatching(currentLevel);
+        }
         
         if (!generatedLevels.Contains(currentLevel))
         {
@@ -408,6 +733,13 @@ public class LevelGenerator : MonoBehaviour
             // Instantiate new level at the calculated position
             GameObject newLevel = Instantiate(randomPrefab, spawnPosition, Quaternion.identity);
             newLevel.name = $"Level_{i + 1}";
+            
+            // Optimize for batching
+            if (enableDynamicBatching)
+            {
+                OptimizeForBatching(newLevel);
+            }
+            
             generatedLevels.Add(newLevel);
 
             currentLevel = newLevel;
@@ -423,8 +755,35 @@ public class LevelGenerator : MonoBehaviour
                 Vector3 closedEndPosition = lastEnd.position - endRoomStart.localPosition;
                 GameObject closedEnd = Instantiate(endClosedRoom, closedEndPosition, Quaternion.identity);
                 closedEnd.name = "Level_ClosedEnd_Final";
+                
+                if (enableDynamicBatching)
+                {
+                    OptimizeForBatching(closedEnd);
+                }
+                
                 generatedLevels.Add(closedEnd);
                 currentLevel = closedEnd;
+            }
+        }
+
+        // If we're still in a runner section at the end, end it
+        if (isInRunnerSection)
+        {
+            Transform lastEnd = FindEndPoint(currentLevel);
+            if (runnerEndPrefab != null)
+            {
+                Transform runnerEndStart = FindStartPoint(runnerEndPrefab);
+                Vector3 runnerEndPosition = lastEnd.position - runnerEndStart.localPosition;
+                GameObject runnerEnd = Instantiate(runnerEndPrefab, runnerEndPosition, Quaternion.identity);
+                runnerEnd.name = "Level_RunnerEnd_Final";
+                
+                if (enableDynamicBatching)
+                {
+                    OptimizeForBatching(runnerEnd);
+                }
+                
+                generatedLevels.Add(runnerEnd);
+                currentLevel = runnerEnd;
             }
         }
 
@@ -432,6 +791,12 @@ public class LevelGenerator : MonoBehaviour
         Transform finalEnd = FindEndPoint(currentLevel);
         GameObject finalEndRoom = Instantiate(endRoomPrefab, Vector3.zero, Quaternion.identity);
         finalEndRoom.name = "EndRoom";
+        
+        // Optimize end room
+        if (enableDynamicBatching)
+        {
+            OptimizeForBatching(finalEndRoom);
+        }
         
         // Position EndRoom so its Start aligns with the last level's End
         Transform endRoomStartPoint = FindStartPoint(finalEndRoom);
@@ -441,6 +806,12 @@ public class LevelGenerator : MonoBehaviour
         generatedLevels.Add(finalEndRoom);
 
         Debug.Log($"Generated {generatedLevels.Count - 1} levels: Using existing StartRoom + {numberOfLevels} levels + EndRoom");
+        
+        // Log batching statistics
+        if (enableDynamicBatching)
+        {
+            LogBatchingStatistics();
+        }
     }
 
     private Transform FindStartPoint(GameObject levelObject)
@@ -486,6 +857,7 @@ public class LevelGenerator : MonoBehaviour
     public void ClearLevels()
     {
         ClearGeneratedLevels();
+        materialCache.Clear(); // Clear material cache when clearing levels
     }
 
     private void ClearGeneratedLevels(bool keepEndRoom = false)
@@ -551,5 +923,10 @@ public class LevelGenerator : MonoBehaviour
     {
         RestartGeneration();
     }
-    //dd
+
+    [ContextMenu("Log Batching Statistics")]
+    private void LogBatchingStatisticsEditor()
+    {
+        LogBatchingStatistics();
+    }
 }

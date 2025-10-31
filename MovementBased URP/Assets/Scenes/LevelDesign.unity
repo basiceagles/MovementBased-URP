@@ -1641,16 +1641,20 @@ MonoBehaviour:
   endRoomPrefab: {fileID: 6999912867395604079, guid: 9fe18092b5f32244582225913884c297, type: 3}
   easyLevels:
   - {fileID: 846373188480522301, guid: d922943a43943284c94b8337ca50a194, type: 3}
+  - {fileID: 2747161626659885058, guid: bb90718fa7ca976438b57908d4138ff7, type: 3}
   mediumLevels: []
   hardLevels: []
   closedLevels:
   - {fileID: 5977601408184335498, guid: 7c3f0b4def59c6a48afc2ba6bb852f98, type: 3}
   startClosedRoom: {fileID: 2324539671385129734, guid: 9a5ed9e7aff2d1a47badf9c3efb4a71e, type: 3}
   endClosedRoom: {fileID: 1083109575596404650, guid: 93e7de0659009d84e87f6a20c0d85a58, type: 3}
+  runnerStartPrefab: {fileID: 1922169315576615410, guid: acdfc90ba19c00b4880e48eaf8a0a426, type: 3}
+  runnerEndPrefab: {fileID: 1003149677673687774, guid: 6a71e5a876311fd45b2bc2fab742fdb9, type: 3}
   easyChance: 25
   mediumChance: 25
   hardChance: 25
-  closedChance: 25
+  closedChance: 0
+  runnerStartChance: 0
   easyCycleRequired: 0
   mediumCycleRequired: 3
   hardCycleRequired: 5
@@ -1658,7 +1662,13 @@ MonoBehaviour:
   numberOfLevels: 10
   generateOnStart: 1
   cycle: 0
-  maxClosedRooms: 5
+  maxClosedRooms: 6
+  runnerMinRooms: 2
+  runnerMaxRooms: 4
+  enableDynamicBatching: 1
+  enableGPUInstancing: 1
+  useSharedMaterials: 1
+  overrideMaterial: {fileID: 0}
   generatedLevels: []
 --- !u!65 &189058405
 BoxCollider:
@@ -17331,6 +17341,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 126349150993992208, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 256963243053790035, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
       propertyPath: m_LocalPosition.x
       value: -15
@@ -17371,9 +17385,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3258944119390462175, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 3475306167236709829, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 3972893223050914452, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
       propertyPath: m_Name
       value: Start
+      objectReference: {fileID: 0}
+    - target: {fileID: 5338119180227316451, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 5660126434213226311, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 5896019063461050004, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
       propertyPath: rolloffMode
@@ -17382,6 +17412,34 @@ PrefabInstance:
     - target: {fileID: 5896019063461050004, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
       propertyPath: panLevelCustomCurve.m_Curve.Array.data[0].value
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6274662169437382649, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 7464256654972376644, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 7551898588231666081, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 7583669794090950882, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8258178849041168484, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8376211093745634808, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8488554269053625531, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
