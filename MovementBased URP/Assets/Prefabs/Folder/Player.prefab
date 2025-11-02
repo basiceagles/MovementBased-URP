@@ -160,7 +160,6 @@ GameObject:
   - component: {fileID: 4507913966532850761}
   - component: {fileID: 2818587151192942589}
   - component: {fileID: 7541385963763542813}
-  - component: {fileID: 5863817201986159063}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -279,7 +278,7 @@ MonoBehaviour:
   rampLayer:
     serializedVersion: 2
     m_Bits: 0
-  initialAirVelocity: 10
+  initialAirVelocity: 25
   velocity: {x: 0, y: 0, z: 0}
   wallRunning: 0
   activeGrappling: 0
@@ -466,28 +465,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &5863817201986159063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1557733885150758004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e083a2996d4c34f41aa6078edc7ada77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wallStickForce: 8
-  wallLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  sphereRadius: 0.6
-  wallJumpHeight: 7
-  wallJumpForce: 15
-  wallTiltAngle: 15
-  tiltSpeed: 5
-  cam: {fileID: 4005968262995598657}
 --- !u!1 &1786397657753048215
 GameObject:
   m_ObjectHideFlags: 0
