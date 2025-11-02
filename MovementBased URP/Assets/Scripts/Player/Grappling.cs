@@ -247,4 +247,9 @@ public class Grappling : MonoBehaviour
             lr.SetPosition(i, point);
         }
     }
+
+    public void SetGrappleKey(KeyCode newKey)
+    {
+        grappleKey = newKey;
+    }
 }
