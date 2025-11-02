@@ -274,4 +274,9 @@ public class Swinging : MonoBehaviour
     }
     
     public bool IsSwinging() => swinging;
+
+    public void SetSwingKey(KeyCode newKey)
+    {
+        swingKey = newKey;
+    }
 }

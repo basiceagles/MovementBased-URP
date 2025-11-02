@@ -15,8 +15,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float slideJumpGravity;
     public bool isJumping;
     
+    [Header("Keybinds")]
+    private KeyCode slideKey = KeyCode.LeftControl;
+    private KeyCode runKey = KeyCode.LeftShift;
+    private KeyCode jumpKey = KeyCode.Space;
+    
     [Header("Slide")]
-    [SerializeField] private KeyCode slideKey;
     [SerializeField] private float slideSpeed;
     [SerializeField] private float slideAcceleration;
     [SerializeField] private float maxSlideSpeed;
@@ -76,7 +80,6 @@ public class PlayerController : MonoBehaviour
         
         HandleAirTransitions(previouslyGrounded, previouslyOnRamp);
         
-        // Сброс currentSlideSpeed при приземлении, если не слайдим
         if (!previouslyGrounded && isGrounded && !isSliding && !wantsToSlide)
         {
             currentSlideSpeed = 0f;
@@ -117,9 +120,11 @@ public class PlayerController : MonoBehaviour
     
     private void CheckGround()
     {
-        Vector3 origin = transform.position + Vector3.up * (controller.radius * 0.5f);
-        float checkDist = groundCheckDistance + controller.radius * 0.5f;
-        float sphereRadius = controller.radius * groundCheckRadius;
+        float scaleMultiplier = transform.localScale.y / originalScale.y;
+        
+        Vector3 origin = transform.position + Vector3.up * (controller.radius * 0.5f * scaleMultiplier);
+        float checkDist = groundCheckDistance + controller.radius * 0.5f * scaleMultiplier;
+        float sphereRadius = controller.radius * groundCheckRadius * scaleMultiplier;
         
         isGrounded = Physics.SphereCast(origin, sphereRadius, Vector3.down, out RaycastHit hit, checkDist) &&
                      ((1 << hit.collider.gameObject.layer) & (groundLayer | slideLayer | rampLayer)) != 0;
@@ -127,12 +132,18 @@ public class PlayerController : MonoBehaviour
     
     private void HandleMovement()
     {
+        Vector3 inputDir = GetInputDirection();
+        
+        if (isSliding && !isGrounded)
+        {
+            HandleAirMovement(inputDir);
+            return;
+        }
+        
         if (isSliding || wallRunning || justWallJumped || activeGrappling)
         {
             return;
         }
-        
-        Vector3 inputDir = GetInputDirection();
         
         if (!isGrounded)
         {
@@ -157,20 +168,37 @@ public class PlayerController : MonoBehaviour
         {
             Vector3 currentHorizontal = horizontalVelocity;
             float currentMagnitude = currentHorizontal.magnitude;
-            Vector3 newDir = (currentHorizontal + inputDir * airControlStrength * Time.deltaTime).normalized;
-            velocity.x = newDir.x * currentMagnitude;
-            velocity.z = newDir.z * currentMagnitude;
+            
+            if (currentMagnitude < walkSpeed * 0.5f)
+            {
+                velocity.x += inputDir.x * airControlStrength * Time.deltaTime;
+                velocity.z += inputDir.z * airControlStrength * Time.deltaTime;
+                
+                Vector3 clampedHorizontal = horizontalVelocity;
+                if (clampedHorizontal.magnitude > walkSpeed)
+                {
+                    clampedHorizontal = clampedHorizontal.normalized * walkSpeed;
+                    velocity.x = clampedHorizontal.x;
+                    velocity.z = clampedHorizontal.z;
+                }
+            }
+            else
+            {
+                Vector3 newDir = (currentHorizontal + inputDir * airControlStrength * Time.deltaTime).normalized;
+                velocity.x = newDir.x * currentMagnitude;
+                velocity.z = newDir.z * currentMagnitude;
+            }
         }
     }
     
     private float GetMovementSpeed()
     {
-        return isCrouching ? crouchSpeed : (Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed);
+        return isCrouching ? crouchSpeed : (Input.GetKey(runKey) ? runSpeed : walkSpeed);
     }
     
     private void HandleJump()
     {
-        if (!Input.GetKeyDown(KeyCode.Space) || !isGrounded) return;
+        if (!Input.GetKeyDown(jumpKey) || !isGrounded) return;
         
         if (isSliding)
         {
@@ -185,6 +213,7 @@ public class PlayerController : MonoBehaviour
     private void NormalJump()
     {
         velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        isJumping = true;
     }
     
     private void SlideJump()
@@ -241,7 +270,7 @@ public class PlayerController : MonoBehaviour
     
     private bool CanStartSlide()
     {
-        return Input.GetKey(KeyCode.LeftShift) && currentSpeed > walkSpeed && Input.GetAxisRaw("Vertical") > 0.1f;
+        return Input.GetKey(runKey) && currentSpeed > walkSpeed && Input.GetAxisRaw("Vertical") > 0.1f;
     }
     
     private bool CanStandUp()
@@ -285,9 +314,11 @@ public class PlayerController : MonoBehaviour
     
     private void UpdateSlide()
     {
-        Vector3 origin = transform.position + Vector3.up * (controller.radius * 0.5f);
-        float checkDist = groundCheckDistance + controller.radius * 0.5f;
-        float sphereRadius = controller.radius * groundCheckRadius;
+        float scaleMultiplier = transform.localScale.y / originalScale.y;
+        
+        Vector3 origin = transform.position + Vector3.up * (controller.radius * 0.5f * scaleMultiplier);
+        float checkDist = groundCheckDistance + controller.radius * 0.5f * scaleMultiplier;
+        float sphereRadius = controller.radius * groundCheckRadius * scaleMultiplier;
         
         bool onSlope = Physics.SphereCast(origin, sphereRadius, Vector3.down, out RaycastHit slopeHit, checkDist, slideLayer);
         isOnSlideLayer = onSlope;
@@ -399,9 +430,15 @@ public class PlayerController : MonoBehaviour
             if (controller == null) return;
         }
         
-        Vector3 origin = transform.position + Vector3.up * (controller.radius * 0.5f);
-        float checkDist = groundCheckDistance + controller.radius * 0.5f;
-        float sphereRadius = controller.radius * groundCheckRadius;
+        float scaleMultiplier = 1f;
+        if (originalScale.y > 0)
+        {
+            scaleMultiplier = transform.localScale.y / originalScale.y;
+        }
+        
+        Vector3 origin = transform.position + Vector3.up * (controller.radius * 0.5f * scaleMultiplier);
+        float checkDist = groundCheckDistance + controller.radius * 0.5f * scaleMultiplier;
+        float sphereRadius = controller.radius * groundCheckRadius * scaleMultiplier;
         
         Gizmos.color = isGrounded ? Color.green : Color.red;
         Gizmos.DrawWireSphere(origin, sphereRadius);
@@ -418,5 +455,12 @@ public class PlayerController : MonoBehaviour
             Vector3 offset = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * sphereRadius;
             Gizmos.DrawLine(origin + offset, endPos + offset);
         }
+    }
+
+    public void SetKeybinds(KeyCode crouch, KeyCode run, KeyCode jump)
+    {
+        slideKey = crouch;
+        runKey = run;
+        jumpKey = jump;
     }
 }

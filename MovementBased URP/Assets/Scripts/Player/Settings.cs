@@ -13,124 +13,239 @@ public class Settings : MonoBehaviour
     [Header("UI References")]
     public GameObject settingsUI;
     public TMPro.TMP_Dropdown resolutionDropdown;
+    public TMPro.TMP_Dropdown refreshRateDropdown;
     public Toggle fullscreenToggle;
     public Toggle vsyncToggle;
     public Slider brightnessSlider;
-    public Slider fovSlider;
+    public Slider sensitivitySlider;
     
     [Header("Settings")]
     public bool isMainMenu;
-    public Camera playerCamera;
     public Volume postProcessVolume;
+    public CameraController cameraController;
+    public KeyRebindManager keyRebindManager;
     
     private Resolution[] resolutions;
-    private float defaultFOV = 60f;
+    private List<string> uniqueResolutions = new List<string>();
+    private List<int> availableRefreshRates = new List<int>();
+    private int targetFPS = -1;
+    private int lastDisplayCount = 0;
+    private int lastMonitorRefreshRate = 0;
 
-    void Start()
+    private void Start()
     {
-        //багфикс чтобы не пропадала мышка при заходе в главное меню
         if (isMainMenu)
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
         
-        // Автоматический поиск камеры если не назначена
-        if (playerCamera == null)
+        SetupResolutionDropdown();
+        SetupRefreshRateDropdown();
+        
+        if (!PlayerPrefs.HasKey("FirstLaunch"))
         {
-            playerCamera = Camera.main;
+            Resolution currentRes = Screen.currentResolution;
+            int maxRefreshRate = currentRes.refreshRate;
+            
+            foreach (Resolution res in resolutions)
+            {
+                if (res.width == currentRes.width && res.height == currentRes.height)
+                {
+                    if (res.refreshRate > maxRefreshRate)
+                    {
+                        maxRefreshRate = res.refreshRate;
+                    }
+                }
+            }
+            
+            Screen.SetResolution(currentRes.width, currentRes.height, FullScreenMode.FullScreenWindow, maxRefreshRate);
+            
+            int optimalIndex = 0;
+            for (int i = 0; i < resolutions.Length; i++)
+            {
+                if (resolutions[i].width == currentRes.width && 
+                    resolutions[i].height == currentRes.height &&
+                    resolutions[i].refreshRate == maxRefreshRate)
+                {
+                    optimalIndex = i;
+                    break;
+                }
+            }
+            
+            PlayerPrefs.SetInt("FirstLaunch", 1);
+            PlayerPrefs.SetInt("Fullscreen", 1);
+            PlayerPrefs.SetInt("ResolutionIndex", optimalIndex);
+            PlayerPrefs.Save();
         }
         
-        //Для работы дропдаун меню с разрешениями экрана
-        SetupResolutionDropdown();
-        
-        // Загрузка сохраненных настроек
         LoadSettings();
         
         m_OpenSettings = InputSystem.actions.FindAction("OpenSettings");
+        
+        lastDisplayCount = Display.displays.Length;
+        lastMonitorRefreshRate = Screen.currentResolution.refreshRate;
     }
 
-    void SetupResolutionDropdown()
+    private void SetupResolutionDropdown()
     {
         resolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
-        List<string> options = new List<string>();
-        int currentResolutionindex = 0;
+        uniqueResolutions.Clear();
+        
+        int currentResolutionIndex = 0;
         
         for (int i = 0; i < resolutions.Length; i++)
         {
-            string option = resolutions[i].width + "x" + resolutions[i].height + " @ " + resolutions[i].refreshRate + "Hz";
-            options.Add(option);
+            string resolutionString = resolutions[i].width + "x" + resolutions[i].height;
+            
+            if (!uniqueResolutions.Contains(resolutionString))
+            {
+                uniqueResolutions.Add(resolutionString);
+            }
 
             if (resolutions[i].width == Screen.currentResolution.width && 
-                resolutions[i].height == Screen.currentResolution.height &&
-                resolutions[i].refreshRate == Screen.currentResolution.refreshRate)
+                resolutions[i].height == Screen.currentResolution.height)
             {
-                currentResolutionindex = i;
+                currentResolutionIndex = uniqueResolutions.IndexOf(resolutionString);
             }
         }
         
-        resolutionDropdown.AddOptions(options);
-        resolutionDropdown.value = currentResolutionindex;
+        resolutionDropdown.AddOptions(uniqueResolutions);
+        resolutionDropdown.value = currentResolutionIndex;
         resolutionDropdown.RefreshShownValue();
     }
 
-    void LoadSettings()
+    private void SetupRefreshRateDropdown()
     {
-        // Разрешение
-        int savedResolution = PlayerPrefs.GetInt("ResolutionIndex", resolutionDropdown.value);
-        if (savedResolution < resolutions.Length)
+        UpdateAvailableRefreshRates();
+        
+        int currentRefreshRateIndex = 1;
+        for (int i = 0; i < availableRefreshRates.Count; i++)
         {
-            resolutionDropdown.value = savedResolution;
-            SetResolution(savedResolution);
+            if (availableRefreshRates[i] == Screen.currentResolution.refreshRate)
+            {
+                currentRefreshRateIndex = i;
+                break;
+            }
         }
         
-        // Полноэкранный режим
+        refreshRateDropdown.value = currentRefreshRateIndex;
+        refreshRateDropdown.RefreshShownValue();
+    }
+
+    private void UpdateAvailableRefreshRates()
+    {
+        availableRefreshRates.Clear();
+        refreshRateDropdown.ClearOptions();
+        
+        string currentResolutionString = uniqueResolutions[resolutionDropdown.value];
+        string[] parts = currentResolutionString.Split('x');
+        int width = int.Parse(parts[0]);
+        int height = int.Parse(parts[1]);
+        
+        List<string> refreshRateOptions = new List<string>();
+        
+        availableRefreshRates.Add(0);
+        refreshRateOptions.Add("No limits");
+        
+        for (int i = 0; i < resolutions.Length; i++)
+        {
+            if (resolutions[i].width == width && resolutions[i].height == height)
+            {
+                if (!availableRefreshRates.Contains(resolutions[i].refreshRate))
+                {
+                    availableRefreshRates.Add(resolutions[i].refreshRate);
+                    refreshRateOptions.Add(resolutions[i].refreshRate + "Hz");
+                }
+            }
+        }
+        
+        refreshRateDropdown.AddOptions(refreshRateOptions);
+    }
+
+    private void LoadSettings()
+    {
+        LoadDropdownValue("ResolutionIndex", resolutionDropdown, uniqueResolutions.Count);
+        LoadDropdownValue("RefreshRateIndex", refreshRateDropdown, availableRefreshRates.Count);
+        
         bool isFullscreen = PlayerPrefs.GetInt("Fullscreen", 1) == 1;
-        fullscreenToggle.isOn = isFullscreen;
-        Screen.fullScreen = isFullscreen;
+        fullscreenToggle.SetIsOnWithoutNotify(isFullscreen);
+        SetFullscreen(isFullscreen);
         
-        // V-Sync
-        int vsyncValue = PlayerPrefs.GetInt("VSync", 1);
-        vsyncToggle.isOn = vsyncValue == 1;
-        QualitySettings.vSyncCount = vsyncValue;
+        bool vsyncEnabled = PlayerPrefs.GetInt("VSync", 0) == 1;
+        vsyncToggle.SetIsOnWithoutNotify(vsyncEnabled);
+        SetVSync(vsyncEnabled);
         
-        // Яркость
         float brightness = PlayerPrefs.GetFloat("Brightness", 1f);
-        brightnessSlider.value = brightness;
+        brightnessSlider.SetValueWithoutNotify(brightness);
         SetBrightness(brightness);
         
-        // FOV
-        float fov = PlayerPrefs.GetFloat("FOV", defaultFOV);
-        fovSlider.value = fov;
-        SetFOV(fov);
+        float sensitivity = PlayerPrefs.GetFloat("Sensitivity", 1f);
+        sensitivitySlider.SetValueWithoutNotify(sensitivity);
+        SetSensitivity(sensitivity);
+    }
+    
+    private void LoadDropdownValue(string key, TMPro.TMP_Dropdown dropdown, int maxCount)
+    {
+        int savedValue = PlayerPrefs.GetInt(key, dropdown.value);
+        if (savedValue < maxCount)
+        {
+            dropdown.value = savedValue;
+        }
     }
 
     public void SaveAndClose()
     {
-        // Сохранение всех настроек
         PlayerPrefs.SetInt("ResolutionIndex", resolutionDropdown.value);
+        PlayerPrefs.SetInt("RefreshRateIndex", refreshRateDropdown.value);
         PlayerPrefs.SetInt("Fullscreen", Screen.fullScreen ? 1 : 0);
         PlayerPrefs.SetInt("VSync", QualitySettings.vSyncCount);
         PlayerPrefs.SetFloat("Brightness", brightnessSlider.value);
-        PlayerPrefs.SetFloat("FOV", fovSlider.value);
+        
+        SetSensitivity(sensitivitySlider.value);
+        
         PlayerPrefs.Save();
         
         settingsUI.SetActive(false);
 
         if (!isMainMenu)
         {
+            Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            
+            if (cameraController != null)
+            {
+                cameraController.enabled = true;
+            }
         }
     }
 
     public void OpenSettings()
     {
         settingsUI.SetActive(true);
+        
+        if (!isMainMenu)
+        {
+            Time.timeScale = 0f;
+            
+            if (cameraController != null)
+            {
+                cameraController.enabled = false;
+            }
+        }
+    }
+    
+    public void ResetKeybinds()
+    {
+        if (keyRebindManager != null)
+        {
+            keyRebindManager.ResetToDefaults();
+        }
     }
 
-    void Update()
+    private void Update()
     {
         if (m_OpenSettings != null && m_OpenSettings.WasPressedThisFrame() && !isMainMenu)
         {
@@ -138,24 +253,166 @@ public class Settings : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
+        
+        CheckForDisplayChanges();
+        
+        if (Input.GetKeyDown(KeyCode.Delete))
+        {
+            PlayerPrefs.DeleteAll();
+        }
+    }
+
+    private void CheckForDisplayChanges()
+    {
+        int currentMonitorRefreshRate = Screen.currentResolution.refreshRate;
+        
+        if (Display.displays.Length != lastDisplayCount || currentMonitorRefreshRate != lastMonitorRefreshRate)
+        {
+            lastDisplayCount = Display.displays.Length;
+            lastMonitorRefreshRate = currentMonitorRefreshRate;
+            
+            SetupResolutionDropdown();
+            SetupRefreshRateDropdown();
+            
+            if (QualitySettings.vSyncCount == 0)
+            {
+                ApplyCurrentSettings();
+            }
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (targetFPS > 0 && QualitySettings.vSyncCount == 0)
+        {
+            float targetFrameTime = 1f / targetFPS;
+            float currentFrameTime = Time.unscaledDeltaTime;
+            
+            if (currentFrameTime < targetFrameTime)
+            {
+                int sleepTime = (int)((targetFrameTime - currentFrameTime) * 1000f);
+                if (sleepTime > 0)
+                {
+                    System.Threading.Thread.Sleep(sleepTime);
+                }
+            }
+        }
     }
 
     public void SetResolution(int resolutionIndex)
     {
-        Resolution resolution = resolutions[resolutionIndex];
-        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+        UpdateAvailableRefreshRates();
+        ApplyCurrentSettings();
+    }
+
+    public void SetRefreshRate(int refreshRateIndex)
+    {
+        ApplyCurrentSettings();
+    }
+
+    private void ApplyCurrentSettings()
+    {
+        string resolutionString = uniqueResolutions[resolutionDropdown.value];
+        string[] parts = resolutionString.Split('x');
+        int width = int.Parse(parts[0]);
+        int height = int.Parse(parts[1]);
+        int refreshRate = availableRefreshRates[refreshRateDropdown.value];
+
+        int actualRefreshRate = refreshRate > 0 ? refreshRate : Screen.currentResolution.refreshRate;
+        
+        if (!IsResolutionSupported(width, height, actualRefreshRate))
+        {
+            actualRefreshRate = GetNearestSupportedRefreshRate(width, height, actualRefreshRate);
+        }
+        
+        Screen.SetResolution(width, height, Screen.fullScreen, actualRefreshRate);
+        
+        if (QualitySettings.vSyncCount == 0)
+        {
+            if (refreshRate == 0)
+            {
+                targetFPS = -1;
+                Application.targetFrameRate = -1;
+            }
+            else
+            {
+                targetFPS = refreshRate;
+                Application.targetFrameRate = targetFPS;
+            }
+        }
+    }
+
+    private bool IsResolutionSupported(int width, int height, int refreshRate)
+    {
+        foreach (Resolution res in Screen.resolutions)
+        {
+            if (res.width == width && res.height == height && res.refreshRate == refreshRate)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int GetNearestSupportedRefreshRate(int width, int height, int targetRefreshRate)
+    {
+        int nearestRate = 60;
+        int minDifference = int.MaxValue;
+        
+        foreach (Resolution res in Screen.resolutions)
+        {
+            if (res.width == width && res.height == height)
+            {
+                int difference = Mathf.Abs(res.refreshRate - targetRefreshRate);
+                if (difference < minDifference)
+                {
+                    minDifference = difference;
+                    nearestRate = res.refreshRate;
+                }
+            }
+        }
+        
+        return nearestRate;
     }
 
     public void SetFullscreen(bool isFullScreen)
     {
+        if (isFullScreen)
+        {
+            Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+        }
+        else
+        {
+            Screen.fullScreenMode = FullScreenMode.Windowed;
+        }
         Screen.fullScreen = isFullScreen;
     }
     
     public void SetVSync(bool enabled)
     {
-        QualitySettings.vSyncCount = enabled ? 1 : 0;
+        if (enabled)
+        {
+            QualitySettings.vSyncCount = 1;
+            Application.targetFrameRate = -1;
+            targetFPS = -1;
+        }
+        else
+        {
+            QualitySettings.vSyncCount = 0;
+            int refreshRate = availableRefreshRates.Count > 0 ? availableRefreshRates[refreshRateDropdown.value] : Screen.currentResolution.refreshRate;
+            
+            if (refreshRate == 0)
+            {
+                targetFPS = -1;
+                Application.targetFrameRate = -1;
+            }
+            else
+            {
+                targetFPS = refreshRate;
+                Application.targetFrameRate = targetFPS;
+            }
+        }
     }
-    
     public void SetBrightness(float brightness)
     {
         if (postProcessVolume != null)
@@ -164,16 +421,17 @@ public class Settings : MonoBehaviour
         }
         else
         {
-            // Альтернативный метод через RenderSettings
             RenderSettings.ambientIntensity = brightness;
         }
     }
     
-    public void SetFOV(float fov)
+    public void SetSensitivity(float sensitivity)
     {
-        if (playerCamera != null)
+        if (cameraController != null)
         {
-            playerCamera.fieldOfView = fov;
+            cameraController.SetSensitivity(sensitivity);
         }
+        
+        PlayerPrefs.SetFloat("Sensitivity", sensitivity);
     }
 }
