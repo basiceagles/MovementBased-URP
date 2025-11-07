@@ -12,6 +12,7 @@ public class WallRunning : MonoBehaviour
     [Header("Wall Jump Settings")]
     [SerializeField] private float wallJumpHeight;
     [SerializeField] private float wallJumpForce;
+    [SerializeField] private float wallJumpCooldown = 0.3f;
     
     [Header("Camera Tilt")]
     [SerializeField] private float wallTiltAngle;
@@ -24,6 +25,9 @@ public class WallRunning : MonoBehaviour
     private bool isWallRunning;
     private Vector3 wallNormal;
     private float currentTilt;
+    private float wallJumpTimer;
+    private Collider lastWall;
+    private Collider currentWall;
 
     private void Start()
     {
@@ -32,6 +36,11 @@ public class WallRunning : MonoBehaviour
 
     private void Update()
     {
+        if (wallJumpTimer > 0)
+        {
+            wallJumpTimer -= Time.deltaTime;
+        }
+        
         if (isWallRunning)
         {
             HandleWallRun();
@@ -55,12 +64,30 @@ public class WallRunning : MonoBehaviour
     
     private void CheckForWalls()
     {
+        if (wallJumpTimer > 0)
+        {
+            if (isWallRunning)
+            {
+                StopWallRun();
+            }
+            return;
+        }
+        
         if (pc.grounded)
         {
             if (isWallRunning)
             {
                 StopWallRun();
             }
+            
+            lastWall = null;
+            
+            currentTilt = 0f;
+            Vector3 rotation = transform.localEulerAngles;
+            rotation.x = 0f;
+            rotation.z = 0f;
+            transform.localEulerAngles = rotation;
+            
             return;
         }
         
@@ -80,13 +107,25 @@ public class WallRunning : MonoBehaviour
             Vector3 directionToWall = (closestPoint - origin).normalized;
             if (Mathf.Abs(Vector3.Dot(directionToWall, Vector3.up)) < 0.3f)
             {
-                wallNormal = -directionToWall; 
+                if (wallCollider == lastWall)
+                {
+                    continue;
+                }
+                
+                wallNormal = -directionToWall;
+                currentWall = wallCollider;
                 wallFound = true;
                 
                 if (!isWallRunning && CanStartWallRun())
                 {
                     StartWallRun();
                 }
+                
+                if (isWallRunning && currentWall != lastWall)
+                {
+                    lastWall = null;
+                }
+                
                 break;
             }
         }
@@ -116,12 +155,6 @@ public class WallRunning : MonoBehaviour
     {
         isWallRunning = false;
         pc.SetWallRunning(false);
-        
-        currentTilt = 0f;
-        Vector3 rotation = transform.localEulerAngles;
-        rotation.x = 0f;
-        rotation.z = 0f;
-        transform.localEulerAngles = rotation;
     }
 
     private void HandleWallRun()
@@ -166,14 +199,11 @@ public class WallRunning : MonoBehaviour
         lookDir.y = 0;
         lookDir.Normalize();
         
-        float dotToWall = Vector3.Dot(lookDir, wallNormal);
-        if (dotToWall < -0.3f)
-        {
-            return; 
-        }
-        
         pc.horizontalVelocity = lookDir * wallJumpForce;
         pc.verticalVelocity = wallJumpHeight;
+        
+        wallJumpTimer = wallJumpCooldown;
+        lastWall = currentWall;
         
         pc.SetWallJumped();
         StopWallRun();
