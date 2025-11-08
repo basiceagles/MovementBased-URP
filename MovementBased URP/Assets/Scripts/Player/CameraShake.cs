@@ -10,12 +10,83 @@ public class CameraShake : MonoBehaviour
     
     private Vector3 initialPosition;
     private Coroutine shakeCoroutine;
+    private Coroutine constantShakeCoroutine;
     private bool isShaking = false;
+    private bool isConstantShaking = false;
 
     void Start()
     {
         // Store the initial position of the camera
         initialPosition = transform.localPosition;
+    }
+
+    /// <summary>
+    /// Starts constant camera shaking using the already set settings
+    /// </summary>
+    public void ConstantlyShakeStart()
+    {
+        if (isConstantShaking) return;
+        
+        // Stop any existing constant shake coroutine
+        if (constantShakeCoroutine != null)
+        {
+            StopCoroutine(constantShakeCoroutine);
+        }
+        
+        // Start new constant shake coroutine
+        constantShakeCoroutine = StartCoroutine(ConstantShakeCoroutine());
+        isConstantShaking = true;
+    }
+
+    /// <summary>
+    /// Starts constant camera shaking with custom parameters
+    /// </summary>
+    /// <param name="magnitude">How intense the shake should be</param>
+    public void ConstantlyShakeStart(float magnitude)
+    {
+        if (isConstantShaking) return;
+        
+        // Stop any existing constant shake coroutine
+        if (constantShakeCoroutine != null)
+        {
+            StopCoroutine(constantShakeCoroutine);
+        }
+        
+        // Start new constant shake coroutine with custom magnitude
+        constantShakeCoroutine = StartCoroutine(ConstantShakeCoroutine(magnitude));
+        isConstantShaking = true;
+    }
+
+    /// <summary>
+    /// Stops the constant camera shaking
+    /// </summary>
+    public void ConstantlyShakeStop()
+    {
+        if (constantShakeCoroutine != null)
+        {
+            StopCoroutine(constantShakeCoroutine);
+            transform.localPosition = initialPosition;
+            isConstantShaking = false;
+            constantShakeCoroutine = null;
+        }
+    }
+
+    /// <summary>
+    /// Coroutine that handles constant camera shaking
+    /// </summary>
+    private IEnumerator ConstantShakeCoroutine(float? customMagnitude = null)
+    {
+        isConstantShaking = true;
+        initialPosition = transform.localPosition;
+        
+        float magnitude = customMagnitude ?? shakeMagnitude;
+        
+        while (true)
+        {
+            // Move camera to a random position within a unit sphere
+            transform.localPosition = initialPosition + Random.insideUnitSphere * magnitude;
+            yield return null;
+        }
     }
 
     /// <summary>
@@ -90,6 +161,9 @@ public class CameraShake : MonoBehaviour
             isShaking = false;
             shakeCoroutine = null;
         }
+        
+        // Also stop constant shaking if active
+        ConstantlyShakeStop();
     }
 
     /// <summary>
@@ -98,7 +172,16 @@ public class CameraShake : MonoBehaviour
     /// <returns>True if camera is shaking</returns>
     public bool IsShaking()
     {
-        return isShaking;
+        return isShaking || isConstantShaking;
+    }
+
+    /// <summary>
+    /// Checks if the camera is currently constant shaking
+    /// </summary>
+    /// <returns>True if camera is constant shaking</returns>
+    public bool IsConstantShaking()
+    {
+        return isConstantShaking;
     }
 
     /// <summary>

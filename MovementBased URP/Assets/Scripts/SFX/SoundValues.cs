@@ -13,6 +13,7 @@ namespace SmallHedge.SoundManager
         FOOTSTEP,
         LEVER,
         UICLICK2,
-        UICLICK3
+        UICLICK3,
+        LIGHTBREAK
     }
 }

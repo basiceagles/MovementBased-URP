@@ -13,8 +13,7 @@ public class EnemyManager : MonoBehaviour
 
     void Start()
     {
-        //Пока захуярил на старт, этот метод будет вызваться когда мы прошли цикл, придется обновлять некоторые данные
-        UpdateOnNewLevelGeneration();
+        
     }
 
     public void SpawnRunner()
@@ -38,12 +37,5 @@ public class EnemyManager : MonoBehaviour
     public void SpeedUpRunner()
     {
         runnerEnemy.moveSpeed = runnerRushSpeed;
-    }
-    
-    public void UpdateOnNewLevelGeneration()
-    {
-        //спавн поинт будет один на сцену, можем себе позволить
-        //а нет блять, я потом перепишу эту хуйню
-        runnerSpawnPoint = GameObject.Find("RunnerSpawnPoint");
     }
 }

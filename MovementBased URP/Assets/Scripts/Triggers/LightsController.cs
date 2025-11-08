@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using SmallHedge.SoundManager;
 
 public class LightsController : MonoBehaviour
 {
@@ -67,6 +68,8 @@ public class LightsController : MonoBehaviour
 
     void TriggerShutdownAnimation()
     {
+        SoundManager.PlaySound(SoundType.LIGHTBREAK);
+        
         foreach (Animator animator in lightAnimators)
         {
             if (animator != null)
