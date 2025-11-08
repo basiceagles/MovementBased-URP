@@ -18,6 +18,8 @@ public class Grappling : MonoBehaviour
     [SerializeField] private float ropeWaveSpeed;
     [SerializeField] private float ropeWaveHeight;
     
+    public float currentGrappleSpeed;
+    
     private Vector3 currentGrapplePosition;
     private Vector3 grapplePoint;
     private bool grappling;
@@ -83,6 +85,8 @@ public class Grappling : MonoBehaviour
         
         pc.horizontalVelocity = new Vector3(dir.x, 0f, dir.z) * speed;
         pc.verticalVelocity = dir.y * speed + gravityCompensation * Time.deltaTime;
+        
+        currentGrappleSpeed = new Vector3(pc.horizontalVelocity.x, pc.verticalVelocity, pc.horizontalVelocity.z).magnitude;
     }
 
     private void LateUpdate()
@@ -137,6 +141,12 @@ public class Grappling : MonoBehaviour
             return;
         }
         CancelInvoke();
+        
+        if (pulling)
+        {
+            pc.currentSlideSpeed = currentGrappleSpeed;
+        }
+        
         pulling = false; 
         pc.activeGrappling = false;
         grappling = false; 

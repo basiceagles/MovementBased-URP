@@ -151,6 +151,11 @@ public class PlayerController : MonoBehaviour
             return;
         }
         
+        if (wantsToSlide)
+        {
+            return;
+        }
+        
         float speed = GetMovementSpeed();
         velocity.x = inputDir.x * speed;
         velocity.z = inputDir.z * speed;
@@ -237,9 +242,17 @@ public class PlayerController : MonoBehaviour
         {
             StandUp();
         }
-        if (wantsToSlide && isGrounded && (currentSpeed > walkSpeed || currentSlideSpeed > 0))
+        if (wantsToSlide && isGrounded)
         {
-            StartSlide();
+            float speed = Mathf.Max(currentSpeed, currentSlideSpeed);
+            if (speed >= 10f)
+            {
+                StartSlide();
+            }
+            else
+            {
+                StartCrouch();
+            }
             wantsToSlide = false; 
         }
         if (isSliding && isGrounded)
