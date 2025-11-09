@@ -134,9 +134,14 @@ public class Settings : MonoBehaviour
 
     private float ConvertToDecibels(float linearVolume)
     {
+        // Improved volume curve for better perceived loudness
         if (linearVolume <= 0.001f)
             return -80f;
-        return Mathf.Log10(linearVolume) * 20f;
+        
+        // Use a more gradual curve that provides better volume at higher values
+        // This will make 100% volume actually sound like 100%
+        float adjustedVolume = Mathf.Pow(linearVolume, 0.7f); // Adjust the exponent for desired curve
+        return Mathf.Log10(adjustedVolume) * 20f;
     }
 
     private void SetupResolutionDropdown()
@@ -272,8 +277,7 @@ public class Settings : MonoBehaviour
         PlayerPrefs.SetInt("VSync", QualitySettings.vSyncCount);
         PlayerPrefs.SetFloat("Brightness", brightnessSlider.value);
         PlayerPrefs.SetFloat("Sensitivity", sensitivitySlider.value);
-        PlayerPrefs.SetInt("FPSCounter", fpsCounterToggle ? 1 : 0);
-        
+        PlayerPrefs.SetInt("FPSCounter", fpsCounterToggle.isOn ? 1 : 0);
 
         // Audio volumes are already saved when sliders change
         PlayerPrefs.Save();

@@ -25,6 +25,7 @@ public class ItemPickup : MonoBehaviour
 
     private GameObject swing;
     private GameObject grapple;
+    private GameObject holdPointBuffer; // Reference to holdPointBuffer
 
     private Lever currentLever;
     private Lever previousLever;
@@ -38,6 +39,9 @@ public class ItemPickup : MonoBehaviour
         swing = GameObject.Find("Swing");
         grapple = GameObject.Find("Grapple");
         playerCamera = GetComponent<Camera>();
+        
+        // Find or create holdPointBuffer
+        holdPointBuffer = GameObject.Find("holdPointBuffer");
     }
 
     private void Update()
@@ -70,7 +74,8 @@ public class ItemPickup : MonoBehaviour
     {
         if (isHolding && heldItem != null)
         {
-            // Position and rotation are now handled by the parent-child relationship
+            heldItem.transform.position = holdPoint.position;
+            heldItem.transform.rotation = holdPoint.rotation;
             heldItem.transform.localScale = originalItemScale;
         }
     }
@@ -180,10 +185,6 @@ public class ItemPickup : MonoBehaviour
     private void Pickup(GameObject item)
     {
         heldItem = item;
-        
-        // Store the original world scale before parenting to preserve the object's intended size
-        // This prevents scale accumulation from multiple pickups
-        Vector3 worldScale = heldItem.transform.lossyScale;
         originalItemScale = heldItem.transform.localScale;
         
         itemCollider = heldItem.GetComponent<Collider>();
@@ -197,25 +198,11 @@ public class ItemPickup : MonoBehaviour
             rb.useGravity = false;
         }
         
-        // Set the holdPoint as parent
-        heldItem.transform.SetParent(holdPoint);
+        // Set parent to holdPointBuffer
+        heldItem.transform.SetParent(holdPointBuffer.transform);
         
-        // Reset local position and rotation to zero
-        heldItem.transform.localPosition = Vector3.zero;
-        heldItem.transform.localRotation = Quaternion.identity;
-        
-        // Restore the world scale by adjusting local scale relative to the new parent
-        if (holdPoint.lossyScale.x != 0 && holdPoint.lossyScale.y != 0 && holdPoint.lossyScale.z != 0)
-        {
-            heldItem.transform.localScale = new Vector3(
-                worldScale.x / holdPoint.lossyScale.x,
-                worldScale.y / holdPoint.lossyScale.y,
-                worldScale.z / holdPoint.lossyScale.z
-            );
-        }
-        
-        // Update the originalItemScale to this new calculated local scale
-        originalItemScale = heldItem.transform.localScale;
+        heldItem.transform.position = holdPoint.position;
+        heldItem.transform.rotation = holdPoint.rotation;
 
         isHolding = true;
 
@@ -233,14 +220,8 @@ public class ItemPickup : MonoBehaviour
             return;
         }
 
-        // Store the current world scale before removing parent
-        Vector3 worldScale = heldItem.transform.lossyScale;
-
-        // Remove the parent-child relationship
+        // Remove parent relationship
         heldItem.transform.SetParent(null);
-
-        // Restore the world scale to maintain consistent size
-        heldItem.transform.localScale = worldScale;
 
         if (itemCollider != null)
         {
