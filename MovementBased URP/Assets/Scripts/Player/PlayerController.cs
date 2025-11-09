@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("EnemysDebug")]
+    [SerializeField] public bool isDamaged = false;
     [Header("Movement")]
     [SerializeField] public float walkSpeed;
     [SerializeField] public float runSpeed;

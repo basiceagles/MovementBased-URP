@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class PerkSelectorScript : MonoBehaviour
 {
@@ -7,11 +8,16 @@ public class PerkSelectorScript : MonoBehaviour
     public int amountToActivate = 2; // Adjustable amount of objects to activate
     private GameObject mainCamera;
     private CameraController cameraController;
+    private GameObject cycleIntTextTarget;
+    private TMP_Text cycleIntText;
 
     void Start()
     {
         mainCamera = GameObject.Find("Main Camera");
         cameraController = mainCamera.GetComponent<CameraController>();
+
+        cycleIntTextTarget = GameObject.Find("CycleIntTextUI");
+        cycleIntText = cycleIntTextTarget.GetComponent<TMP_Text>();
     }
 
     public void OpenPerkMenu()
@@ -41,6 +47,12 @@ public class PerkSelectorScript : MonoBehaviour
         
         // Check if we have enough objects in the array
         if (objectsArray.Length == 0)
+        {
+            return;
+        }
+        
+        // Check if amount to activate is 0 or less - don't spawn anything
+        if (amountToActivate <= 0)
         {
             return;
         }

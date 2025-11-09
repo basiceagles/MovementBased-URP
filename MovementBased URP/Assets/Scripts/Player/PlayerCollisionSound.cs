@@ -16,7 +16,7 @@ public class PlayerColissionSound : MonoBehaviour
     public float soundPlayInterval = 0.2f;
     public float soundPlayIntervalGround = 1f;
 
-    void Start()
+    void Awake()
     {
         // Get the AudioSource component attached to this GameObject
         audioSource = GetComponent<AudioSource>();

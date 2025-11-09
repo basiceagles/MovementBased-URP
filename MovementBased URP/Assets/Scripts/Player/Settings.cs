@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
+using UnityEngine.Audio;
 
 public class Settings : MonoBehaviour
 {
@@ -31,6 +32,17 @@ public class Settings : MonoBehaviour
     private int targetFPS = -1;
     private int lastDisplayCount = 0;
     private int lastMonitorRefreshRate = 0;
+    
+    [Header("Audio Mixer Settings")]
+    [SerializeField] private AudioMixerGroup masterMixerGroup;
+    [SerializeField] private AudioMixerGroup sfxMixerGroup;
+    [SerializeField] private AudioMixerGroup musicMixerGroup;
+    [SerializeField] private Slider masterSlider;
+    [SerializeField] private Slider sfxSlider;
+    [SerializeField] private Slider musicSlider;
+    [Header("Other Settings")]
+    [SerializeField] private Toggle fpsCounterToggle;
+    private GameObject fpsCounterTarget;
 
     private void Start()
     {
@@ -39,15 +51,17 @@ public class Settings : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
-        
+
+        fpsCounterTarget = GameObject.Find("FpsCounterUI");
+
         SetupResolutionDropdown();
         SetupRefreshRateDropdown();
-        
+
         if (!PlayerPrefs.HasKey("FirstLaunch"))
         {
             Resolution currentRes = Screen.currentResolution;
             int maxRefreshRate = currentRes.refreshRate;
-            
+
             foreach (Resolution res in resolutions)
             {
                 if (res.width == currentRes.width && res.height == currentRes.height)
@@ -58,13 +72,13 @@ public class Settings : MonoBehaviour
                     }
                 }
             }
-            
+
             Screen.SetResolution(currentRes.width, currentRes.height, FullScreenMode.FullScreenWindow, maxRefreshRate);
-            
+
             int optimalIndex = 0;
             for (int i = 0; i < resolutions.Length; i++)
             {
-                if (resolutions[i].width == currentRes.width && 
+                if (resolutions[i].width == currentRes.width &&
                     resolutions[i].height == currentRes.height &&
                     resolutions[i].refreshRate == maxRefreshRate)
                 {
@@ -72,19 +86,57 @@ public class Settings : MonoBehaviour
                     break;
                 }
             }
-            
+
             PlayerPrefs.SetInt("FirstLaunch", 1);
             PlayerPrefs.SetInt("Fullscreen", 1);
             PlayerPrefs.SetInt("ResolutionIndex", optimalIndex);
             PlayerPrefs.Save();
         }
-        
+
+        // Initialize audio before loading settings
+        InitializeAudio();
         LoadSettings();
-        
+
         m_OpenSettings = InputSystem.actions.FindAction("OpenSettings");
-        
+
         lastDisplayCount = Display.displays.Length;
         lastMonitorRefreshRate = Screen.currentResolution.refreshRate;
+    }
+
+    private void InitializeAudio()
+    {
+        // Add listeners for audio sliders
+        masterSlider.onValueChanged.AddListener(MasterMixerVolume);
+        sfxSlider.onValueChanged.AddListener(SfxMixerVolume);
+        musicSlider.onValueChanged.AddListener(MusicMixerVolume);
+    }
+
+    public void MasterMixerVolume(float sliderValue)
+    {
+        float volumeDB = ConvertToDecibels(sliderValue);
+        masterMixerGroup.audioMixer.SetFloat("Master", volumeDB);
+        PlayerPrefs.SetFloat("MasterVolume", sliderValue);
+    }
+
+    public void SfxMixerVolume(float sliderValue)
+    {
+        float volumeDB = ConvertToDecibels(sliderValue);
+        sfxMixerGroup.audioMixer.SetFloat("SFX", volumeDB);
+        PlayerPrefs.SetFloat("SfxVolume", sliderValue);
+    }
+
+    public void MusicMixerVolume(float sliderValue)
+    {
+        float volumeDB = ConvertToDecibels(sliderValue);
+        musicMixerGroup.audioMixer.SetFloat("Music", volumeDB);
+        PlayerPrefs.SetFloat("MusicVolume", sliderValue);
+    }
+
+    private float ConvertToDecibels(float linearVolume)
+    {
+        if (linearVolume <= 0.001f)
+            return -80f;
+        return Mathf.Log10(linearVolume) * 20f;
     }
 
     private void SetupResolutionDropdown()
@@ -184,6 +236,23 @@ public class Settings : MonoBehaviour
         float sensitivity = PlayerPrefs.GetFloat("Sensitivity", 1f);
         sensitivitySlider.SetValueWithoutNotify(sensitivity);
         SetSensitivity(sensitivity);
+
+        // Load audio settings with proper default values
+        float masterVolume = PlayerPrefs.GetFloat("MasterVolume", 0.8f);
+        masterSlider.SetValueWithoutNotify(masterVolume);
+        MasterMixerVolume(masterVolume);
+
+        float sfxVolume = PlayerPrefs.GetFloat("SfxVolume", 0.8f);
+        sfxSlider.SetValueWithoutNotify(sfxVolume);
+        SfxMixerVolume(sfxVolume);
+
+        float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.8f);
+        musicSlider.SetValueWithoutNotify(musicVolume);
+        MusicMixerVolume(musicVolume);
+
+        bool fpsEnabled = PlayerPrefs.GetInt("FPSCounter", 0) == 1;
+        fpsCounterToggle.SetIsOnWithoutNotify(fpsEnabled);
+        SetFpsCounter(fpsEnabled);
     }
     
     private void LoadDropdownValue(string key, TMPro.TMP_Dropdown dropdown, int maxCount)
@@ -202,11 +271,13 @@ public class Settings : MonoBehaviour
         PlayerPrefs.SetInt("Fullscreen", Screen.fullScreen ? 1 : 0);
         PlayerPrefs.SetInt("VSync", QualitySettings.vSyncCount);
         PlayerPrefs.SetFloat("Brightness", brightnessSlider.value);
+        PlayerPrefs.SetFloat("Sensitivity", sensitivitySlider.value);
+        PlayerPrefs.SetInt("FPSCounter", fpsCounterToggle ? 1 : 0);
         
-        SetSensitivity(sensitivitySlider.value);
-        
+
+        // Audio volumes are already saved when sliders change
         PlayerPrefs.Save();
-        
+
         settingsUI.SetActive(false);
 
         if (!isMainMenu)
@@ -214,12 +285,16 @@ public class Settings : MonoBehaviour
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            
+
             if (cameraController != null)
             {
                 cameraController.enabled = true;
             }
         }
+
+        //Some settings requires update after saving
+        bool isFpsCounerOn = fpsCounterToggle.isOn;
+        SetFpsCounter(isFpsCounerOn);
     }
 
     public void OpenSettings()
@@ -413,6 +488,7 @@ public class Settings : MonoBehaviour
             }
         }
     }
+    
     public void SetBrightness(float brightness)
     {
         if (postProcessVolume != null)
@@ -424,14 +500,26 @@ public class Settings : MonoBehaviour
             RenderSettings.ambientIntensity = brightness;
         }
     }
-    
+
     public void SetSensitivity(float sensitivity)
     {
         if (cameraController != null)
         {
             cameraController.SetSensitivity(sensitivity);
         }
-        
+
         PlayerPrefs.SetFloat("Sensitivity", sensitivity);
+    }
+    
+    public void SetFpsCounter(bool enabled)
+    {
+        if (enabled && fpsCounterTarget != null)
+        {
+            fpsCounterTarget.SetActive(true);
+        }
+        else if (fpsCounterTarget != null)
+        {
+            fpsCounterTarget.SetActive(false);
+        }
     }
 }

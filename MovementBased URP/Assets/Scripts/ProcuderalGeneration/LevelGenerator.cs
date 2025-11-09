@@ -9,8 +9,6 @@ public class LevelGenerator : MonoBehaviour
 
     [Header("Level Arrays")]
     public List<GameObject> easyLevels = new List<GameObject>();
-    public List<GameObject> mediumLevels = new List<GameObject>();
-    public List<GameObject> hardLevels = new List<GameObject>();
     public List<GameObject> closedLevels = new List<GameObject>();
     public GameObject startClosedRoom;
     public GameObject endClosedRoom;
@@ -22,10 +20,6 @@ public class LevelGenerator : MonoBehaviour
     [Header("Spawn Chances")]
     [Range(0, 100)]
     public int easyChance = 25;
-    [Range(0, 100)]
-    public int mediumChance = 25;
-    [Range(0, 100)]
-    public int hardChance = 25;
     [Range(0, 100)]
     public int closedChance = 25;
     [Range(0, 100)]
@@ -346,20 +340,6 @@ public class LevelGenerator : MonoBehaviour
             weights.Add(easyChance);
         }
 
-        // Medium levels - check cycle requirement
-        if (cycle >= mediumCycleRequired && mediumLevels.Count > 0)
-        {
-            availableTypes.Add("Medium");
-            weights.Add(mediumChance);
-        }
-
-        // Hard levels - check cycle requirement
-        if (cycle >= hardCycleRequired && hardLevels.Count > 0)
-        {
-            availableTypes.Add("Hard");
-            weights.Add(hardChance);
-        }
-
         // Closed levels - check cycle requirement and special prefabs
         if (cycle >= closedCycleRequired && closedLevels.Count > 0 && startClosedRoom != null && endClosedRoom != null)
         {
@@ -424,12 +404,6 @@ public class LevelGenerator : MonoBehaviour
             case "Easy":
                 levelList = easyLevels;
                 break;
-            case "Medium":
-                levelList = mediumLevels;
-                break;
-            case "Hard":
-                levelList = hardLevels;
-                break;
         }
 
         if (levelList == null || levelList.Count == 0)
@@ -437,8 +411,6 @@ public class LevelGenerator : MonoBehaviour
             Debug.LogError($"No levels available in {type} category!");
             // Fallback to first available type
             if (easyLevels.Count > 0) return easyLevels[0];
-            if (mediumLevels.Count > 0) return mediumLevels[0];
-            if (hardLevels.Count > 0) return hardLevels[0];
             return null;
         }
 

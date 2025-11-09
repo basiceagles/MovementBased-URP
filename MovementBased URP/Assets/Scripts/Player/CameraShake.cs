@@ -11,13 +11,81 @@ public class CameraShake : MonoBehaviour
     private Vector3 initialPosition;
     private Coroutine shakeCoroutine;
     private Coroutine constantShakeCoroutine;
+    private Coroutine smoothConstantShakeCoroutine;
     private bool isShaking = false;
     private bool isConstantShaking = false;
+    private bool isSmoothConstantShaking = false;
 
     void Start()
     {
         // Store the initial position of the camera
         initialPosition = transform.localPosition;
+    }
+
+    /// <summary>
+    /// Starts constant camera shaking that smoothly increases from 0.1 to 1 magnitude over adjustable time
+    /// </summary>
+    /// <param name="rampUpTime">Time in seconds to smoothly increase from 0.1 to 1 magnitude</param>
+    public void ConstantlyShakeStartSmoothly(float rampUpTime = 1.0f)
+    {
+        if (isSmoothConstantShaking) return;
+        
+        // Stop any existing smooth constant shake coroutine
+        if (smoothConstantShakeCoroutine != null)
+        {
+            StopCoroutine(smoothConstantShakeCoroutine);
+        }
+        
+        // Start new smooth constant shake coroutine
+        smoothConstantShakeCoroutine = StartCoroutine(SmoothConstantShakeCoroutine(rampUpTime));
+        isSmoothConstantShaking = true;
+    }
+
+    /// <summary>
+    /// Coroutine that handles smooth constant camera shaking with ramp up
+    /// </summary>
+    private IEnumerator SmoothConstantShakeCoroutine(float rampUpTime)
+    {
+        isSmoothConstantShaking = true;
+        initialPosition = transform.localPosition;
+        
+        float elapsed = 0f;
+        float startMagnitude = 0.1f;
+        float targetMagnitude = 1.0f;
+        
+        // Ramp up phase
+        while (elapsed < rampUpTime)
+        {
+            // Calculate current magnitude with smooth interpolation
+            float currentMagnitude = Mathf.Lerp(startMagnitude, targetMagnitude, elapsed / rampUpTime);
+            
+            // Move camera to a random position within a unit sphere
+            transform.localPosition = initialPosition + Random.insideUnitSphere * currentMagnitude;
+            
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        
+        // Constant phase - maintain target magnitude
+        while (true)
+        {
+            transform.localPosition = initialPosition + Random.insideUnitSphere * targetMagnitude;
+            yield return null;
+        }
+    }
+
+    /// <summary>
+    /// Stops the smooth constant camera shaking
+    /// </summary>
+    public void ConstantlyShakeStopSmoothly()
+    {
+        if (smoothConstantShakeCoroutine != null)
+        {
+            StopCoroutine(smoothConstantShakeCoroutine);
+            transform.localPosition = initialPosition;
+            isSmoothConstantShaking = false;
+            smoothConstantShakeCoroutine = null;
+        }
     }
 
     /// <summary>
@@ -164,6 +232,7 @@ public class CameraShake : MonoBehaviour
         
         // Also stop constant shaking if active
         ConstantlyShakeStop();
+        ConstantlyShakeStopSmoothly();
     }
 
     /// <summary>
@@ -172,7 +241,7 @@ public class CameraShake : MonoBehaviour
     /// <returns>True if camera is shaking</returns>
     public bool IsShaking()
     {
-        return isShaking || isConstantShaking;
+        return isShaking || isConstantShaking || isSmoothConstantShaking;
     }
 
     /// <summary>
@@ -181,7 +250,16 @@ public class CameraShake : MonoBehaviour
     /// <returns>True if camera is constant shaking</returns>
     public bool IsConstantShaking()
     {
-        return isConstantShaking;
+        return isConstantShaking || isSmoothConstantShaking;
+    }
+
+    /// <summary>
+    /// Checks if the camera is currently smooth constant shaking
+    /// </summary>
+    /// <returns>True if camera is smooth constant shaking</returns>
+    public bool IsSmoothConstantShaking()
+    {
+        return isSmoothConstantShaking;
     }
 
     /// <summary>

@@ -14,6 +14,8 @@ public class KeybindRaycaster : MonoBehaviour
     private Lever previousLever;
     private bool wasLookingAtLever = false;
     private bool isCollected;
+    private GameObject mainCamera;
+    private ItemPickup itemPickup;
 
     void Start()
     {
@@ -37,7 +39,8 @@ public class KeybindRaycaster : MonoBehaviour
         Lever hitLever = null;
 
         if (currentLever != null)
-        isCollected = currentLever.collected;
+            isCollected = currentLever.collected;
+
 
         // Cast ray to find interactable objects with Lever script
         if (Physics.Raycast(ray, out hit, interactionRange, interactableLayer))
@@ -63,6 +66,7 @@ public class KeybindRaycaster : MonoBehaviour
             previousLever.HideUIKeybind();
             wasLookingAtLever = false;
         }
+
 
         // Update previous lever reference
         if (!isLookingAtLever)

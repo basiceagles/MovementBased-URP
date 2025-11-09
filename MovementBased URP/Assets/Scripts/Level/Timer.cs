@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Timer : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class Timer : MonoBehaviour
     [SerializeField] private int seconds = 0;
     [SerializeField] private int milliseconds = 0;
     [SerializeField] private int thresholdSeconds = 10;
+    [SerializeField] private string deadSceneName = "TimerDead";
     
     [Header("TextMeshPro Display")]
     [SerializeField] private TMP_Text timerText;
@@ -18,7 +20,7 @@ public class Timer : MonoBehaviour
     [SerializeField] private bool autoUpdateText = true;
     
     private float totalTimeInSeconds;
-    private float currentTime;
+    public float currentTime;
     private Coroutine countdownCoroutine;
     private bool isThresholdCalled = false;
     private bool isBelowThresholdCalled = false;
@@ -97,6 +99,11 @@ public class Timer : MonoBehaviour
         {
             OnCountdownUnderThreshold();
         }
+        // Check if countdown is above threshold (called every frame while above threshold)
+        else if (currentTime > thresholdSeconds)
+        {
+            OnCountdownAboveThreshold();
+        }
         
         // Check if countdown just went below threshold (called once)
         if (currentTime <= thresholdSeconds && !isBelowThresholdCalled)
@@ -116,6 +123,7 @@ public class Timer : MonoBehaviour
             UpdateTimerText(formattedTime);
         }
     }
+    
     private void OnCountdownUnderThreshold()
     {
         // Update text color when under threshold
@@ -129,14 +137,25 @@ public class Timer : MonoBehaviour
         {
             musicManagerAS.pitch = 1.1f;
         }
+    }
+
+    private void OnCountdownAboveThreshold()
+    {
+        // Update text color when above threshold
+        if (timerText != null)
+        {
+            timerText.color = normalColor;
+        }
         
-        // Add any other under threshold logic here
+        // Reset music pitch
+        if (musicManagerAS != null)
+        {
+            musicManagerAS.pitch = 1.0f;
+        }
     }
 
     private void OnCountdownBelowThreshold()
     {
-        // Add one-time below threshold logic here
-        // For example: play warning sound, show alert, etc.
         Debug.Log("Warning: Time below threshold!");
     }
 
@@ -145,12 +164,14 @@ public class Timer : MonoBehaviour
         // Add countdown completion logic here
         // For example: trigger game over, play sound, etc.
         Debug.Log("Countdown complete!");
-        
+
         // Reset music pitch when timer completes
         if (musicManagerAS != null)
         {
             musicManagerAS.pitch = 1.0f;
         }
+
+        SceneManager.LoadScene(deadSceneName);
     }
 
     private void UpdateTimerText(string timeString)

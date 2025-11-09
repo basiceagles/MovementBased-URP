@@ -1,105 +1,279 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class RedEyeDetector : MonoBehaviour
 {
     [Header("Detection Settings")]
     [SerializeField] private float detectionRange = 10f;
     [SerializeField] private string targetTag = "RedEye";
+    [SerializeField] private LayerMask obstacleLayers = -1;
+    [SerializeField] private float bufferTime = 0.1f;
     
     [Header("Fill Settings")]
-    [SerializeField] private float fillDuration = 1.5f;
-    [SerializeField] private float maxFillValue = 5f;
+    [SerializeField] private float fillDuration = 1f;
+    [SerializeField] private float maxFillValue = 1f;
     
     [Header("Debug")]
     [SerializeField] private float currentFillValue = 0f;
     [SerializeField] private bool isRedEyeVisible = false;
+
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private string deadSceneName;
+    [SerializeField] private GameObject playerTarget;
     
     private Camera mainCamera;
-    private GameObject redEyeObject;
+    public List<GameObject> redEyeObjects;
+    private GameObject currentRedEyeObject;
     private Coroutine fillCoroutine;
+    private CameraShake cameraShake;
+    private PlayerController playerController;
+    private float lastVisibleTime = 0f;
+    private GameObject enemyOverlayManagerTarget;
+    private EnemyOverlayManager enemyOverlayManager;
+
+    private GameObject globalVolumeTarget;
+    private Volume globalVolume;
+
+    private LensDistortion lensDistortion;
+    private ChromaticAberration chromaticAberration;
     
-    // Events for other scripts to listen to
     public System.Action<float> OnFillValueChanged;
     public System.Action OnFillComplete;
     public System.Action OnRedEyeDetected;
     public System.Action OnRedEyeLost;
-    
+
     void Start()
     {
-        mainCamera = Camera.main;
+        playerController = playerTarget.GetComponent<PlayerController>();
+        enemyOverlayManagerTarget = GameObject.Find("EnemyOverlaysManager");
+        enemyOverlayManager = enemyOverlayManagerTarget.GetComponent<EnemyOverlayManager>();
+
+        globalVolumeTarget = GameObject.Find("Global Volume");
+        globalVolume = globalVolumeTarget.GetComponent<Volume>();
+
+        globalVolume.profile.TryGet<LensDistortion>(out lensDistortion);
+        globalVolume.profile.TryGet<ChromaticAberration>(out chromaticAberration);
         
+        mainCamera = Camera.main;
+        cameraShake = mainCamera.GetComponent<CameraShake>();
+        currentFillValue = 0f;
+
         if (mainCamera == null)
         {
             Debug.LogError("No main camera found in scene!");
         }
+
+        redEyeObjects = new List<GameObject>();
+        Invoke("FindRedEyeGameobjects", 0.1f);
+    }
+    
+    public void FindRedEyeGameobjects()
+    {
+        GameObject[] foundObjects = GameObject.FindGameObjectsWithTag(targetTag);
         
-        // Find the RedEye object by tag
-        redEyeObject = GameObject.FindGameObjectWithTag(targetTag);
-        
-        if (redEyeObject == null)
+        if (foundObjects == null || foundObjects.Length == 0)
         {
-            Debug.LogWarning($"No object with tag '{targetTag}' found in scene.");
+            Debug.LogWarning($"No objects with tag '{targetTag}' found in scene.");
+        }
+        else
+        {
+            redEyeObjects.Clear();
+            redEyeObjects.AddRange(foundObjects);
+            Debug.Log($"Found {redEyeObjects.Count} RedEye objects in scene");
         }
     }
     
     void Update()
     {
-        if (redEyeObject == null || mainCamera == null) return;
-        
-        CheckRedEyeVisibility();
-    }
-    
-    private void CheckRedEyeVisibility()
-    {
+        redEyeObjects.RemoveAll(obj => obj == null);
+
+        // Store previous state
         bool wasVisible = isRedEyeVisible;
-        isRedEyeVisible = IsObjectOnScreen(redEyeObject);
+        GameObject previousRedEye = currentRedEyeObject;
+
+        // Check visibility FIRST before finding new targets
+        bool currentObjectIsVisible = currentRedEyeObject != null && IsObjectVisible(currentRedEyeObject);
         
-        // Object just became visible
+        if (currentObjectIsVisible)
+        {
+            lastVisibleTime = Time.time;
+        }
+
+        // Find current target
+        FindCurrentRedEye();
+
+        if (currentRedEyeObject == null || mainCamera == null) 
+        {
+            if (wasVisible)
+            {
+                StopFillCoroutine();
+            }
+            return;
+        }
+
+        // Apply buffer and update visibility state
+        bool isVisibleWithBuffer = currentObjectIsVisible || (Time.time - lastVisibleTime <= bufferTime);
+        isRedEyeVisible = isVisibleWithBuffer;
+
+        // Handle visibility changes immediately
         if (!wasVisible && isRedEyeVisible)
         {
             StartFillCoroutine();
             OnRedEyeDetected?.Invoke();
         }
-        // Object just became invisible
         else if (wasVisible && !isRedEyeVisible)
         {
             StopFillCoroutine();
             OnRedEyeLost?.Invoke();
         }
+
+        audioSource.volume = currentFillValue;
+
+        if (currentFillValue == maxFillValue && currentRedEyeObject != null)
+        {
+            StopFillCoroutine();
+            Destroy(currentRedEyeObject);
+            redEyeObjects.Remove(currentRedEyeObject);
+            currentRedEyeObject = null;
+
+            if (playerController.isDamaged)
+            {
+                SceneManager.LoadScene(deadSceneName);
+            }
+            else
+            {
+                playerController.isDamaged = true;
+                enemyOverlayManager.CallRedEyeOverlay();
+            }
+        }
+
+        if (lensDistortion != null)
+            lensDistortion.intensity.value = -currentFillValue;
+        
+        if (chromaticAberration != null)
+            chromaticAberration.intensity.value = currentFillValue;
+    }
+
+    private void FindCurrentRedEye()
+    {
+        GameObject closestVisibleRedEye = null;
+        float closestDistance = Mathf.Infinity;
+        bool foundCurrentObject = false;
+
+        foreach (GameObject redEye in redEyeObjects)
+        {
+            if (redEye == null) continue;
+
+            if (IsObjectVisible(redEye))
+            {
+                float distance = Vector3.Distance(mainCamera.transform.position, redEye.transform.position);
+                
+                // Check if this is our current object
+                if (redEye == currentRedEyeObject)
+                {
+                    foundCurrentObject = true;
+                }
+                
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestVisibleRedEye = redEye;
+                }
+            }
+        }
+
+        // If current object is still visible, keep it
+        if (foundCurrentObject && currentRedEyeObject != null)
+        {
+            // Current object is still visible, no need to change
+            return;
+        }
+
+        // If we found a different visible RedEye
+        if (closestVisibleRedEye != null && closestVisibleRedEye != currentRedEyeObject)
+        {
+            // If we were tracking a different RedEye, stop the current fill
+            if (currentRedEyeObject != null && fillCoroutine != null)
+            {
+                StopFillCoroutine();
+            }
+            
+            currentRedEyeObject = closestVisibleRedEye;
+            lastVisibleTime = Time.time;
+            
+            // Don't start fill here - let Update handle it immediately
+        }
+        // If no RedEye is visible at all
+        else if (closestVisibleRedEye == null && currentRedEyeObject != null)
+        {
+            // Current object is no longer visible - this will be handled in Update
+        }
     }
     
-    private bool IsObjectOnScreen(GameObject targetObject)
+    private bool IsObjectVisible(GameObject targetObject)
     {
-        // Check if object is within range
+        if (targetObject == null) return false;
+        
         float distance = Vector3.Distance(mainCamera.transform.position, targetObject.transform.position);
         if (distance > detectionRange) return false;
         
-        // Check if object is within camera view frustum
         Vector3 screenPoint = mainCamera.WorldToViewportPoint(targetObject.transform.position);
+
+        // Use slightly larger bounds for better edge detection
+        bool onScreen = screenPoint.z > 0 &&
+                       screenPoint.x >= -0.05f && screenPoint.x <= 1.05f &&
+                       screenPoint.y >= -0.05f && screenPoint.y <= 1.05f;
         
-        // Object is on screen if it's within the viewport (0-1 range) and in front of camera
-        bool onScreen = screenPoint.z > 0 && 
-                       screenPoint.x >= 0 && screenPoint.x <= 1 && 
-                       screenPoint.y >= 0 && screenPoint.y <= 1;
+        if (!onScreen) return false;
         
-        return onScreen;
+        return HasLineOfSight(targetObject);
+    }
+    
+    private bool HasLineOfSight(GameObject targetObject)
+    {
+        Vector3 cameraPosition = mainCamera.transform.position;
+        Vector3 targetPosition = targetObject.transform.position;
+        
+        Vector3 billboardForward = targetObject.transform.forward;
+        Vector3 adjustedTargetPosition = targetPosition + billboardForward * 0.1f;
+        
+        Vector3 direction = (adjustedTargetPosition - cameraPosition).normalized;
+        float distance = Vector3.Distance(cameraPosition, adjustedTargetPosition);
+        
+        RaycastHit hit;
+        if (Physics.Raycast(cameraPosition, direction, out hit, distance, obstacleLayers))
+        {
+            if (hit.collider.gameObject == targetObject || 
+                hit.collider.transform.IsChildOf(targetObject.transform))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        return true;
     }
     
     private void StartFillCoroutine()
     {
-        // Stop any existing coroutine
         if (fillCoroutine != null)
         {
             StopCoroutine(fillCoroutine);
         }
         
-        // Reset fill value
-        currentFillValue = 0f;
-        OnFillValueChanged?.Invoke(currentFillValue);
-        
-        // Start new fill coroutine
         fillCoroutine = StartCoroutine(FillCoroutine());
+
+        if (!audioSource.isPlaying)
+        {
+            audioSource.Play();
+        }
     }
     
     private void StopFillCoroutine()
@@ -110,25 +284,25 @@ public class RedEyeDetector : MonoBehaviour
             fillCoroutine = null;
         }
         
-        // Reset fill value when object leaves screen
         currentFillValue = 0f;
         OnFillValueChanged?.Invoke(currentFillValue);
+
+        audioSource.Stop();
     }
     
     private IEnumerator FillCoroutine()
     {
+        float startValue = currentFillValue;
         float timer = 0f;
         float targetValue = maxFillValue;
         
-        while (timer < fillDuration && isRedEyeVisible)
+        while (timer < fillDuration && isRedEyeVisible && currentRedEyeObject != null)
         {
             timer += Time.deltaTime;
             float progress = Mathf.Clamp01(timer / fillDuration);
             
-            // Calculate current fill value based on progress - smooth interpolation
-            float newFillValue = progress * targetValue;
+            float newFillValue = Mathf.Lerp(startValue, targetValue, progress);
             
-            // Update continuously for smooth changes
             if (newFillValue != currentFillValue)
             {
                 currentFillValue = newFillValue;
@@ -138,8 +312,7 @@ public class RedEyeDetector : MonoBehaviour
             yield return null;
         }
         
-        // Ensure we reach the target value
-        if (isRedEyeVisible && currentFillValue < targetValue)
+        if (isRedEyeVisible && currentRedEyeObject != null && currentFillValue < targetValue)
         {
             currentFillValue = targetValue;
             OnFillValueChanged?.Invoke(currentFillValue);
@@ -147,25 +320,5 @@ public class RedEyeDetector : MonoBehaviour
         }
         
         fillCoroutine = null;
-    }
-    
-    // Public methods to access current state
-    public float GetCurrentFillValue() => currentFillValue;
-    public bool IsRedEyeVisible() => isRedEyeVisible;
-    public bool IsFilling() => fillCoroutine != null;
-    
-    // Optional: Get rounded integer value if needed
-    public int GetCurrentFillValueRounded() => Mathf.RoundToInt(currentFillValue);
-    public int GetCurrentFillValueFloored() => Mathf.FloorToInt(currentFillValue);
-    public int GetCurrentFillValueCeiled() => Mathf.CeilToInt(currentFillValue);
-    
-    // Editor helper to visualize detection range
-    void OnDrawGizmosSelected()
-    {
-        if (mainCamera != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(mainCamera.transform.position, detectionRange);
-        }
     }
 }

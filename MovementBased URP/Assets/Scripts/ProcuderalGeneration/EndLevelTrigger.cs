@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class EndLevelTrigger : MonoBehaviour
 {
@@ -15,6 +16,11 @@ public class EndLevelTrigger : MonoBehaviour
     public Animator perkSelectorAnimator;
     private GameObject targetTimerManager;
     private Timer targetTimer;
+    private GameObject cameraTarget;
+    private RedEyeDetector redEyeDetector;
+    private GameObject cycleIntTextTarget;
+    private TMP_Text cycleIntText;
+    private int currentCycle = 0;
 
     void Start()
     {
@@ -32,6 +38,12 @@ public class EndLevelTrigger : MonoBehaviour
 
         targetTimerManager = GameObject.Find("TimerManager");
         targetTimer = targetTimerManager.GetComponent<Timer>();
+
+        cameraTarget = GameObject.Find("Main Camera");
+        redEyeDetector = cameraTarget.GetComponent<RedEyeDetector>();
+
+        cycleIntTextTarget = GameObject.Find("CycleIntTextUI");
+        cycleIntText = cycleIntTextTarget.GetComponent<TMP_Text>();
     }
 
     void OnTriggerEnter(Collider other)
@@ -43,7 +55,16 @@ public class EndLevelTrigger : MonoBehaviour
         
         slideMetalDoorManager.CloseDoor();
         levelGenerator.RestartGeneration();
+
+        //ПЕРЕДЕЛАТЬ
+        levelGenerator.cycle++;
+        levelGenerator.numberOfLevels++;
+        currentCycle = levelGenerator.cycle;
+        cycleIntText.text = currentCycle.ToString();
+        
         musicManagerScript.StopPlayingMusic();
+
+        redEyeDetector.FindRedEyeGameobjects();
 
         targetTimer.StopAndReset();
 
