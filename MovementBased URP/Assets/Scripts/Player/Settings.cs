@@ -4,15 +4,17 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Audio;
+using System;
 
 public class Settings : MonoBehaviour
 {
     [Header("Input")]
     public InputActionAsset inputActions;
     private InputAction m_OpenSettings;
-    
+
     [Header("UI References")]
     public GameObject settingsUI;
+    public GameObject mainMenuUI;
     public TMPro.TMP_Dropdown resolutionDropdown;
     public TMPro.TMP_Dropdown refreshRateDropdown;
     public Toggle fullscreenToggle;
@@ -43,6 +45,8 @@ public class Settings : MonoBehaviour
     [Header("Other Settings")]
     [SerializeField] private Toggle fpsCounterToggle;
     private GameObject fpsCounterTarget;
+    private bool mainMenuIsActive = false;
+    private AudioSource[] allAudioSourcesInScene;
 
     private void Start()
     {
@@ -97,10 +101,21 @@ public class Settings : MonoBehaviour
         InitializeAudio();
         LoadSettings();
 
+        FindAllAudioSourcesInScene();
+
         m_OpenSettings = InputSystem.actions.FindAction("OpenSettings");
 
         lastDisplayCount = Display.displays.Length;
         lastMonitorRefreshRate = Screen.currentResolution.refreshRate;
+
+        //fix after switching scenes
+        Time.timeScale = 1f;
+        UnPauseAllAudioSource();
+    }
+
+    private void FindAllAudioSourcesInScene()
+    {
+        allAudioSourcesInScene = FindObjectsOfType<AudioSource>();
     }
 
     private void InitializeAudio()
@@ -284,11 +299,15 @@ public class Settings : MonoBehaviour
 
         settingsUI.SetActive(false);
 
+        mainMenuIsActive = false;
+
         if (!isMainMenu)
         {
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+
+            UnPauseAllAudioSource();
 
             if (cameraController != null)
             {
@@ -297,22 +316,89 @@ public class Settings : MonoBehaviour
         }
 
         //Some settings requires update after saving
-        bool isFpsCounerOn = fpsCounterToggle.isOn;
-        SetFpsCounter(isFpsCounerOn);
+        bool isFpsCounterOn = fpsCounterToggle.isOn;
+        SetFpsCounter(isFpsCounterOn);
     }
 
-    public void OpenSettings()
+    public void OpenMainMenuSettings()
     {
-        settingsUI.SetActive(true);
+        mainMenuUI.SetActive(true);
+        mainMenuIsActive = true;
         
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        
+
         if (!isMainMenu)
         {
             Time.timeScale = 0f;
-            
+
+            PauseAllAudioSource();
+
             if (cameraController != null)
             {
                 cameraController.enabled = false;
             }
+        }
+    }
+
+    public void OpenSettings()
+    {
+        if (!isMainMenu)
+        {
+            Time.timeScale = 0f;
+
+            if (cameraController != null)
+            {
+                cameraController.enabled = false;
+            }
+
+            settingsUI.SetActive(true);
+            mainMenuUI.SetActive(false);
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+    }
+
+    private void PauseAllAudioSource()
+    {
+        if (allAudioSourcesInScene == null) return;
+
+        foreach (AudioSource audio in allAudioSourcesInScene)
+        {
+            audio.Pause();
+        }
+    }
+    
+    private void UnPauseAllAudioSource()
+    {
+        if (allAudioSourcesInScene == null) return;
+
+        foreach (AudioSource audio in allAudioSourcesInScene)
+        {
+            audio.UnPause();
+        }
+    }
+    
+    public void CloseMainMenuSettings()
+    {
+        if (!isMainMenu)
+        {
+            Time.timeScale = 1f;
+
+            UnPauseAllAudioSource();
+
+            if (cameraController != null)
+            {
+                cameraController.enabled = true;
+            }
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            mainMenuUI.SetActive(false);
+            mainMenuIsActive = false;
         }
     }
     
@@ -328,9 +414,11 @@ public class Settings : MonoBehaviour
     {
         if (m_OpenSettings != null && m_OpenSettings.WasPressedThisFrame() && !isMainMenu)
         {
-            OpenSettings();
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            if (!mainMenuIsActive)
+            {
+                FindAllAudioSourcesInScene();
+                OpenMainMenuSettings();
+            }
         }
         
         CheckForDisplayChanges();
