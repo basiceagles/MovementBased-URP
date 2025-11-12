@@ -54,12 +54,12 @@ public class EndLevelTrigger : MonoBehaviour
         perkSelectorAnimator.Play("PerkSelectorMenu");
         
         slideMetalDoorManager.CloseDoor();
-        levelGenerator.RestartGeneration();
+        //levelGenerator.RestartGeneration();
 
         //ПЕРЕДЕЛАТЬ
-        levelGenerator.cycle++;
+
         levelGenerator.numberOfLevels++;
-        currentCycle = levelGenerator.cycle;
+        currentCycle++;
         cycleIntText.text = currentCycle.ToString();
         
         musicManagerScript.StopPlayingMusic();

@@ -15,17 +15,17 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 1
-  m_FogColor: {r: 0.35686275, g: 0.35686275, b: 0.35686275, a: 1}
+  m_FogColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.05
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.4745098, g: 0.4745098, b: 0.4745098, a: 1}
+  m_AmbientSkyColor: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 3
-  m_SubtractiveShadowColor: {r: 0.50980395, g: 0.50980395, b: 0.50980395, a: 1}
+  m_SubtractiveShadowColor: {r: 1, g: 1, b: 1, a: 1}
   m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
@@ -3391,29 +3391,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fde32a18b890a74c8cd1da15661a8f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startRoomPrefab: {fileID: 8455387217744935174}
+  startRoomPrefab: {fileID: 3972893223050914452, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
   endRoomPrefab: {fileID: 6999912867395604079, guid: 9fe18092b5f32244582225913884c297, type: 3}
   easyLevels:
-  - {fileID: 846373188480522301, guid: d922943a43943284c94b8337ca50a194, type: 3}
-  - {fileID: 2747161626659885058, guid: bb90718fa7ca976438b57908d4138ff7, type: 3}
+  - levelPrefab: {fileID: 846373188480522301, guid: d922943a43943284c94b8337ca50a194, type: 3}
+    levelType: 0
+  - levelPrefab: {fileID: 2747161626659885058, guid: bb90718fa7ca976438b57908d4138ff7, type: 3}
+    levelType: 1
   closedLevels:
-  - {fileID: 5977601408184335498, guid: 7c3f0b4def59c6a48afc2ba6bb852f98, type: 3}
-  - {fileID: 6153910659377611486, guid: bb8e0852ec0e92745993f8fa81e6ea86, type: 3}
-  - {fileID: 4638537626074715897, guid: 2c0a715c436a3ea4692eb4b02aba2663, type: 3}
-  - {fileID: 7653183948189240332, guid: 0e6752cf917f126448b113b06739cad6, type: 3}
-  - {fileID: 7448500623132463532, guid: 8eab544e5b1b6e448aad9136713c3710, type: 3}
+  - levelPrefab: {fileID: 5977601408184335498, guid: 7c3f0b4def59c6a48afc2ba6bb852f98, type: 3}
+    levelType: 0
+  - levelPrefab: {fileID: 6153910659377611486, guid: bb8e0852ec0e92745993f8fa81e6ea86, type: 3}
+    levelType: 0
+  - levelPrefab: {fileID: 4638537626074715897, guid: 2c0a715c436a3ea4692eb4b02aba2663, type: 3}
+    levelType: 1
+  - levelPrefab: {fileID: 7653183948189240332, guid: 0e6752cf917f126448b113b06739cad6, type: 3}
+    levelType: 2
   startClosedRoom: {fileID: 2324539671385129734, guid: 9a5ed9e7aff2d1a47badf9c3efb4a71e, type: 3}
   endClosedRoom: {fileID: 1083109575596404650, guid: 93e7de0659009d84e87f6a20c0d85a58, type: 3}
+  spawnEasyLevels: 1
+  spawnClosedLevels: 1
   runnerStartPrefab: {fileID: 1922169315576615410, guid: acdfc90ba19c00b4880e48eaf8a0a426, type: 3}
   runnerEndPrefab: {fileID: 1003149677673687774, guid: 6a71e5a876311fd45b2bc2fab742fdb9, type: 3}
-  easyChance: 25
+  easyChance: 0
   closedChance: 25
   runnerStartChance: 25
-  easyCycleRequired: 2
-  mediumCycleRequired: 3
-  hardCycleRequired: 5
-  closedCycleRequired: 0
-  numberOfLevels: 10
+  standardChance: 25
+  swingChance: 25
+  grappleChance: 25
+  waterChance: 0
+  doubleJumpChance: 0
+  lowGravityChance: 0
+  planetChance: 0
+  holesChance: 0
+  numberOfLevels: 40
   generateOnStart: 1
   cycle: 0
   maxClosedRooms: 6
@@ -6974,24 +6985,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fde32a18b890a74c8cd1da15661a8f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startRoomPrefab: {fileID: 8455387217744935174}
-  endRoomPrefab: {fileID: 6999912867395604079, guid: 9fe18092b5f32244582225913884c297, type: 3}
-  easyLevels:
-  - {fileID: 846373188480522301, guid: d922943a43943284c94b8337ca50a194, type: 3}
-  - {fileID: 2747161626659885058, guid: bb90718fa7ca976438b57908d4138ff7, type: 3}
+  startRoomPrefab: {fileID: 0}
+  endRoomPrefab: {fileID: 0}
+  easyLevels: []
   closedLevels:
-  - {fileID: 7448500623132463532, guid: 8eab544e5b1b6e448aad9136713c3710, type: 3}
-  startClosedRoom: {fileID: 2324539671385129734, guid: 9a5ed9e7aff2d1a47badf9c3efb4a71e, type: 3}
-  endClosedRoom: {fileID: 1083109575596404650, guid: 93e7de0659009d84e87f6a20c0d85a58, type: 3}
-  runnerStartPrefab: {fileID: 1922169315576615410, guid: acdfc90ba19c00b4880e48eaf8a0a426, type: 3}
-  runnerEndPrefab: {fileID: 1003149677673687774, guid: 6a71e5a876311fd45b2bc2fab742fdb9, type: 3}
+  - levelPrefab: {fileID: 0}
+    levelType: 0
+  startClosedRoom: {fileID: 0}
+  endClosedRoom: {fileID: 0}
+  spawnEasyLevels: 1
+  spawnClosedLevels: 1
+  runnerStartPrefab: {fileID: 0}
+  runnerEndPrefab: {fileID: 0}
   easyChance: 25
   closedChance: 25
   runnerStartChance: 25
-  easyCycleRequired: 1
-  mediumCycleRequired: 3
-  hardCycleRequired: 5
-  closedCycleRequired: 0
+  standardChance: 25
+  swingChance: 25
+  grappleChance: 25
+  waterChance: 25
+  doubleJumpChance: 25
+  lowGravityChance: 25
+  planetChance: 25
+  holesChance: 25
   numberOfLevels: 10
   generateOnStart: 1
   cycle: 0
@@ -10960,6 +10976,127 @@ RectTransform:
   m_AnchoredPosition: {x: 87.5, y: 0}
   m_SizeDelta: {x: 175, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &951652985
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 951652986}
+  - component: {fileID: 951652988}
+  - component: {fileID: 951652987}
+  m_Layer: 0
+  m_Name: Spot Light (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &951652986
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 951652985}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071059, y: -0, z: 0.0000021755695, w: 0.7071078}
+  m_LocalPosition: {x: -0.37, y: 2.128, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1793109495}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!114 &951652987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 951652985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+--- !u!108 &951652988
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 951652985}
+  m_Enabled: 1
+  serializedVersion: 11
+  m_Type: 0
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 6
+  m_Range: 4.2112265
+  m_SpotAngle: 179
+  m_InnerSpotAngle: 122.65416
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!1 &960567247
 GameObject:
   m_ObjectHideFlags: 0
@@ -18488,6 +18625,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1790854761}
   m_CullTransparentMesh: 1
+--- !u!4 &1793109495 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3128516382519199472, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+  m_PrefabInstance: {fileID: 8455387217744935173}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1797726807
 GameObject:
   m_ObjectHideFlags: 0
@@ -21925,6 +22067,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 3343798156140563583, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+      propertyPath: groundCheckRadius
+      value: 0.7
+      objectReference: {fileID: 0}
     - target: {fileID: 3469260907815785715, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: m_LocalPosition.x
       value: -14.68764
@@ -22034,6 +22180,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: Start
       objectReference: {fileID: 0}
+    - target: {fileID: 4676158364660907488, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d940f9d5b31d35b4a88dbcc17cf576a4, type: 2}
+    - target: {fileID: 5227655448417849132, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_Range
+      value: 4.2112265
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227655448417849132, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227655448417849132, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227655448417849132, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227655448417849132, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_InnerSpotAngle
+      value: 122.65416
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227655448417849132, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5338119180227316451, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
@@ -22062,6 +22236,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
+    - target: {fileID: 6285562125487777595, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c58b05377c133d64f95c596d74351eac, type: 2}
     - target: {fileID: 7075937354741877835, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.000020802014
@@ -22099,14 +22277,13 @@ PrefabInstance:
     - {fileID: 7050142773319083331, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
     - {fileID: 3475306167236709829, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
     - {fileID: 4211528921187051194, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
-    m_AddedGameObjects: []
+    - {fileID: 7053288853396950632, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 3128516382519199472, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 951652986}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
---- !u!1 &8455387217744935174 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3972893223050914452, guid: 3835e94f709dcbb44968a38860646e80, type: 3}
-  m_PrefabInstance: {fileID: 8455387217744935173}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

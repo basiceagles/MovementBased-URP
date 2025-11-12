@@ -11,6 +11,7 @@ namespace SmallHedge.SoundManager
         JUMP,
         FALL,
         FOOTSTEP,
+        FOOTSTEPMETAL,
         LEVER,
         UICLICK2,
         UICLICK3,
