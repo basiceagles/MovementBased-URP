@@ -156,7 +156,7 @@ public class LevelGenerator : MonoBehaviour
 
         // Get the End point from the existing StartRoom
         Transform previousEndPoint = FindEndPoint(startRoom);
-        Vector3 currentSpawnPosition = previousEndPoint.position;
+        Vector3 currentEndPosition = previousEndPoint.position;
 
         // Generate Random Levels
         for (int i = 0; i < numberOfLevels; i++)
@@ -172,15 +172,16 @@ public class LevelGenerator : MonoBehaviour
                 break;
             }
 
-            // Get the Start point of the level prefab to use as reference
-            Transform levelStartPoint = FindStartPoint(randomLevelPrefab);
-
-            // Calculate spawn position so the level's Start point aligns with previous End point
-            Vector3 spawnPosition = currentSpawnPosition - levelStartPoint.localPosition;
-
-            // Instantiate the level at the calculated spawn position
-            GameObject level = Instantiate(randomLevelPrefab, spawnPosition, Quaternion.identity);
+            // SIMPLE AND CONSISTENT APPROACH: Instantiate then adjust
+            GameObject level = Instantiate(randomLevelPrefab, currentEndPosition, Quaternion.identity);
             level.name = $"Level_{i + 1}";
+
+            // Get the Start point of the instantiated level
+            Transform levelStartPoint = FindStartPoint(level);
+            
+            // Calculate how much we need to move the level so its Start point matches currentEndPosition
+            Vector3 moveOffset = currentEndPosition - levelStartPoint.position;
+            level.transform.position += moveOffset;
 
             // Optimize for dynamic batching
             if (enableDynamicBatching)
@@ -190,36 +191,40 @@ public class LevelGenerator : MonoBehaviour
 
             generatedLevels.Add(level);
 
-            // Update the current spawn position to be the End point of this level
-            currentSpawnPosition = FindEndPoint(level).position;
+            // Update the current end position to be the End point of this level
+            currentEndPosition = FindEndPoint(level).position;
+            
+            Debug.Log($"Level {i+1}: Start at {FindStartPoint(level).position}, End at {currentEndPosition}");
         }
 
         // If we're still in a closed section at the end, close it
         if (isInClosedSection)
         {
-            SpawnEndClosedRoom(ref currentSpawnPosition);
+            SpawnEndClosedRoom(ref currentEndPosition);
         }
 
         // If we're still in a runner section at the end, end it
         if (isInRunnerSection)
         {
-            SpawnRunnerEndRoom(ref currentSpawnPosition);
+            SpawnRunnerEndRoom(ref currentEndPosition);
         }
 
-        // Generate End Room
-        GameObject endRoomPrefabInstance = Instantiate(endRoomPrefab, Vector3.zero, Quaternion.identity);
+        // Generate End Room using same consistent approach
+        GameObject endRoomPrefabInstance = Instantiate(endRoomPrefab, currentEndPosition, Quaternion.identity);
         endRoomPrefabInstance.name = "EndRoom";
+
+        // Get the Start point of the instantiated EndRoom
+        Transform endRoomStart = FindStartPoint(endRoomPrefabInstance);
+        
+        // Calculate the offset needed to align the Start point with the current end position
+        Vector3 endRoomOffset = currentEndPosition - endRoomStart.position;
+        endRoomPrefabInstance.transform.position += endRoomOffset;
 
         // Optimize end room for batching
         if (enableDynamicBatching)
         {
             OptimizeForBatching(endRoomPrefabInstance);
         }
-
-        // Get the Start point of the EndRoom and position it correctly
-        Transform endRoomStart = FindStartPoint(endRoomPrefabInstance);
-        Vector3 endRoomPosition = currentSpawnPosition - endRoomStart.localPosition;
-        endRoomPrefabInstance.transform.position = endRoomPosition;
 
         generatedLevels.Add(endRoomPrefabInstance);
 
@@ -610,14 +615,20 @@ public class LevelGenerator : MonoBehaviour
         return GetRandomLevelFromType("Closed");
     }
 
-    private void SpawnEndClosedRoom(ref Vector3 currentSpawnPosition)
+    private void SpawnEndClosedRoom(ref Vector3 currentEndPosition)
     {
         if (endClosedRoom != null)
         {
-            Transform endRoomStart = FindStartPoint(endClosedRoom);
-            Vector3 spawnPosition = currentSpawnPosition - endRoomStart.localPosition;
-            GameObject level = Instantiate(endClosedRoom, spawnPosition, Quaternion.identity);
+            // Use the same consistent approach: instantiate then adjust
+            GameObject level = Instantiate(endClosedRoom, currentEndPosition, Quaternion.identity);
             level.name = $"Level_ClosedEnd_{currentLevelIndex}";
+
+            // Get the Start point of the instantiated level
+            Transform endRoomStart = FindStartPoint(level);
+            
+            // Calculate the offset needed to align the Start point with the current end position
+            Vector3 offset = currentEndPosition - endRoomStart.position;
+            level.transform.position += offset;
 
             // Optimize for batching
             if (enableDynamicBatching)
@@ -627,22 +638,28 @@ public class LevelGenerator : MonoBehaviour
 
             generatedLevels.Add(level);
 
-            // Update spawn position using the existing waypoints from the prefab
-            currentSpawnPosition = FindEndPoint(level).position;
+            // Update end position using the existing waypoints from the prefab
+            currentEndPosition = FindEndPoint(level).position;
         }
 
         isInClosedSection = false;
         hasSpawnedStartClosedRoom = false;
     }
 
-    private void SpawnRunnerEndRoom(ref Vector3 currentSpawnPosition)
+    private void SpawnRunnerEndRoom(ref Vector3 currentEndPosition)
     {
         if (runnerEndPrefab != null)
         {
-            Transform endRoomStart = FindStartPoint(runnerEndPrefab);
-            Vector3 spawnPosition = currentSpawnPosition - endRoomStart.localPosition;
-            GameObject level = Instantiate(runnerEndPrefab, spawnPosition, Quaternion.identity);
+            // Use the same consistent approach: instantiate then adjust
+            GameObject level = Instantiate(runnerEndPrefab, currentEndPosition, Quaternion.identity);
             level.name = $"Level_RunnerEnd_{currentLevelIndex}";
+
+            // Get the Start point of the instantiated level
+            Transform endRoomStart = FindStartPoint(level);
+            
+            // Calculate the offset needed to align the Start point with the current end position
+            Vector3 offset = currentEndPosition - endRoomStart.position;
+            level.transform.position += offset;
 
             // Optimize for batching
             if (enableDynamicBatching)
@@ -652,15 +669,12 @@ public class LevelGenerator : MonoBehaviour
 
             generatedLevels.Add(level);
 
-            // Update spawn position using the existing waypoints from the prefab
-            currentSpawnPosition = FindEndPoint(level).position;
+            // Update end position using the existing waypoints from the prefab
+            currentEndPosition = FindEndPoint(level).position;
         }
 
         isInRunnerSection = false;
     }
-
-    // ... Rest of your existing methods (RestartGeneration, GenerateLevelsSimple, FindStartPoint, FindEndPoint, etc.)
-    // These remain exactly as you had them, just make sure to call OptimizeForBatching where appropriate
 
     public void RestartGeneration()
     {
@@ -728,7 +742,7 @@ public class LevelGenerator : MonoBehaviour
             generatedLevels.Add(currentLevel);
         }
 
-        // Add random levels
+        // Add random levels using the same consistent approach
         for (int i = 0; i < numberOfLevels; i++)
         {
             currentLevelIndex = i;
@@ -743,15 +757,16 @@ public class LevelGenerator : MonoBehaviour
             // Get the End point of the current level
             Transform currentEnd = FindEndPoint(currentLevel);
 
-            // Get the Start point of the new level prefab
-            Transform newLevelStart = FindStartPoint(randomPrefab);
-
-            // Calculate spawn position so new level's Start aligns with current level's End
-            Vector3 spawnPosition = currentEnd.position - newLevelStart.localPosition;
-
-            // Instantiate new level at the calculated position
-            GameObject newLevel = Instantiate(randomPrefab, spawnPosition, Quaternion.identity);
+            // Use the same consistent approach: instantiate then adjust
+            GameObject newLevel = Instantiate(randomPrefab, currentEnd.position, Quaternion.identity);
             newLevel.name = $"Level_{i + 1}";
+
+            // Get the Start point of the instantiated level
+            Transform newLevelStart = FindStartPoint(newLevel);
+            
+            // Calculate the offset needed to align the Start point with the End point
+            Vector3 offset = currentEnd.position - newLevelStart.position;
+            newLevel.transform.position += offset;
 
             // Optimize for batching
             if (enableDynamicBatching)
@@ -770,10 +785,16 @@ public class LevelGenerator : MonoBehaviour
             Transform lastEnd = FindEndPoint(currentLevel);
             if (endClosedRoom != null)
             {
-                Transform endRoomStart = FindStartPoint(endClosedRoom);
-                Vector3 closedEndPosition = lastEnd.position - endRoomStart.localPosition;
-                GameObject closedEnd = Instantiate(endClosedRoom, closedEndPosition, Quaternion.identity);
+                // Use the same consistent approach: instantiate then adjust
+                GameObject closedEnd = Instantiate(endClosedRoom, lastEnd.position, Quaternion.identity);
                 closedEnd.name = "Level_ClosedEnd_Final";
+
+                // Get the Start point of the instantiated level
+                Transform endRoomStart = FindStartPoint(closedEnd);
+                
+                // Calculate the offset needed to align the Start point with the End point
+                Vector3 offset = lastEnd.position - endRoomStart.position;
+                closedEnd.transform.position += offset;
 
                 if (enableDynamicBatching)
                 {
@@ -791,10 +812,16 @@ public class LevelGenerator : MonoBehaviour
             Transform lastEnd = FindEndPoint(currentLevel);
             if (runnerEndPrefab != null)
             {
-                Transform runnerEndStart = FindStartPoint(runnerEndPrefab);
-                Vector3 runnerEndPosition = lastEnd.position - runnerEndStart.localPosition;
-                GameObject runnerEnd = Instantiate(runnerEndPrefab, runnerEndPosition, Quaternion.identity);
+                // Use the same consistent approach: instantiate then adjust
+                GameObject runnerEnd = Instantiate(runnerEndPrefab, lastEnd.position, Quaternion.identity);
                 runnerEnd.name = "Level_RunnerEnd_Final";
+
+                // Get the Start point of the instantiated level
+                Transform runnerEndStart = FindStartPoint(runnerEnd);
+                
+                // Calculate the offset needed to align the Start point with the End point
+                Vector3 offset = lastEnd.position - runnerEndStart.position;
+                runnerEnd.transform.position += offset;
 
                 if (enableDynamicBatching)
                 {
@@ -806,21 +833,23 @@ public class LevelGenerator : MonoBehaviour
             }
         }
 
-        // Add EndRoom
+        // Add EndRoom using the same consistent approach
         Transform finalEnd = FindEndPoint(currentLevel);
-        GameObject finalEndRoom = Instantiate(endRoomPrefab, Vector3.zero, Quaternion.identity);
+        GameObject finalEndRoom = Instantiate(endRoomPrefab, finalEnd.position, Quaternion.identity);
         finalEndRoom.name = "EndRoom";
+
+        // Get the Start point of the instantiated EndRoom
+        Transform endRoomStartPoint = FindStartPoint(finalEndRoom);
+        
+        // Calculate the offset needed to align the Start point with the End point
+        Vector3 endRoomOffset = finalEnd.position - endRoomStartPoint.position;
+        finalEndRoom.transform.position += endRoomOffset;
 
         // Optimize end room
         if (enableDynamicBatching)
         {
             OptimizeForBatching(finalEndRoom);
         }
-
-        // Position EndRoom so its Start aligns with the last level's End
-        Transform endRoomStartPoint = FindStartPoint(finalEndRoom);
-        Vector3 finalEndRoomPosition = finalEnd.position - endRoomStartPoint.localPosition;
-        finalEndRoom.transform.position = finalEndRoomPosition;
 
         generatedLevels.Add(finalEndRoom);
 
