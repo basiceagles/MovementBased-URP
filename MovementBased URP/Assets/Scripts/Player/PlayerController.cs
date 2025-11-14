@@ -41,6 +41,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask slideLayer;
     [SerializeField] private LayerMask rampLayer;
+    
+    [Header("Surface Alignment")]
+    [SerializeField] private bool enableSurfaceAlignment = true;
+    [SerializeField] private float alignmentSmoothness = 8f;
+    [SerializeField] private float maxSlopeAngle = 60f;
+    [SerializeField] private LayerMask alignmentLayers;
 
     [SerializeField] private float initialAirVelocity;
     private CharacterController controller;
@@ -51,6 +57,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 airVelocity;
     private float previousYPosition;
     private bool isOnSlideLayer;
+    private Vector3 currentSurfaceNormal = Vector3.up;
+    private Vector3 targetSurfaceNormal = Vector3.up;
     
     public bool wallRunning, activeGrappling;
     private bool justWallJumped;
@@ -106,6 +114,8 @@ public class PlayerController : MonoBehaviour
             velocity.y = -2f;
         }
         
+        AlignToSurface();
+        
         previousYPosition = transform.position.y;
         ApplyMovement();
     }
@@ -130,6 +140,12 @@ public class PlayerController : MonoBehaviour
         
         isGrounded = Physics.SphereCast(origin, sphereRadius, Vector3.down, out RaycastHit hit, checkDist) &&
                      ((1 << hit.collider.gameObject.layer) & (groundLayer | slideLayer | rampLayer)) != 0;
+        
+        if (enableSurfaceAlignment)
+        {
+            targetSurfaceNormal = (isGrounded && ((1 << hit.collider.gameObject.layer) & alignmentLayers) != 0) 
+                ? ClampNormal(hit.normal) : Vector3.up;
+        }
     }
     
     private void HandleMovement()
@@ -344,7 +360,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (Physics.SphereCast(origin, sphereRadius, Vector3.down, out RaycastHit groundHit, checkDist, groundLayer))
         {
-            HandleGroundSliding();
+            HandleGroundSliding(groundHit);
         }
     }
     
@@ -359,6 +375,9 @@ public class PlayerController : MonoBehaviour
             }
         }
         
+        if (enableSurfaceAlignment && ((1 << hit.collider.gameObject.layer) & alignmentLayers) != 0)
+            targetSurfaceNormal = ClampNormal(hit.normal);
+        
         Vector3 camDir = transform.forward;
         camDir.y = 0;
         Vector3 slopeDir = Vector3.ProjectOnPlane(camDir.normalized, hit.normal).normalized;
@@ -367,8 +386,11 @@ public class PlayerController : MonoBehaviour
         ApplySlideVelocity(slopeDir);
     }
     
-    private void HandleGroundSliding()
+    private void HandleGroundSliding(RaycastHit hit)
     {
+        if (enableSurfaceAlignment && ((1 << hit.collider.gameObject.layer) & alignmentLayers) != 0)
+            targetSurfaceNormal = ClampNormal(hit.normal);
+        
         Vector3 camDir = transform.forward;
         camDir.y = 0;
         camDir.Normalize();
@@ -401,7 +423,10 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                velocity.y = -2f;
+                if (enableSurfaceAlignment && !isJumping && Vector3.Angle(Vector3.up, currentSurfaceNormal) > 5f && currentSpeed > walkSpeed * 0.8f)
+                    velocity.y = -10f;
+                else
+                    velocity.y = -2f;
             }
             isJumping = false;
         }
@@ -435,6 +460,25 @@ public class PlayerController : MonoBehaviour
     public void ClearAirVelocity()
     {
         airVelocity = Vector3.zero;
+    }
+    
+    private Vector3 ClampNormal(Vector3 normal)
+    {
+        float angle = Vector3.Angle(Vector3.up, normal);
+        return angle > maxSlopeAngle ? Vector3.Slerp(Vector3.up, normal, maxSlopeAngle / angle) : normal;
+    }
+    
+    private void AlignToSurface()
+    {
+        if (!enableSurfaceAlignment || wallRunning || activeGrappling) return;
+        
+        currentSurfaceNormal = Vector3.Slerp(currentSurfaceNormal, targetSurfaceNormal, alignmentSmoothness * Time.deltaTime);
+        
+        Vector3 forward = Vector3.ProjectOnPlane(transform.forward, currentSurfaceNormal).normalized;
+        Quaternion target = Quaternion.LookRotation(forward, currentSurfaceNormal);
+        Vector3 euler = target.eulerAngles;
+        euler.y = transform.eulerAngles.y;
+        transform.rotation = Quaternion.Euler(euler);
     }
     
     private void OnDrawGizmos()
