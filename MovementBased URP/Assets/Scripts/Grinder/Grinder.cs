@@ -24,7 +24,8 @@ public class Grinder : MonoBehaviour
     void Start()
     {
         targetTimerManager = GameObject.Find("TimerManager");
-        targetTimer = targetTimerManager.GetComponent<Timer>();
+        if (targetTimerManager != null) targetTimer = targetTimerManager.GetComponent<Timer>();
+        else Debug.LogWarning("TimerManager is not set!");
     }
     public void PlayOpenAnimation()
     {
@@ -60,7 +61,7 @@ public class Grinder : MonoBehaviour
     
     public void GrinderInsertNode()
     {
-        targetTimer.currentTime = targetTimer.currentTime + timeToAdd;
+        if (targetTimer != null) targetTimer.currentTime = targetTimer.currentTime + timeToAdd;
         insertAudioSource.Play();
         PlayAnimation(insertAnimation.name);
     }

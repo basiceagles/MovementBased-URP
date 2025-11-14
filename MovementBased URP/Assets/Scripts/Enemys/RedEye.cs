@@ -50,7 +50,8 @@ public class RedEyeDetector : MonoBehaviour
     {
         playerController = playerTarget.GetComponent<PlayerController>();
         enemyOverlayManagerTarget = GameObject.Find("EnemyOverlaysManager");
-        enemyOverlayManager = enemyOverlayManagerTarget.GetComponent<EnemyOverlayManager>();
+        if (enemyOverlayManagerTarget != null) enemyOverlayManager = enemyOverlayManagerTarget.GetComponent<EnemyOverlayManager>();
+        else Debug.LogWarning("EnemyOverlayManager is not set!");
 
         globalVolumeTarget = GameObject.Find("Global Volume");
         globalVolume = globalVolumeTarget.GetComponent<Volume>();

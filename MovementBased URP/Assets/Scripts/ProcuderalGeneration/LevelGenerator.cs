@@ -23,6 +23,7 @@ public class LevelGenerator : MonoBehaviour
     }
 
     [Header("Level Prefabs")]
+    [Tooltip("START SCENE PREFAB MUST BE USED FROM SCENE!")]
     public GameObject startRoomPrefab; // Reference to the existing start prefab in scene
     public GameObject endRoomPrefab;
 
@@ -111,7 +112,6 @@ public class LevelGenerator : MonoBehaviour
 
     private void InitializeBatchingSettings()
     {
-
         if (enableGPUInstancing)
         {
             Debug.Log("GPU Instancing optimization enabled");
@@ -695,16 +695,22 @@ public class LevelGenerator : MonoBehaviour
             return;
         }
 
-        // Delete all generated levels except the end room
-        ClearGeneratedLevels(keepEndRoom: true);
+        // Store the reference to the current end room before clearing
+        GameObject newStartRoom = currentEndRoom;
 
-        // Rename End to Start
-        currentEndRoom.name = "StartRoom";
+        // Clear all generated levels EXCEPT the current end room
+        ClearGeneratedLevels(keepSpecificRoom: newStartRoom);
 
-        // Update the startRoomPrefab reference to the renamed object
-        startRoomPrefab = currentEndRoom;
+        // Rename End to Start and update the reference
+        newStartRoom.name = "StartRoom";
+        startRoomPrefab = newStartRoom;
 
-        // Start level generation again
+        // Reset the end room prefab reference so we can spawn a new one
+        // If you want to keep using the same end prefab, make sure endRoomPrefab is still set in the inspector
+
+        Debug.Log($"Restarting generation: EndRoom '{newStartRoom.name}' is now the new StartRoom");
+
+        // Start level generation again - this will use the new start room and generate new levels
         GenerateLevels();
     }
 
@@ -908,7 +914,7 @@ public class LevelGenerator : MonoBehaviour
         materialCache.Clear(); // Clear material cache when clearing levels
     }
 
-    private void ClearGeneratedLevels(bool keepEndRoom = false)
+    private void ClearGeneratedLevels(bool keepEndRoom = false, GameObject keepSpecificRoom = null)
     {
         List<GameObject> levelsToDestroy = new List<GameObject>();
         List<GameObject> levelsToKeep = new List<GameObject>();
@@ -917,7 +923,9 @@ public class LevelGenerator : MonoBehaviour
         {
             if (level != null)
             {
-                bool shouldKeep = (level == startRoomPrefab) || (keepEndRoom && level.name == "EndRoom");
+                bool shouldKeep = (level == startRoomPrefab) || 
+                                 (keepEndRoom && level.name == "EndRoom") ||
+                                 (keepSpecificRoom != null && level == keepSpecificRoom);
 
                 if (shouldKeep)
                 {
