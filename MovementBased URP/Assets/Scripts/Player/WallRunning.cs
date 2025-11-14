@@ -24,6 +24,9 @@ public class WallRunning : MonoBehaviour
     private PlayerController pc;
     private bool isWallRunning;
     private Vector3 wallNormal;
+    private bool isActivelyWallRunning;
+    public bool IsWallRunning => isWallRunning;
+    public bool IsActivelyWallRunning => isActivelyWallRunning;
     private float currentTilt;
     private float wallJumpTimer;
     private Collider lastWall;
@@ -53,6 +56,7 @@ public class WallRunning : MonoBehaviour
         }
         else
         {
+            isActivelyWallRunning = false;
             ResetTilt();
         }
     }
@@ -168,6 +172,7 @@ public class WallRunning : MonoBehaviour
         
         if (inputDir.magnitude <= 0.1f)
         {
+            isActivelyWallRunning = false;
             StopWallRun();
             return;
         }
@@ -181,9 +186,11 @@ public class WallRunning : MonoBehaviour
             if (Input.GetKey(KeyCode.LeftShift))
             {
                 movement += wallForward * forwardInput * pc.runSpeed;
+                isActivelyWallRunning = true; 
             }
             else
             {
+                isActivelyWallRunning = false;
                 StopWallRun();
                 return;
             }
