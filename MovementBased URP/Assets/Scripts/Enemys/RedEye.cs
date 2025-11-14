@@ -246,16 +246,16 @@ public class RedEyeDetector : MonoBehaviour
         float distance = Vector3.Distance(cameraPosition, adjustedTargetPosition);
         
         RaycastHit hit;
-        if (Physics.Raycast(cameraPosition, direction, out hit, distance, obstacleLayers))
+        if (Physics.Raycast(cameraPosition, direction, out hit, Mathf.Infinity, obstacleLayers, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider.gameObject == targetObject || 
                 hit.collider.transform.IsChildOf(targetObject.transform))
             {
                 return true;
             }
-            else
+            else if (hit.distance < distance)
             {
-                return false;
+                return false; // Препятствие между камерой и RedEye
             }
         }
         
