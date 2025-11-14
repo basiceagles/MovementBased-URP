@@ -10,6 +10,8 @@ public class ButtonPerkController : MonoBehaviour, IPointerEnterHandler, IPointe
 
     [Header("Animation Parameters")]
     public AnimationClip animationClip;
+    [Header("Audio Source")]
+    public AudioSource audioSource;
 
 
     void Start()
@@ -64,6 +66,11 @@ public class ButtonPerkController : MonoBehaviour, IPointerEnterHandler, IPointe
         {
             ShowPerkUI(index);
             PlayAnimation(index, animationClip);
+            audioSource.Play();
+            if (index == 0)
+            {
+                audioSource.loop = true;
+            }
         }
     }
 
@@ -72,6 +79,8 @@ public class ButtonPerkController : MonoBehaviour, IPointerEnterHandler, IPointe
         if (IsValidIndex(index))
         {
             HidePerkUI(index);
+            audioSource.Stop();
+            audioSource.loop = false;
         }
     }
 

@@ -23,7 +23,7 @@ public class EnemyManager : MonoBehaviour
         {
             Transform spawnpointTransform;
             spawnpointTransform = runnerSpawnPoint.GetComponent<Transform>();
-            spawnedRunnerGameobject = Instantiate(runnerPrefab, spawnpointTransform.position, spawnpointTransform.rotation);
+            spawnedRunnerGameobject = Instantiate(runnerPrefab, spawnpointTransform.position, runnerPrefab.transform.rotation);
 
             //от этого скрипта будут подвязаны все показатели врагов, поэтому это обязательно
             runnerEnemy = spawnedRunnerGameobject.GetComponent<RunnerEnemy>();

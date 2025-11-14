@@ -3,8 +3,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Audio;
 using System;
+
+public enum AntiAliasingType
+{
+    None = 0,
+    FXAA = 1,
+    SMAA = 2,
+    TAA = 3
+}
 
 public class Settings : MonoBehaviour
 {
@@ -19,6 +28,8 @@ public class Settings : MonoBehaviour
     public TMPro.TMP_Dropdown refreshRateDropdown;
     public Toggle fullscreenToggle;
     public Toggle vsyncToggle;
+    public Toggle shadowsToggle;    
+    public TMPro.TMP_Dropdown antiAliasingDropdown;
     public Slider brightnessSlider;
     public Slider sensitivitySlider;
     
@@ -27,6 +38,7 @@ public class Settings : MonoBehaviour
     public Volume postProcessVolume;
     public CameraController cameraController;
     public KeyRebindManager keyRebindManager;
+    public Camera mainCamera;
     
     private Resolution[] resolutions;
     private List<string> uniqueResolutions = new List<string>();
@@ -99,6 +111,7 @@ public class Settings : MonoBehaviour
 
         // Initialize audio before loading settings
         InitializeAudio();
+        SetupAntiAliasingDropdown();
         LoadSettings();
 
         FindAllAudioSourcesInScene();
@@ -124,6 +137,12 @@ public class Settings : MonoBehaviour
         masterSlider.onValueChanged.AddListener(MasterMixerVolume);
         sfxSlider.onValueChanged.AddListener(SfxMixerVolume);
         musicSlider.onValueChanged.AddListener(MusicMixerVolume);
+        
+        // Add listener for anti-aliasing dropdown
+        antiAliasingDropdown.onValueChanged.AddListener(SetAntiAliasing);
+        
+        // Add listener for shadows toggle
+        shadowsToggle.onValueChanged.AddListener(SetShadows);
     }
 
     public void MasterMixerVolume(float sliderValue)
@@ -241,10 +260,18 @@ public class Settings : MonoBehaviour
         LoadDropdownValue("ResolutionIndex", resolutionDropdown, uniqueResolutions.Count);
         LoadDropdownValue("RefreshRateIndex", refreshRateDropdown, availableRefreshRates.Count);
         
+        int antiAliasingType = PlayerPrefs.GetInt("AntiAliasing", 1);
+        antiAliasingDropdown.SetValueWithoutNotify(antiAliasingType);
+        SetAntiAliasing(antiAliasingType);
+        
         bool isFullscreen = PlayerPrefs.GetInt("Fullscreen", 1) == 1;
         fullscreenToggle.SetIsOnWithoutNotify(isFullscreen);
         SetFullscreen(isFullscreen);
-        
+
+        bool shadowsEnabled = PlayerPrefs.GetInt("Shadows", 1) == 1;
+        shadowsToggle.SetIsOnWithoutNotify(shadowsEnabled);
+        SetShadows(shadowsEnabled);
+
         bool vsyncEnabled = PlayerPrefs.GetInt("VSync", 0) == 1;
         vsyncToggle.SetIsOnWithoutNotify(vsyncEnabled);
         SetVSync(vsyncEnabled);
@@ -293,6 +320,8 @@ public class Settings : MonoBehaviour
         PlayerPrefs.SetFloat("Brightness", brightnessSlider.value);
         PlayerPrefs.SetFloat("Sensitivity", sensitivitySlider.value);
         PlayerPrefs.SetInt("FPSCounter", fpsCounterToggle.isOn ? 1 : 0);
+        PlayerPrefs.SetInt("AntiAliasing", antiAliasingDropdown.value);
+        PlayerPrefs.SetInt("Shadows", shadowsToggle.isOn ? 1 : 0);
 
         // Audio volumes are already saved when sliders change
         PlayerPrefs.Save();
@@ -540,6 +569,58 @@ public class Settings : MonoBehaviour
         }
         
         return nearestRate;
+    }
+    
+    private void SetupAntiAliasingDropdown()
+    {
+        antiAliasingDropdown.ClearOptions();
+        List<string> antiAliasingOptions = new List<string>
+        {
+            "None",
+            "FXAA",
+            "SMAA",
+            "TAA"
+        };
+        antiAliasingDropdown.AddOptions(antiAliasingOptions);
+    }
+    
+    public void SetAntiAliasing(int antiAliasingIndex)
+    {
+        AntiAliasingType aaType = (AntiAliasingType)antiAliasingIndex;
+        var cameraData = mainCamera.GetUniversalAdditionalCameraData();
+        
+        switch (aaType)
+        {
+            case AntiAliasingType.None:
+                cameraData.antialiasing = AntialiasingMode.None;
+                break;
+            case AntiAliasingType.FXAA:
+                cameraData.antialiasing = AntialiasingMode.FastApproximateAntialiasing;
+                break;
+            case AntiAliasingType.SMAA:
+                cameraData.antialiasing = AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+                cameraData.antialiasingQuality = AntialiasingQuality.High;
+                break;
+            case AntiAliasingType.TAA:
+                cameraData.antialiasing = AntialiasingMode.TemporalAntiAliasing;
+                break;
+        }
+        
+        PlayerPrefs.SetInt("AntiAliasing", antiAliasingIndex);
+    }
+    
+    public void SetShadows(bool enabled)
+    {
+        if (mainCamera != null)
+        {
+            var cameraData = mainCamera.GetUniversalAdditionalCameraData();
+            if (cameraData != null)
+            {
+                cameraData.renderShadows = enabled;
+            }
+        }
+        
+        PlayerPrefs.SetInt("Shadows", enabled ? 1 : 0);
     }
 
     public void SetFullscreen(bool isFullScreen)

@@ -15,7 +15,7 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 1
-  m_FogColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+  m_FogColor: {r: 0.35686275, g: 0.35686275, b: 0.35686275, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.05
   m_LinearFogStart: 0
@@ -2321,7 +2321,6 @@ RectTransform:
   - {fileID: 223385815}
   - {fileID: 1308532373}
   - {fileID: 1645816641}
-  - {fileID: 500539787}
   - {fileID: 602491430}
   - {fileID: 904661405}
   - {fileID: 683651499}
@@ -3390,7 +3389,7 @@ MonoBehaviour:
     levelType: 2
   startClosedRoom: {fileID: 2324539671385129734, guid: 9a5ed9e7aff2d1a47badf9c3efb4a71e, type: 3}
   endClosedRoom: {fileID: 1083109575596404650, guid: 93e7de0659009d84e87f6a20c0d85a58, type: 3}
-  spawnEasyLevels: 1
+  spawnEasyLevels: 0
   spawnClosedLevels: 1
   runnerStartPrefab: {fileID: 1922169315576615410, guid: acdfc90ba19c00b4880e48eaf8a0a426, type: 3}
   runnerEndPrefab: {fileID: 5173017403127473263, guid: 9eb8e7dbd75edbf47bf39503c70778a0, type: 3}
@@ -4667,7 +4666,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 585411228}
         m_TargetAssemblyTypeName: Settings, Assembly-CSharp
-        m_MethodName: SetFullscreen
+        m_MethodName: SetShadows
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5232,6 +5231,7 @@ GameObject:
   m_Component:
   - component: {fileID: 497487943}
   - component: {fileID: 497487944}
+  - component: {fileID: 497487945}
   m_Layer: 5
   m_Name: PerkSelectorExplainer
   m_TagString: Untagged
@@ -5279,6 +5279,104 @@ MonoBehaviour:
   - {fileID: 1930820040}
   - {fileID: 1942405989}
   animationClip: {fileID: 7400000, guid: b56302d88dbcbfb4da5f9a401667d111, type: 2}
+  audioSource: {fileID: 497487945}
+--- !u!82 &497487945
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 497487942}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: -9115099129918078811, guid: a60d6f2e7ea418a4bbf5dc0b96aacfde, type: 2}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 152acf0ae2ba9604dac56478bb342591, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 0.5
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &500539786
 GameObject:
   m_ObjectHideFlags: 0
@@ -5289,7 +5387,7 @@ GameObject:
   m_Component:
   - component: {fileID: 500539787}
   m_Layer: 5
-  m_Name: ResolutionDropdown
+  m_Name: AADropdown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5308,11 +5406,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 598591892}
-  m_Father: {fileID: 197147434}
+  m_Father: {fileID: 1645816641}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 524.4295, y: -36.5643}
+  m_AnchoredPosition: {x: 524.4265, y: 0}
   m_SizeDelta: {x: 351.71, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &513022534
@@ -6719,12 +6817,15 @@ MonoBehaviour:
   refreshRateDropdown: {fileID: 2116389252}
   fullscreenToggle: {fileID: 815013123}
   vsyncToggle: {fileID: 1017413739}
+  shadowsToggle: {fileID: 471749632}
+  antiAliasingDropdown: {fileID: 598591893}
   brightnessSlider: {fileID: 19510025}
   sensitivitySlider: {fileID: 1070535373}
   isMainMenu: 0
   postProcessVolume: {fileID: 832575518}
   cameraController: {fileID: 1382079954}
   keyRebindManager: {fileID: 585411231}
+  mainCamera: {fileID: 1382079967}
   masterMixerGroup: {fileID: 24300002, guid: a60d6f2e7ea418a4bbf5dc0b96aacfde, type: 2}
   sfxMixerGroup: {fileID: -9115099129918078811, guid: a60d6f2e7ea418a4bbf5dc0b96aacfde, type: 2}
   musicMixerGroup: {fileID: 4052579170877653061, guid: a60d6f2e7ea418a4bbf5dc0b96aacfde, type: 2}
@@ -7071,7 +7172,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 585411228}
         m_TargetAssemblyTypeName: Settings, Assembly-CSharp
-        m_MethodName: SetResolution
+        m_MethodName: SetAntiAliasing
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -17850,14 +17951,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Starts to spawn red noisy nodes ebery where at the level.
+  m_text: 'Starts to spawn red noisy nodes everywhere at the level.
+
 
 
     Delivering
     nodes to the special "Node Handler" machine will give you some amount of time.
-    Default is 15 seconds
-
-'
+    The default is 15 seconds.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0737cb738bd5109469ba59b4cb74e351, type: 2}
   m_sharedMaterial: {fileID: 281967962810816550, guid: 0737cb738bd5109469ba59b4cb74e351, type: 2}
@@ -19206,6 +19306,7 @@ RectTransform:
   - {fileID: 740958360}
   - {fileID: 1485346388}
   - {fileID: 1018078576}
+  - {fileID: 500539787}
   m_Father: {fileID: 197147434}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
