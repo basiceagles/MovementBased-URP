@@ -98,7 +98,7 @@ public class RunnerEnemy : MonoBehaviour
         // Rotate to face the waypoint (optional)
         if (direction != Vector3.zero)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            Quaternion targetRotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, -90, 0);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
         }
 
@@ -117,6 +117,14 @@ public class RunnerEnemy : MonoBehaviour
         // Check if this is the end waypoint
         if (currentWaypoint.name == endWaypointName)
         {
+            AudioSource audioSource;
+            audioSource = currentWaypoint.GetComponent<AudioSource>();
+            audioSource.Play();
+
+            CallCameraShake callCameraShake;
+            callCameraShake = currentWaypoint.GetComponent<CallCameraShake>();
+            callCameraShake.CallCameraShaker();
+
             DestroyEnemy();
         }
         else
@@ -130,6 +138,7 @@ public class RunnerEnemy : MonoBehaviour
     {
         Debug.Log("Reached end waypoint. Destroying enemy.");
         Destroy(gameObject);
+        
     }
 
     // Public method to manually set waypoints (useful for testing)

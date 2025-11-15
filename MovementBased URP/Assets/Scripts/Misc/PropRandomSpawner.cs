@@ -5,11 +5,36 @@ public class PropRandomSpawner : MonoBehaviour
     [SerializeField] private GameObject[] prefabs;
     [SerializeField] [Range(0, 100)] private float spawnChance = 50f;
 
+    [SerializeField] private bool isGrinderSpawner = false;
+    [SerializeField] private bool isPropSpawner = false;
+
+    private PerkSelectorScript perkSelectorScript;
+    private GameObject perkSelectorScriptTarget;
+
+
     void Start()
     {
+        perkSelectorScriptTarget = GameObject.Find("PerkSelectorManager");
+        perkSelectorScript = perkSelectorScriptTarget.GetComponent<PerkSelectorScript>();
+
+        if (isGrinderSpawner) spawnChance = perkSelectorScript.grinderSpawnChance;
+
         // Set unique name for this spawner
-        SetUniqueSpawnerName();
-        
+        //SetUniqueSpawnerName();
+
+        if (perkSelectorScript.spawnGrinder && isGrinderSpawner)
+        {
+            SpawnProp();
+        }
+
+        if (perkSelectorScript.spawnProps && isPropSpawner)
+        {
+            SpawnProp();
+        }
+    }
+
+    private void SpawnProp()
+    {
         if (prefabs != null && prefabs.Length > 0)
         {
             // Check if we should spawn based on chance
@@ -22,7 +47,7 @@ public class PropRandomSpawner : MonoBehaviour
                     Instantiate(prefabs[randomIndex], transform.position, transform.rotation, transform);
                 }
             }
-        }
+        }     
     }
 
     private void SetUniqueSpawnerName()

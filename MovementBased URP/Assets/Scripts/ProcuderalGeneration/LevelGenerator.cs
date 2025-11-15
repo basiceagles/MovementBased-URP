@@ -69,6 +69,7 @@ public class LevelGenerator : MonoBehaviour
 
     [Header("Generation Settings")]
     public int numberOfLevels = 4;
+    public int numberOfLevelsToAdd = 1;
     public bool generateOnStart = true;
     public int cycle = 0;
     public int maxClosedRooms = 3;
@@ -108,6 +109,16 @@ public class LevelGenerator : MonoBehaviour
         {
             GenerateLevels();
         }
+    }
+
+    public void UpdateLevelsCounts()
+    {
+        numberOfLevels = numberOfLevels + numberOfLevelsToAdd;
+    }
+
+    public void UpdateCycleCount()
+    {
+        cycle++;
     }
 
     private void InitializeBatchingSettings()

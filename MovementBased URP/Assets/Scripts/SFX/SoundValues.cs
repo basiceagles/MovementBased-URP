@@ -16,6 +16,7 @@ namespace SmallHedge.SoundManager
         UICLICK3,
         LIGHTBREAK,
         FOOTSTEPMETAL,
-        TVGLITCH
+        TVGLITCH,
+        EARTHQUAKE
     }
 }
