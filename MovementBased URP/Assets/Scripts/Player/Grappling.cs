@@ -7,6 +7,7 @@ public class Grappling : MonoBehaviour
     [SerializeField] private Transform cam;           
     [SerializeField] private Transform player;        
     [SerializeField] public LayerMask whatIsGrappleable;
+    [SerializeField] private LayerMask nodeLayer;
     [SerializeField] public LineRenderer lr;           
     [SerializeField] private KeyCode grappleKey = KeyCode.Mouse0;
     [SerializeField] private float maxGrappleDistance;
@@ -28,9 +29,11 @@ public class Grappling : MonoBehaviour
     private PlayerController pc;
     private bool hookFlying;
     private float hookFlyProgress;
-    private Soul targetSoul;
     private Swinging swinging;
     private Lever targetLever;
+    private Transform carriedNode;
+    private Rigidbody carriedNodeRb;
+    private ItemPickup itemPickup;
 
     void Start()
     {
@@ -41,6 +44,7 @@ public class Grappling : MonoBehaviour
         pc = player.GetComponent<PlayerController>();
         player = pc.transform;
         swinging = FindObjectOfType<Swinging>();
+        itemPickup = FindObjectOfType<ItemPickup>();
     }
 
     bool IsValidVector(Vector3 vector)
@@ -66,6 +70,10 @@ public class Grappling : MonoBehaviour
         if (pulling)
         {
             UpdateGrapplePull();
+        }
+        if (carriedNode != null)
+        {
+            UpdateCarriedNode();
         }
     }
 
@@ -106,15 +114,9 @@ public class Grappling : MonoBehaviour
         bool hit = Physics.Raycast(cam.position, cam.forward, out RaycastHit hitInfo, maxGrappleDistance);
         grapplePoint = hit ? hitInfo.point : cam.position + cam.forward * maxGrappleDistance;
 
-        targetSoul = null;
         targetLever = null;
         if (hit)
         {
-            Soul soul = hitInfo.collider.GetComponent<Soul>();
-            if (soul != null)
-            {
-                targetSoul = soul;
-            }
             Lever lever = hitInfo.collider.GetComponent<Lever>();
             if (lever != null)
             {
@@ -127,13 +129,13 @@ public class Grappling : MonoBehaviour
         hookFlying = true;
         hookFlyProgress = 0f;
 
-        if (targetSoul != null)
+        if (targetLever != null)
         {
             Invoke(nameof(StopGrapple), 0.5f);
         }
-        else if (targetLever != null)
+        else if (hit && ((1 << hitInfo.collider.gameObject.layer) & nodeLayer) != 0)
         {
-            Invoke(nameof(StopGrapple), 0.5f);
+            StartCarryNode(hitInfo.collider.transform);
         }
         else if (hit && ((1 << hitInfo.collider.gameObject.layer) & whatIsGrappleable) != 0)
         {
@@ -157,8 +159,15 @@ public class Grappling : MonoBehaviour
         {
             pc.currentSlideSpeed = currentGrappleSpeed;
         }
+        if (carriedNodeRb != null)
+        {
+            carriedNodeRb.isKinematic = false;
+            carriedNodeRb.useGravity = true;
+        }
         
         pulling = false; 
+        carriedNode = null;
+        carriedNodeRb = null;
         pc.activeGrappling = false;
         grappling = false; 
         grapplingCdTimer = grapplingCd;
@@ -178,6 +187,11 @@ public class Grappling : MonoBehaviour
         Vector3 startPos = grappleGunTip.position;
         Vector3 endPos = grapplePoint;
 
+        if (carriedNode != null)
+        {
+            endPos = carriedNode.position;
+        }
+
         if (!IsValidVector(startPos) || !IsValidVector(endPos))
         {
             return;
@@ -191,11 +205,6 @@ public class Grappling : MonoBehaviour
                 hookFlyProgress = 1f;
                 hookFlying = false;
 
-                if (targetSoul != null)
-                {
-                    targetSoul.Collect();
-                    targetSoul = null;
-                }
                 if (targetLever != null)
                 {
                     targetLever.Collect();
@@ -256,6 +265,49 @@ public class Grappling : MonoBehaviour
             
             lr.SetPosition(i, point);
         }
+    }
+
+    private void StartCarryNode(Transform nodeTransform)
+    {
+        carriedNode = nodeTransform;
+        carriedNodeRb = carriedNode != null ? carriedNode.GetComponent<Rigidbody>() : null;
+        if (carriedNodeRb != null)
+        {
+            carriedNodeRb.isKinematic = true;
+            carriedNodeRb.useGravity = false;
+        }
+        hookFlying = false;
+        if (carriedNode != null)
+        {
+            currentGrapplePosition = carriedNode.position;
+        }
+    }
+
+    private void UpdateCarriedNode()
+    {
+        if (carriedNode == null)
+        {
+            return;
+        }
+
+        Vector3 targetPos = player.position;
+        float dist = Vector3.Distance(carriedNode.position, targetPos);
+
+        if (dist < 1f)
+        {
+            if (itemPickup != null)
+            {
+                itemPickup.ForcePickup(carriedNode.gameObject);
+            }
+            carriedNode = null;
+            carriedNodeRb = null;
+            StopGrapple();
+            return;
+        }
+
+        float speed = grappleSpeed;
+        Vector3 dir = (targetPos - carriedNode.position).normalized;
+        carriedNode.position += dir * speed * Time.deltaTime;
     }
 
     public void SetGrappleKey(KeyCode newKey)

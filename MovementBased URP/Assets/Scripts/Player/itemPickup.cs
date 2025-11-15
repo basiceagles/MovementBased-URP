@@ -182,6 +182,21 @@ public class ItemPickup : MonoBehaviour
         }
     }
     
+    public void ForcePickup(GameObject item)
+    {
+        if (item == null)
+        {
+            return;
+        }
+
+        if (isHolding)
+        {
+            return;
+        }
+
+        Pickup(item);
+    }
+
     private void Pickup(GameObject item)
     {
         heldItem = item;
