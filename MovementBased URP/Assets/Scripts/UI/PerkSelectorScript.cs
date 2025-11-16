@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class PerkSelectorScript : MonoBehaviour
 {
@@ -101,7 +102,7 @@ public class PerkSelectorScript : MonoBehaviour
         Cursor.visible = true;
         cameraController.enabled = false;
         ActivateRandomObjects();
-        itemPickup.enabled = false;
+        //itemPickup.enabled = false; DELETE
     }
     
     public void ClosePerkMenu()
@@ -109,16 +110,80 @@ public class PerkSelectorScript : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         cameraController.enabled = true;
+        
+        // Reset all button animations before playing the close animation
+        ResetAllButtonAnimations();
+        
         animator.Play(animationClip.name);
-        itemPickup.enabled = true;
+        //itemPickup.enabled = true; DELETE
 
         levelGenerator.RestartGeneration();
         redEyeDetector.FindRedEyeGameobjects();
-
-        UpdateDeactivationCounts();
         
         // Reset button hierarchy when closing menu
-        ResetButtonHierarchy();
+        Invoke("ResetButtonHierarchy", 1f);
+    }
+    
+    private void ResetAllButtonAnimations()
+    {
+        // Reset all buttons in the hierarchy to normal state
+        foreach (ButtonHierarchy hierarchy in buttonHierarchies)
+        {
+            // Reset parent button
+            if (hierarchy.parentButton != null)
+            {
+                ResetSingleButtonAnimation(hierarchy.parentButton);
+            }
+            
+            // Reset all child buttons
+            foreach (GameObject childButton in hierarchy.childButtons)
+            {
+                if (childButton != null)
+                {
+                    ResetSingleButtonAnimation(childButton);
+                }
+            }
+        }
+        
+        // Also reset any active perk buttons from objectsArray
+        foreach (SpawnableObject spawnable in objectsArray)
+        {
+            if (spawnable.gameObject != null && spawnable.gameObject.activeInHierarchy)
+            {
+                ResetSingleButtonAnimation(spawnable.gameObject);
+            }
+        }
+    }
+
+    private void ResetSingleButtonAnimation(GameObject buttonObject)
+    {
+        // Reset Button component state first
+        Button button = buttonObject.GetComponent<Button>();
+        if (button != null)
+        {
+            // Force button to exit highlighted/pressed states
+            button.OnPointerExit(null);
+            button.OnDeselect(null);
+        }
+
+        // Reset Animator state
+        Animator anim = buttonObject.GetComponent<Animator>();
+        if (anim != null)
+        {
+            // Method 1: Rebind completely to reset to initial state
+            anim.Rebind();
+            anim.Update(0f);
+            
+            // Method 2: Force play the normal state
+            anim.Play("Normal", 0, 0f);
+            anim.Update(0f);
+            
+            // Method 3: Reset common animator parameters
+            anim.SetBool("Highlighted", false);
+            anim.SetBool("Pressed", false);
+            anim.SetBool("Selected", false);
+            anim.SetTrigger("Normal");
+        }
     }
     
     // Call this method to activate random objects
@@ -143,61 +208,33 @@ public class PerkSelectorScript : MonoBehaviour
             return;
         }
         
-        if (amountToActivate > objectsArray.Length)
+        // Create a list of available objects that can be spawned
+        List<SpawnableObject> availableObjects = new List<SpawnableObject>();
+        foreach (SpawnableObject spawnable in objectsArray)
         {
-            amountToActivate = objectsArray.Length;
+            if (spawnable.gameObject != null && spawnable.spawnAtMenuOpen)
+            {
+                availableObjects.Add(spawnable);
+            }
         }
         
-        // Activate random objects
+        if (amountToActivate > availableObjects.Count)
+        {
+            amountToActivate = availableObjects.Count;
+        }
+        
+        // Activate random objects using Fisher-Yates shuffle
         for (int i = 0; i < amountToActivate; i++)
         {
-            GameObject randomObject = GetRandomInactiveObject();
-            if (randomObject != null)
-            {
-                randomObject.SetActive(true);
-            }
+            int randomIndex = Random.Range(i, availableObjects.Count);
+            SpawnableObject temp = availableObjects[i];
+            availableObjects[i] = availableObjects[randomIndex];
+            availableObjects[randomIndex] = temp;
+            
+            availableObjects[i].gameObject.SetActive(true);
         }
-    }
-    
-    private GameObject GetRandomInactiveObject()
-    {
-        // Create a list of inactive objects
-        System.Collections.Generic.List<GameObject> inactiveObjects = new System.Collections.Generic.List<GameObject>();
-        
-        foreach (SpawnableObject spawnable in objectsArray)
-        {
-            if (spawnable.gameObject != null && !spawnable.gameObject.activeInHierarchy && spawnable.spawnAtMenuOpen)
-            {
-                inactiveObjects.Add(spawnable.gameObject);
-            }
-        }
-        
-        // If no inactive objects found, return null
-        if (inactiveObjects.Count == 0)
-            return null;
-        
-        // Return a random inactive object
-        int randomIndex = Random.Range(0, inactiveObjects.Count);
-        return inactiveObjects[randomIndex];
     }
 
-    private void UpdateDeactivationCounts()
-    {
-        foreach (SpawnableObject spawnable in objectsArray)
-        {
-            if (spawnable.gameObject != null && spawnable.gameObject.activeInHierarchy && spawnable.spawnAtMenuOpen)
-            {
-                spawnable.currentDeactivationCount++;
-                
-                // Check if we've reached the deactivation limit
-                if (spawnable.timesAmountToDeactivate > 0 && 
-                    spawnable.currentDeactivationCount >= spawnable.timesAmountToDeactivate)
-                {
-                    spawnable.spawnAtMenuOpen = false;
-                }
-            }
-        }
-    }
 
     // Button hierarchy methods
     public void OnParentButtonClick(int hierarchyIndex)
@@ -264,6 +301,85 @@ public class PerkSelectorScript : MonoBehaviour
         }
     }
 
+   // New method to deactivate specific GameObject by index with timesAmountToDeactivate logic
+    public void DeactivateObjectByIndex(int objectIndex)
+    {
+        if (objectIndex >= 0 && objectIndex < objectsArray.Length)
+        {
+            SpawnableObject spawnable = objectsArray[objectIndex];
+            if (spawnable.gameObject != null && spawnable.spawnAtMenuOpen)
+            {
+                // Decrease timesAmountToDeactivate by 1
+                if (spawnable.timesAmountToDeactivate > 0)
+                {
+                    spawnable.timesAmountToDeactivate--;
+                    
+                    // If this was the last deactivation (reached 0), set spawnAtMenuOpen to false
+                    if (spawnable.timesAmountToDeactivate == 0)
+                    {
+                        spawnable.spawnAtMenuOpen = false;
+                        Debug.Log($"Fully deactivated object at index {objectIndex}: {spawnable.gameObject.name}. No more spawns allowed.");
+                    }
+                    else
+                    {
+                        Debug.Log($"Decreased deactivation count for object at index {objectIndex}: {spawnable.gameObject.name}. Remaining deactivations: {spawnable.timesAmountToDeactivate}");
+                    }
+                }
+                else
+                {
+                    // If timesAmountToDeactivate is already 0, set spawnAtMenuOpen to false
+                    spawnable.spawnAtMenuOpen = false;
+                    Debug.Log($"Fully deactivated object at index {objectIndex}: {spawnable.gameObject.name}. No more spawns allowed.");
+                }
+                
+                // Always deactivate the GameObject immediately
+                spawnable.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Invalid object index: {objectIndex}");
+        }
+    }
+
+    // Alternative method to deactivate by GameObject reference
+    public void DeactivateObjectByReference(GameObject targetObject)
+    {
+        foreach (SpawnableObject spawnable in objectsArray)
+        {
+            if (spawnable.gameObject == targetObject && spawnable.spawnAtMenuOpen)
+            {
+                // Decrease timesAmountToDeactivate by 1
+                if (spawnable.timesAmountToDeactivate > 0)
+                {
+                    spawnable.timesAmountToDeactivate--;
+                    
+                    // If this was the last deactivation (reached 0), set spawnAtMenuOpen to false
+                    if (spawnable.timesAmountToDeactivate == 0)
+                    {
+                        spawnable.spawnAtMenuOpen = false;
+                        Debug.Log($"Fully deactivated object: {targetObject.name}. No more spawns allowed.");
+                    }
+                    else
+                    {
+                        Debug.Log($"Decreased deactivation count for object: {targetObject.name}. Remaining deactivations: {spawnable.timesAmountToDeactivate}");
+                    }
+                }
+                else
+                {
+                    // If timesAmountToDeactivate is already 0, set spawnAtMenuOpen to false
+                    spawnable.spawnAtMenuOpen = false;
+                    Debug.Log($"Fully deactivated object: {targetObject.name}. No more spawns allowed.");
+                }
+                
+                // Always deactivate the GameObject immediately
+                spawnable.gameObject.SetActive(false);
+                return;
+            }
+        }
+        Debug.LogWarning($"Object not found in objectsArray or already deactivated: {targetObject.name}");
+    }
+
     private void ResetButtonHierarchy()
     {
         foreach (ButtonHierarchy hierarchy in buttonHierarchies)
@@ -287,15 +403,22 @@ public class PerkSelectorScript : MonoBehaviour
     {
         spawnGrinder = true;
         spawnNodes = true;
+        levelGenerator.numberOfLevelsToAdd = levelGenerator.numberOfLevelsToAdd + 2;
     }
     public void ButtonGrapplePerk()
     {
         grappleGameobject.SetActive(true);
         levelGenerator.swingChance = swingChance;
+        levelGenerator.numberOfLevelsToAdd = levelGenerator.numberOfLevelsToAdd + 3;
     }
     public void ButtonSwingPerk()
     {
         swingGameobject.SetActive(true);
         levelGenerator.grappleChance = grappleChance;
+    }
+    public void ButtonAdditionalPerksPerk()
+    {
+        amountToActivate++;
+        levelGenerator.numberOfLevelsToAdd++;
     }
 }

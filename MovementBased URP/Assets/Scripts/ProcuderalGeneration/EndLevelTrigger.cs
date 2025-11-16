@@ -57,9 +57,6 @@ public class EndLevelTrigger : MonoBehaviour
         slideMetalDoorManager.CloseDoor();
 
         //ПЕРЕДЕЛАТЬ
-
-        levelGenerator.UpdateLevelsCounts();
-        levelGenerator.UpdateCycleCount();
         cycleIntText.text = currentCycle.ToString();
         
         musicManagerScript.StopPlayingMusic();

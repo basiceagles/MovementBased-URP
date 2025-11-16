@@ -34,6 +34,21 @@ public class Grappling : MonoBehaviour
 
     void Start()
     {
+        RefreshReferences();
+    }
+
+    private void OnEnable()
+    {
+        LevelGenerator.RestartGenerationEvent += RefreshReferences;
+    }
+
+    private void OnDisable()
+    {
+        LevelGenerator.RestartGenerationEvent -= RefreshReferences;
+    }
+
+    private void RefreshReferences()
+    {
         grappleGunTip = transform;
         lr = GetComponent<LineRenderer>();
         cam = Camera.main?.transform;

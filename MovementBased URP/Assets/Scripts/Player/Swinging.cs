@@ -30,6 +30,20 @@ public class Swinging : MonoBehaviour
 
     void Start()
     {
+        RefreshReferences();
+    }
+
+    private void OnEnable()
+    {
+        LevelGenerator.RestartGenerationEvent += RefreshReferences;
+    }
+    private void OnDisable()
+    {
+        LevelGenerator.RestartGenerationEvent -= RefreshReferences;
+    }
+
+    private void RefreshReferences()
+    {
         grappling = FindObjectOfType<Grappling>();
         if (swingGunTip == null) 
         {
@@ -141,7 +155,7 @@ public class Swinging : MonoBehaviour
         {
             return;
         }
-        grappling.enabled = false;
+        if (grappling != null) grappling.enabled = false;
         swingPoint = hit.point; 
         swinging = true; 
         pc.activeGrappling = true;
@@ -189,7 +203,7 @@ public class Swinging : MonoBehaviour
         
         swinging = false; 
         pc.activeGrappling = false;
-        grappling.enabled = true;
+        if (grappling != null) grappling.enabled = true;
         hookFlying = false;
         lr.positionCount = 0; 
         lr.enabled = false;

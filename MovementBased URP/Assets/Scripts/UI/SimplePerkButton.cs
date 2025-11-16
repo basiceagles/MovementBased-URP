@@ -13,6 +13,7 @@ public class ButtonPerkController : MonoBehaviour, IPointerEnterHandler, IPointe
     [Header("Audio Source")]
     public AudioSource audioSource;
 
+    private bool[] isPointerOverButton;
 
     void Start()
     {
@@ -22,6 +23,9 @@ public class ButtonPerkController : MonoBehaviour, IPointerEnterHandler, IPointe
             Debug.LogError("Buttons and GameObjects arrays must have the same length!");
             return;
         }
+
+        // Initialize tracking array
+        isPointerOverButton = new bool[buttons.Length];
 
         // Add listeners for each button
         for (int i = 0; i < buttons.Length; i++)
@@ -46,6 +50,24 @@ public class ButtonPerkController : MonoBehaviour, IPointerEnterHandler, IPointe
                 entryExit.eventID = EventTriggerType.PointerExit;
                 entryExit.callback.AddListener((data) => { OnButtonUnhighlighted(index); });
                 trigger.triggers.Add(entryExit);
+
+                // Create entry for pointer click (to handle button hide scenarios)
+                var entryClick = new EventTrigger.Entry();
+                entryClick.eventID = EventTriggerType.PointerClick;
+                entryClick.callback.AddListener((data) => { ForceHideAllUI(); });
+                trigger.triggers.Add(entryClick);
+            }
+        }
+    }
+
+    void Update()
+    {
+        // Check if any button that had pointer over is now hidden or disabled
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            if (isPointerOverButton[i] && (buttons[i] == null || !buttons[i].gameObject.activeInHierarchy || !buttons[i].interactable))
+            {
+                ForceHideUI(i);
             }
         }
     }
@@ -64,13 +86,10 @@ public class ButtonPerkController : MonoBehaviour, IPointerEnterHandler, IPointe
     {
         if (IsValidIndex(index))
         {
+            isPointerOverButton[index] = true;
             ShowPerkUI(index);
             PlayAnimation(index, animationClip);
             audioSource.Play();
-            if (index == 0)
-            {
-                audioSource.loop = true;
-            }
         }
     }
 
@@ -78,9 +97,29 @@ public class ButtonPerkController : MonoBehaviour, IPointerEnterHandler, IPointe
     {
         if (IsValidIndex(index))
         {
+            isPointerOverButton[index] = false;
             HidePerkUI(index);
             audioSource.Stop();
             audioSource.loop = false;
+        }
+    }
+
+    private void ForceHideUI(int index)
+    {
+        if (IsValidIndex(index))
+        {
+            isPointerOverButton[index] = false;
+            HidePerkUI(index);
+            audioSource.Stop();
+            audioSource.loop = false;
+        }
+    }
+
+    private void ForceHideAllUI()
+    {
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            ForceHideUI(i);
         }
     }
 

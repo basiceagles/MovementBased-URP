@@ -36,6 +36,21 @@ public class ItemPickup : MonoBehaviour
 
     void Start()
     {
+        RefreshReferences();
+    }
+    
+    private void OnEnable()
+    {
+        LevelGenerator.RestartGenerationEvent += RefreshReferences;
+    }
+
+    private void OnDisable()
+    {
+        LevelGenerator.RestartGenerationEvent -= RefreshReferences;
+    }
+
+    private void RefreshReferences()
+    {
         swing = GameObject.Find("Swing");
         grapple = GameObject.Find("Grapple");
         playerCamera = GetComponent<Camera>();
@@ -208,8 +223,8 @@ public class ItemPickup : MonoBehaviour
 
         if (disableGrappleAndSwing)
         {
-            grapple.SetActive(false);
-            swing.SetActive(false);
+            if(grapple != null)grapple.SetActive(false);
+            if(swing !=null)swing.SetActive(false);
         }
     }
 
@@ -241,8 +256,8 @@ public class ItemPickup : MonoBehaviour
 
         if (disableGrappleAndSwing)
         {
-            grapple.SetActive(true);
-            swing.SetActive(true);
+            if(grapple != null)grapple.SetActive(true);
+            if(swing !=null)swing.SetActive(true);
         }
     }
 
@@ -260,7 +275,7 @@ public class ItemPickup : MonoBehaviour
         isHolding = false;
         itemCollider = null;
 
-        grapple.SetActive(true);
-        swing.SetActive(true);
+        if(grapple != null)grapple.SetActive(true);
+        if(swing !=null)swing.SetActive(true);
     }
 }

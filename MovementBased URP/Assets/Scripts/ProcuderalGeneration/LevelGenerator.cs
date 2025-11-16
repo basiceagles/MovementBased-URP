@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -100,6 +101,11 @@ public class LevelGenerator : MonoBehaviour
 
     // Material cache for batching optimization
     private Dictionary<string, Material> materialCache = new Dictionary<string, Material>();
+
+    //Events
+    public delegate void RestartGenerationDelegate();
+    public static event RestartGenerationDelegate RestartGenerationEvent;
+    
 
     private void Start()
     {
@@ -689,6 +695,11 @@ public class LevelGenerator : MonoBehaviour
 
     public void RestartGeneration()
     {
+        RestartGenerationEvent?.Invoke();
+        
+        UpdateLevelsCounts();
+        UpdateCycleCount();
+
         // Find the current end room (which will become the new start)
         GameObject currentEndRoom = null;
         foreach (GameObject level in generatedLevels)
