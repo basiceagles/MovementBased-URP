@@ -109,7 +109,10 @@ public class Grappling : MonoBehaviour
         {
             return;
         }
-        swinging.enabled = false;
+        if (swinging != null)
+        {
+            swinging.enabled = false;
+        }
         grappling = true;
         bool hit = Physics.Raycast(cam.position, cam.forward, out RaycastHit hitInfo, maxGrappleDistance);
         grapplePoint = hit ? hitInfo.point : cam.position + cam.forward * maxGrappleDistance;
@@ -171,7 +174,10 @@ public class Grappling : MonoBehaviour
         pc.activeGrappling = false;
         grappling = false; 
         grapplingCdTimer = grapplingCd;
-        swinging.enabled = true;
+        if (swinging != null)
+        {
+            swinging.enabled = true;
+        }
         hookFlying = false;
         lr.enabled = false; 
         lr.positionCount = 0;

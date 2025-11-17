@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -12,7 +13,10 @@ public class LevelGenerator : MonoBehaviour
         DoubleJump,
         LowGravity,
         Planet,
-        Holes
+        Holes,
+        RedEye,
+        RedWalls,
+        NodeExchanger
     }
 
     [System.Serializable]
@@ -66,9 +70,16 @@ public class LevelGenerator : MonoBehaviour
     public int planetChance = 25;
     [Range(0, 100)]
     public int holesChance = 25;
+    [Range(0, 100)]
+    public int redEyeChance = 25;
+    [Range(0, 100)]
+    public int redWallsChance = 25;
+    [Range(0, 100)]
+    public int nodeExchangerChance = 25;
 
     [Header("Generation Settings")]
     public int numberOfLevels = 4;
+    public int numberOfLevelsToAdd = 1;
     public bool generateOnStart = true;
     public int cycle = 0;
     public int maxClosedRooms = 3;
@@ -100,6 +111,11 @@ public class LevelGenerator : MonoBehaviour
     // Material cache for batching optimization
     private Dictionary<string, Material> materialCache = new Dictionary<string, Material>();
 
+    //Events
+    public delegate void RestartGenerationDelegate();
+    public static event RestartGenerationDelegate RestartGenerationEvent;
+    
+
     private void Start()
     {
         InitializeBatchingSettings();
@@ -108,6 +124,16 @@ public class LevelGenerator : MonoBehaviour
         {
             GenerateLevels();
         }
+    }
+
+    public void UpdateLevelsCounts()
+    {
+        numberOfLevels = numberOfLevels + numberOfLevelsToAdd;
+    }
+
+    public void UpdateCycleCount()
+    {
+        cycle++;
     }
 
     private void InitializeBatchingSettings()
@@ -486,6 +512,9 @@ public class LevelGenerator : MonoBehaviour
             case LevelType.LowGravity: return lowGravityChance;
             case LevelType.Planet: return planetChance;
             case LevelType.Holes: return holesChance;
+            case LevelType.RedEye: return redEyeChance;
+            case LevelType.RedWalls: return redWallsChance;
+            case LevelType.NodeExchanger: return nodeExchangerChance;
             default: return 25;
         }
     }
@@ -678,6 +707,11 @@ public class LevelGenerator : MonoBehaviour
 
     public void RestartGeneration()
     {
+        RestartGenerationEvent?.Invoke();
+        
+        UpdateLevelsCounts();
+        UpdateCycleCount();
+
         // Find the current end room (which will become the new start)
         GameObject currentEndRoom = null;
         foreach (GameObject level in generatedLevels)

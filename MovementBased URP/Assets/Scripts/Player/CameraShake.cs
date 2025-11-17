@@ -7,6 +7,7 @@ public class CameraShake : MonoBehaviour
     [SerializeField] private float shakeDuration = 0.5f;
     [SerializeField] private float shakeMagnitude = 0.1f;
     [SerializeField] private float dampingSpeed = 1.0f;
+    [SerializeField] private AudioSource earthquakeAS;
     
     private Vector3 initialPosition;
     private Coroutine shakeCoroutine;
@@ -104,6 +105,8 @@ public class CameraShake : MonoBehaviour
         // Start new constant shake coroutine
         constantShakeCoroutine = StartCoroutine(ConstantShakeCoroutine());
         isConstantShaking = true;
+
+        earthquakeAS.Play();
     }
 
     /// <summary>
@@ -123,6 +126,8 @@ public class CameraShake : MonoBehaviour
         // Start new constant shake coroutine with custom magnitude
         constantShakeCoroutine = StartCoroutine(ConstantShakeCoroutine(magnitude));
         isConstantShaking = true;
+
+        earthquakeAS.Play();
     }
 
     /// <summary>
@@ -137,6 +142,8 @@ public class CameraShake : MonoBehaviour
             isConstantShaking = false;
             constantShakeCoroutine = null;
         }
+
+        earthquakeAS.Stop();
     }
 
     /// <summary>

@@ -13,12 +13,29 @@ public class RandomSpawner : MonoBehaviour
     [Header("Advanced Settings")]
     [SerializeField] private bool parentToSpawnPoint = true;
     [SerializeField] private bool avoidOverlappingSpawns = true;
+    [Header("Spawn Type Settings")]
+    [SerializeField] private bool redEyeSpawner = false;
+    [SerializeField] private bool nodeSpawner = false;
+
+    private PerkSelectorScript perkSelectorScript;
+    private GameObject perkSelectorScriptTarget;
 
     private List<GameObject> spawnedObjects = new List<GameObject>();
 
     void Awake()
     {
-        if (spawnOnStart)
+        perkSelectorScriptTarget = GameObject.Find("PerkSelectorManager");
+        perkSelectorScript = perkSelectorScriptTarget.GetComponent<PerkSelectorScript>();
+
+        if (redEyeSpawner) spawnChance = perkSelectorScript.redEyeSpawnChance;
+        if (nodeSpawner) spawnChance = perkSelectorScript.nodeSpawnChance;
+
+        if (perkSelectorScript.spawnNodes && nodeSpawner)
+        {
+            SpawnObjects();
+        }
+
+        if (perkSelectorScript.spawnRedEye && redEyeSpawner)
         {
             SpawnObjects();
         }

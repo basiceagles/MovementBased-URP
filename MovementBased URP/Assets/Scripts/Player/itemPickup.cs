@@ -25,7 +25,7 @@ public class ItemPickup : MonoBehaviour
 
     private GameObject swing;
     private GameObject grapple;
-    private GameObject holdPointBuffer; // Reference to holdPointBuffer
+    private GameObject holdPointBuffer; 
 
     private Lever currentLever;
     private Lever previousLever;
@@ -223,8 +223,14 @@ public class ItemPickup : MonoBehaviour
 
         if (disableGrappleAndSwing)
         {
-            grapple.SetActive(false);
-            swing.SetActive(false);
+            if (grapple != null)
+            {
+                grapple.SetActive(false);
+            }
+            if (swing != null)
+            {
+                swing.SetActive(false);
+            }
         }
     }
 
@@ -256,8 +262,14 @@ public class ItemPickup : MonoBehaviour
 
         if (disableGrappleAndSwing)
         {
-            grapple.SetActive(true);
-            swing.SetActive(true);
+            if (grapple != null)
+            {
+                grapple.SetActive(true);
+            }
+            if (swing != null)
+            {
+                swing.SetActive(true);
+            }
         }
     }
 
@@ -275,7 +287,13 @@ public class ItemPickup : MonoBehaviour
         isHolding = false;
         itemCollider = null;
 
-        grapple.SetActive(true);
-        swing.SetActive(true);
+        if (grapple != null)
+        {
+            grapple.SetActive(true);
+        }
+        if (swing != null)
+        {
+            swing.SetActive(true);
+        }
     }
 }

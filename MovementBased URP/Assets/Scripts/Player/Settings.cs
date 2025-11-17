@@ -59,6 +59,8 @@ public class Settings : MonoBehaviour
     private GameObject fpsCounterTarget;
     private bool mainMenuIsActive = false;
     private AudioSource[] allAudioSourcesInScene;
+    [Header("Other References")]
+    [SerializeField] private PerkSelectorScript perkSelectorScript;
 
     private void Start()
     {
@@ -441,12 +443,16 @@ public class Settings : MonoBehaviour
 
     private void Update()
     {
-        if (m_OpenSettings != null && m_OpenSettings.WasPressedThisFrame() && !isMainMenu)
+        if (m_OpenSettings != null && m_OpenSettings.WasPressedThisFrame() && !isMainMenu && !perkSelectorScript.isPerkMenuOpen)
         {
             if (!mainMenuIsActive)
             {
                 FindAllAudioSourcesInScene();
                 OpenMainMenuSettings();
+            }
+            else if (mainMenuIsActive)
+            {
+                CloseMainMenuSettings();
             }
         }
         

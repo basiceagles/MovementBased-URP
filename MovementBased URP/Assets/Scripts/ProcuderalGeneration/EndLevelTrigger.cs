@@ -25,6 +25,7 @@ public class EndLevelTrigger : MonoBehaviour
     void Start()
     {
         slideMetalDoorManager = targetDoor.GetComponent<SlideMetalDoorManager>();
+
         targetProcuderalGeneration = GameObject.Find("ProcuderalGeneration");
         levelGenerator = targetProcuderalGeneration.GetComponent<LevelGenerator>();
 
@@ -54,17 +55,11 @@ public class EndLevelTrigger : MonoBehaviour
         perkSelectorAnimator.Play("PerkSelectorMenu");
         
         slideMetalDoorManager.CloseDoor();
-        levelGenerator.RestartGeneration();
 
         //ПЕРЕДЕЛАТЬ
-
-        levelGenerator.numberOfLevels++;
-        currentCycle++;
         cycleIntText.text = currentCycle.ToString();
         
         musicManagerScript.StopPlayingMusic();
-
-        redEyeDetector.FindRedEyeGameobjects();
 
         targetTimer.StopAndReset();
 

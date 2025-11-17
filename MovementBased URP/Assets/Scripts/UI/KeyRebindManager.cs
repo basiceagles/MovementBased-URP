@@ -26,6 +26,7 @@ public class KeyRebindManager : MonoBehaviour
     public PlayerController playerController;
     public Swinging swingingScript;
     public Grappling grapplingScript;
+    public WallRunning wallRunningScript;
 
     private KeyBinding currentRebinding;
     private bool isWaitingForKey = false;
@@ -181,6 +182,10 @@ public class KeyRebindManager : MonoBehaviour
         if (grapplingScript != null)
         {
             grapplingScript.SetGrappleKey(rope.currentKey);
+        }
+        if(wallRunningScript != null)
+        {
+            wallRunningScript.SetWallRunningKey(jump.currentKey);
         }
     }
 

@@ -7,9 +7,7 @@ using UnityEngine.SceneManagement;
 public class Timer : MonoBehaviour
 {
     [Header("Countdown Settings")]
-    [SerializeField] private int minutes = 1;
-    [SerializeField] private int seconds = 0;
-    [SerializeField] private int milliseconds = 0;
+    public int totalSeconds = 60;
     [SerializeField] private int thresholdSeconds = 10;
     [SerializeField] private string deadSceneName = "TimerDead";
     
@@ -62,11 +60,9 @@ public class Timer : MonoBehaviour
         UpdateCountdownDisplay();
     }
 
-    public void StartCountdown(int customMinutes, int customSeconds = 0, int customMilliseconds = 0)
+    public void StartCountdown(int customSeconds)
     {
-        minutes = customMinutes;
-        seconds = customSeconds;
-        milliseconds = customMilliseconds;
+        totalSeconds = customSeconds;
         StartCountdown();
     }
 
@@ -244,6 +240,6 @@ public class Timer : MonoBehaviour
 
     private void CalculateTotalTime()
     {
-        totalTimeInSeconds = (minutes * 60f) + seconds + (milliseconds / 1000f);
+        totalTimeInSeconds = totalSeconds;
     }
 }
