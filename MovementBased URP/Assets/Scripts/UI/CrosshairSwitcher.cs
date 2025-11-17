@@ -9,7 +9,7 @@ public class CrosshairSwitcher : MonoBehaviour
     public void SwitchCrosshair()
     {
         
-        if (isCrosshairSwitched)
+        if (!isCrosshairSwitched)
         {
             isCrosshairSwitched = !isCrosshairSwitched;
             normalCrosshair.SetActive(true);

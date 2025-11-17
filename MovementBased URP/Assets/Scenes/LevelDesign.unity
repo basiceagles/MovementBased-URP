@@ -8816,6 +8816,7 @@ MonoBehaviour:
   playerController: {fileID: 1773325611}
   swingingScript: {fileID: 1125720348}
   grapplingScript: {fileID: 1008693407}
+  wallRunningScript: {fileID: 1773325616}
 --- !u!1 &585560293
 GameObject:
   m_ObjectHideFlags: 0
@@ -27944,6 +27945,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 542f55fd64623e4418728cb12eae1fca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1773325616 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1802631790307948027, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+  m_PrefabInstance: {fileID: 1123764456140826848}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e083a2996d4c34f41aa6078edc7ada77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1782605682
 GameObject:
   m_ObjectHideFlags: 0
@@ -34180,6 +34192,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7639928502226673217, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+      propertyPath: crosshairSwitcherScript
+      value: 
+      objectReference: {fileID: 1511086648}
     - target: {fileID: 7923699575329384124, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: m_IsActive
       value: 0
