@@ -38,6 +38,7 @@ public class PerkSelectorScript : MonoBehaviour
     [Header("Node Perk References")]
     [Range(0, 100)] public float nodeSpawnChance = 25f;
     [Range(0, 100)] public float grinderSpawnChance = 75f;
+    [Range(0, 100)] public int nodeRoomSpawnChance = 15;
     public bool spawnGrinder = false;
     public bool spawnNodes = false;
     [Header("Red Eye Perk References")]
@@ -56,6 +57,13 @@ public class PerkSelectorScript : MonoBehaviour
     public bool useGrapple = false;
     [SerializeField] private GameObject grappleGameobject;
     [Range(0, 100)] [SerializeField] private int grappleChance = 25;
+    [Header("Add Levels Perk References")]
+    [SerializeField] private int levelsToAdd1;
+    [SerializeField] private int levelsToAdd2;
+    [SerializeField] private int levelsToAdd3;
+    [SerializeField] private int timeToAdd1;
+    [SerializeField] private int timeToAdd2;
+    [SerializeField] private int timeToAdd3;
 
     private GameObject targetProcuderalGeneration;
     private LevelGenerator levelGenerator;
@@ -63,7 +71,10 @@ public class PerkSelectorScript : MonoBehaviour
     private RedEyeDetector redEyeDetector;
     private PlayerController playerController;
     private ItemPickup itemPickup;
-
+    private GameObject timerTarget;
+    private Timer timer;
+    [Header("Debug Only")]
+    [SerializeField] public bool isPerkMenuOpen;
 
     void Start()
     {
@@ -76,6 +87,9 @@ public class PerkSelectorScript : MonoBehaviour
         cameraTarget = GameObject.Find("Main Camera");
         redEyeDetector = cameraTarget.GetComponent<RedEyeDetector>();
         itemPickup = cameraTarget.GetComponent<ItemPickup>();
+
+        timerTarget = GameObject.Find("TimerManager");
+        timer = timerTarget.GetComponent<Timer>();
 
 
         InitializeButtonHierarchy();
@@ -103,6 +117,7 @@ public class PerkSelectorScript : MonoBehaviour
         cameraController.enabled = false;
         ActivateRandomObjects();
         //itemPickup.enabled = false; DELETE
+        isPerkMenuOpen = true;
     }
     
     public void ClosePerkMenu()
@@ -122,6 +137,7 @@ public class PerkSelectorScript : MonoBehaviour
         
         // Reset button hierarchy when closing menu
         Invoke("ResetButtonHierarchy", 1f);
+        isPerkMenuOpen = false;
     }
     
     private void ResetAllButtonAnimations()
@@ -189,7 +205,7 @@ public class PerkSelectorScript : MonoBehaviour
     // Call this method to activate random objects
     public void ActivateRandomObjects()
     {
-        // First, deactivate objects that have spawnAtMenuOpen set to false
+        // First, deactivate all objects that have spawnAtMenuOpen set to false
         foreach (SpawnableObject spawnable in objectsArray)
         {
             if (spawnable.gameObject != null && !spawnable.spawnAtMenuOpen)
@@ -199,16 +215,18 @@ public class PerkSelectorScript : MonoBehaviour
         // Check if we have enough objects in the array
         if (objectsArray.Length == 0)
         {
+            Debug.LogWarning("No objects in objectsArray!");
             return;
         }
         
         // Check if amount to activate is 0 or less - don't spawn anything
         if (amountToActivate <= 0)
         {
+            Debug.LogWarning("amountToActivate is 0 or less, no objects will be activated.");
             return;
         }
         
-        // Create a list of available objects that can be spawned
+        // Create a list of available objects that can be spawned (spawnAtMenuOpen = true)
         List<SpawnableObject> availableObjects = new List<SpawnableObject>();
         foreach (SpawnableObject spawnable in objectsArray)
         {
@@ -218,20 +236,48 @@ public class PerkSelectorScript : MonoBehaviour
             }
         }
         
-        if (amountToActivate > availableObjects.Count)
+        // If no available objects, return
+        if (availableObjects.Count == 0)
         {
-            amountToActivate = availableObjects.Count;
+            Debug.LogWarning("No available objects with spawnAtMenuOpen = true!");
+            return;
         }
         
-        // Activate random objects using Fisher-Yates shuffle
-        for (int i = 0; i < amountToActivate; i++)
+        // Ensure we don't try to activate more objects than available
+        int actualAmountToActivate = Mathf.Min(amountToActivate, availableObjects.Count);
+        
+        // Shuffle the available objects using Fisher-Yates algorithm
+        ShuffleList(availableObjects);
+        
+        // Deactivate all objects first
+        foreach (SpawnableObject spawnable in objectsArray)
         {
-            int randomIndex = Random.Range(i, availableObjects.Count);
-            SpawnableObject temp = availableObjects[i];
-            availableObjects[i] = availableObjects[randomIndex];
-            availableObjects[randomIndex] = temp;
-            
-            availableObjects[i].gameObject.SetActive(true);
+            if (spawnable.gameObject != null)
+                spawnable.gameObject.SetActive(false);
+        }
+        
+        // Activate the first 'actualAmountToActivate' objects from the shuffled list
+        for (int i = 0; i < actualAmountToActivate; i++)
+        {
+            if (i < availableObjects.Count)
+            {
+                availableObjects[i].gameObject.SetActive(true);
+                Debug.Log($"Activated: {availableObjects[i].gameObject.name}");
+            }
+        }
+        
+        Debug.Log($"Activated {actualAmountToActivate} out of {availableObjects.Count} available objects");
+    }
+
+    // Proper Fisher-Yates shuffle implementation
+    private void ShuffleList<T>(List<T> list)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int randomIndex = Random.Range(0, i + 1);
+            T temp = list[i];
+            list[i] = list[randomIndex];
+            list[randomIndex] = temp;
         }
     }
 
@@ -250,13 +296,19 @@ public class PerkSelectorScript : MonoBehaviour
                     childButton.SetActive(true);
             }
             
-            // Set spawnAtMenuOpen to true for specific objects assigned to this parent button
+            // Set spawnAtMenuOpen to true for all objects assigned to this parent button
             foreach (GameObject objectToEnable in hierarchy.objectsToEnable)
             {
                 SetSpawnAtMenuOpenForObject(objectToEnable, true);
             }
             
             hierarchy.isActive = true;
+            
+            Debug.Log($"Parent button clicked in hierarchy {hierarchyIndex}. Activated {hierarchy.childButtons.Length} child buttons and enabled {hierarchy.objectsToEnable.Length} objects.");
+        }
+        else
+        {
+            Debug.LogWarning($"Invalid hierarchy index: {hierarchyIndex}");
         }
     }
 
@@ -270,11 +322,10 @@ public class PerkSelectorScript : MonoBehaviour
             {
                 GameObject clickedChildButton = hierarchy.childButtons[childIndex];
                 
-                // You can add specific logic here for when a specific child button is clicked
-                Debug.Log($"Child button {childIndex} clicked in hierarchy {hierarchyIndex}");
+                // FIXED: Enable spawnAtMenuOpen for ALL child buttons in objectsArray when any child button is clicked
+                EnableAllChildButtonsInObjectsArray();
                 
-                // Example: Set specific objects based on which child button was clicked
-                // You can expand this logic based on your needs
+                Debug.Log($"Child button {childIndex} clicked in hierarchy {hierarchyIndex}. Enabled spawnAtMenuOpen for ALL child buttons in objectsArray.");
                 
                 // Deactivate parent and all child buttons after selection
                 if (hierarchy.parentButton != null)
@@ -285,8 +336,41 @@ public class PerkSelectorScript : MonoBehaviour
                     if (childButton != null)
                         childButton.SetActive(false);
                 }
+                
+                hierarchy.isActive = false;
             }
         }
+    }
+
+    // NEW METHOD: Enable spawnAtMenuOpen for ALL objects in objectsArray that are child buttons in ANY hierarchy
+    private void EnableAllChildButtonsInObjectsArray()
+    {
+        // Create a set of all child buttons from all hierarchies
+        HashSet<GameObject> allChildButtons = new HashSet<GameObject>();
+        foreach (ButtonHierarchy hierarchy in buttonHierarchies)
+        {
+            foreach (GameObject childButton in hierarchy.childButtons)
+            {
+                if (childButton != null)
+                {
+                    allChildButtons.Add(childButton);
+                }
+            }
+        }
+
+        // Enable spawnAtMenuOpen for all objects in objectsArray that are child buttons
+        int enabledCount = 0;
+        foreach (SpawnableObject spawnable in objectsArray)
+        {
+            if (spawnable.gameObject != null && allChildButtons.Contains(spawnable.gameObject))
+            {
+                spawnable.spawnAtMenuOpen = true;
+                enabledCount++;
+                Debug.Log($"Enabled spawnAtMenuOpen for child button: {spawnable.gameObject.name}");
+            }
+        }
+        
+        Debug.Log($"Enabled spawnAtMenuOpen for {enabledCount} child buttons in objectsArray");
     }
 
     private void SetSpawnAtMenuOpenForObject(GameObject targetObject, bool value)
@@ -296,6 +380,7 @@ public class PerkSelectorScript : MonoBehaviour
             if (spawnable.gameObject == targetObject)
             {
                 spawnable.spawnAtMenuOpen = value;
+                Debug.Log($"Set spawnAtMenuOpen to {value} for object: {targetObject.name}");
                 break;
             }
         }
@@ -404,6 +489,7 @@ public class PerkSelectorScript : MonoBehaviour
         spawnGrinder = true;
         spawnNodes = true;
         levelGenerator.numberOfLevelsToAdd = levelGenerator.numberOfLevelsToAdd + 2;
+        levelGenerator.nodeExchangerChance = levelGenerator.nodeExchangerChance + nodeRoomSpawnChance;
     }
     public void ButtonGrapplePerk()
     {
@@ -420,5 +506,20 @@ public class PerkSelectorScript : MonoBehaviour
     {
         amountToActivate++;
         levelGenerator.numberOfLevelsToAdd++;
+    }
+    public void ButtonAdditionalLevels1Perk()
+    {
+        levelGenerator.numberOfLevels = levelGenerator.numberOfLevels + levelsToAdd1;
+        timer.totalSeconds = timer.totalSeconds + timeToAdd1;
+    }
+    public void ButtonAdditionalLevels2Perk()
+    {
+        levelGenerator.numberOfLevels = levelGenerator.numberOfLevels + levelsToAdd2;
+        timer.totalSeconds = timer.totalSeconds + timeToAdd2;
+    }
+    public void ButtonAdditionalLevels3Perk()
+    {
+        levelGenerator.numberOfLevels = levelGenerator.numberOfLevels + levelsToAdd2;
+        timer.totalSeconds = timer.totalSeconds + timeToAdd3;
     }
 }

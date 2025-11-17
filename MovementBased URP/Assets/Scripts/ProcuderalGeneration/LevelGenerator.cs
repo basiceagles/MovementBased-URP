@@ -13,7 +13,10 @@ public class LevelGenerator : MonoBehaviour
         DoubleJump,
         LowGravity,
         Planet,
-        Holes
+        Holes,
+        RedEye,
+        RedWalls,
+        NodeExchanger
     }
 
     [System.Serializable]
@@ -67,6 +70,12 @@ public class LevelGenerator : MonoBehaviour
     public int planetChance = 25;
     [Range(0, 100)]
     public int holesChance = 25;
+    [Range(0, 100)]
+    public int redEyeChance = 25;
+    [Range(0, 100)]
+    public int redWallsChance = 25;
+    [Range(0, 100)]
+    public int nodeExchangerChance = 25;
 
     [Header("Generation Settings")]
     public int numberOfLevels = 4;
@@ -503,6 +512,9 @@ public class LevelGenerator : MonoBehaviour
             case LevelType.LowGravity: return lowGravityChance;
             case LevelType.Planet: return planetChance;
             case LevelType.Holes: return holesChance;
+            case LevelType.RedEye: return redEyeChance;
+            case LevelType.RedWalls: return redWallsChance;
+            case LevelType.NodeExchanger: return nodeExchangerChance;
             default: return 25;
         }
     }

@@ -20,6 +20,7 @@ public class WallRunning : MonoBehaviour
     
     [Header("References")]
     [SerializeField] private Transform cam;
+    private KeyCode jumpKey = KeyCode.Space;
 
     private PlayerController pc;
     private bool isWallRunning;
@@ -49,7 +50,7 @@ public class WallRunning : MonoBehaviour
             HandleWallRun();
             ApplyWallTilt();
             
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(jumpKey))
             {
                 WallJump();
             }
@@ -253,5 +254,10 @@ public class WallRunning : MonoBehaviour
         bool wallDetected = wallColliders.Length > 0;
         Gizmos.color = wallDetected ? Color.red : Color.gray;
         Gizmos.DrawWireSphere(origin, sphereRadius);
+    }
+
+    public void SetWallRunningKey(KeyCode newKey)
+    {
+        jumpKey = newKey;
     }
 }

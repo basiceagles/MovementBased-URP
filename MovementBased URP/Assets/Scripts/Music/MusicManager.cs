@@ -8,6 +8,8 @@ public class MusicManager : MonoBehaviour
     [Header("Audio Settings")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip[] audioClips;
+    [SerializeField] private AudioClip ambientAudioClip;
+    [SerializeField] private AudioSource ambientAudioSource;
     
     [Header("Volume Settings")]
     [SerializeField] private float maxVolume = 1.0f;
@@ -52,6 +54,10 @@ public class MusicManager : MonoBehaviour
         musicPlayingUITextAnimator = musicPlayingUI.GetComponent<Animator>();
         
         InitializeShuffleSystem();
+
+
+        //GOVNOKOD
+        ambientAudioSource.Play();
     }
     
     private void InitializeShuffleSystem()
@@ -99,6 +105,8 @@ public class MusicManager : MonoBehaviour
         musicPlayingUIText.text = audioClips[randomIndex].name;
 
         //Debug.Log($"Now playing: {audioClips[randomIndex].name} (Index: {randomIndex})");
+
+        ambientAudioSource.Stop();
     }
     
     public void StopPlayingMusic()
@@ -115,6 +123,7 @@ public class MusicManager : MonoBehaviour
                 Debug.Log("Music stopped");
             }
         }
+        ambientAudioSource.Play();
     }
     
     private IEnumerator FadeIn()
