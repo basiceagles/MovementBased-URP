@@ -478,6 +478,8 @@ public class PlayerController : MonoBehaviour
         Quaternion target = Quaternion.LookRotation(forward, currentSurfaceNormal);
         Vector3 euler = target.eulerAngles;
         euler.y = transform.eulerAngles.y;
+        euler.z = transform.eulerAngles.z;
+        
         transform.rotation = Quaternion.Euler(euler);
     }
     

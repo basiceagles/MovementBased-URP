@@ -25,32 +25,16 @@ public class ItemPickup : MonoBehaviour
 
     private GameObject swing;
     private GameObject grapple;
-    private GameObject holdPointBuffer; // Reference to holdPointBuffer
+    private GameObject holdPointBuffer; 
 
     private Lever currentLever;
     private Lever previousLever;
     private bool wasLookingAtLever = false;
     private bool isCollected;
-    [SerializeField] private CrosshairSwitcher crosshairSwitcherScript;
 
     public bool disableGrappleAndSwing = false;
 
     void Start()
-    {
-        RefreshReferences();
-    }
-    
-    private void OnEnable()
-    {
-        LevelGenerator.RestartGenerationEvent += RefreshReferences;
-    }
-
-    private void OnDisable()
-    {
-        LevelGenerator.RestartGenerationEvent -= RefreshReferences;
-    }
-
-    private void RefreshReferences()
     {
         swing = GameObject.Find("Swing");
         grapple = GameObject.Find("Grapple");
@@ -137,7 +121,6 @@ public class ItemPickup : MonoBehaviour
         {
             currentGrinder.ShowUITip();
             wasLookingAtGrinder = true;
-            crosshairSwitcherScript.SwitchCrosshair();
         }
 
         //grinder ui
@@ -145,7 +128,6 @@ public class ItemPickup : MonoBehaviour
         {
             previousGrinder.HideUITip();
             wasLookingAtGrinder = false;
-            crosshairSwitcherScript.SwitchCrosshair();
         }
 
         // Update previous lever reference
@@ -164,7 +146,6 @@ public class ItemPickup : MonoBehaviour
         {
             currentLever.ShowUIKeybind();
             wasLookingAtLever = true;
-            crosshairSwitcherScript.SwitchCrosshair();
         }
 
         // Handle HideUIKeybind call (when stopping looking at a lever)
@@ -172,7 +153,6 @@ public class ItemPickup : MonoBehaviour
         {
             previousLever.HideUIKeybind();
             wasLookingAtLever = false;
-            crosshairSwitcherScript.SwitchCrosshair();
         }
 
         // Update previous lever reference
@@ -202,6 +182,21 @@ public class ItemPickup : MonoBehaviour
         }
     }
     
+    public void ForcePickup(GameObject item)
+    {
+        if (item == null)
+        {
+            return;
+        }
+
+        if (isHolding)
+        {
+            return;
+        }
+
+        Pickup(item);
+    }
+
     private void Pickup(GameObject item)
     {
         heldItem = item;
@@ -228,8 +223,14 @@ public class ItemPickup : MonoBehaviour
 
         if (disableGrappleAndSwing)
         {
-            if(grapple != null)grapple.SetActive(false);
-            if(swing !=null)swing.SetActive(false);
+            if (grapple != null)
+            {
+                grapple.SetActive(false);
+            }
+            if (swing != null)
+            {
+                swing.SetActive(false);
+            }
         }
     }
 
@@ -261,8 +262,14 @@ public class ItemPickup : MonoBehaviour
 
         if (disableGrappleAndSwing)
         {
-            if(grapple != null)grapple.SetActive(true);
-            if(swing !=null)swing.SetActive(true);
+            if (grapple != null)
+            {
+                grapple.SetActive(true);
+            }
+            if (swing != null)
+            {
+                swing.SetActive(true);
+            }
         }
     }
 
@@ -280,7 +287,13 @@ public class ItemPickup : MonoBehaviour
         isHolding = false;
         itemCollider = null;
 
-        if(grapple != null)grapple.SetActive(true);
-        if(swing !=null)swing.SetActive(true);
+        if (grapple != null)
+        {
+            grapple.SetActive(true);
+        }
+        if (swing != null)
+        {
+            swing.SetActive(true);
+        }
     }
 }
