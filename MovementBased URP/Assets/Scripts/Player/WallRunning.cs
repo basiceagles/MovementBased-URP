@@ -20,6 +20,7 @@ public class WallRunning : MonoBehaviour
     
     [Header("References")]
     [SerializeField] private Transform cam;
+    [SerializeField] private JumpFallSounds jumpFallSounds;
     private KeyCode jumpKey = KeyCode.Space;
 
     private PlayerController pc;
@@ -215,6 +216,8 @@ public class WallRunning : MonoBehaviour
         
         pc.SetWallJumped();
         StopWallRun();
+
+        jumpFallSounds.CallJumpSoundMethod();
     }
     
     private void ApplyWallTilt()

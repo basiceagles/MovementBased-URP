@@ -256,6 +256,7 @@ MonoBehaviour:
   gravity: -30
   airControlStrength: 25
   isGrounded: 0
+  isOnAir: 0
   jumpHeight: 1.5
   slideJumpHeight: 1
   slideJumpGravity: -20
@@ -268,7 +269,7 @@ MonoBehaviour:
   currentSlideSpeed: 0
   isSliding: 0
   groundCheckDistance: 0.3
-  groundCheckRadius: 0.6
+  groundCheckRadius: 0.7
   gizmoLineCount: 8
   groundLayer:
     serializedVersion: 2
@@ -518,7 +519,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7690408842432544986
 Transform:
   m_ObjectHideFlags: 0
@@ -1214,6 +1215,7 @@ MonoBehaviour:
   interactKey: 101
   isHolding: 0
   disableGrappleAndSwing: 1
+  crosshairSwitcher: {fileID: 0}
 --- !u!82 &7902459169574237243
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1456,7 +1458,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8407356733780038912
 Transform:
   m_ObjectHideFlags: 0
@@ -1490,6 +1492,9 @@ MonoBehaviour:
   whatIsGrappleable:
     serializedVersion: 2
     m_Bits: 512
+  nodeLayer:
+    serializedVersion: 2
+    m_Bits: 0
   lr: {fileID: 3566058100906187380}
   grappleKey: 324
   maxGrappleDistance: 25
