@@ -17,6 +17,8 @@ public class Lever : MonoBehaviour
     [Header("Objects Reference")]
     [SerializeField] private GameObject uiToolTip;
     [SerializeField] private GameObject uiKeybind;
+    private CrosshairSwitcher crosshairSwitcher;
+    private GameObject crosshairSwitcherTarget;
 
     [Header("Lever Manager Search")]
     public string targetTag = "LeverManager";
@@ -36,6 +38,9 @@ public class Lever : MonoBehaviour
 
         // Инвок чтобы дать предметам загрузится
         Invoke("SearchForLeverManager", 0.1f);
+
+        crosshairSwitcherTarget = GameObject.Find("CrossHairUI");
+        crosshairSwitcher = crosshairSwitcherTarget.GetComponent<CrosshairSwitcher>();
     }
 
     //Ищем левел манагер объект с помощью коллайдера, в нем нам нужен в скрипт LeverCollectManager, и метод CheckCollectStatus
@@ -108,6 +113,10 @@ public class Lever : MonoBehaviour
         if (uiKeybind != null)
         {
             uiKeybind.SetActive(false);
+        }
+        if (crosshairSwitcher != null)
+        {
+            crosshairSwitcher.HideSwitchCrosshair();
         }
     }
 

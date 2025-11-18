@@ -34,6 +34,8 @@ public class ItemPickup : MonoBehaviour
 
     public bool disableGrappleAndSwing = false;
 
+    [SerializeField] private CrosshairSwitcher crosshairSwitcher;
+
     void Start()
     {
         swing = GameObject.Find("Swing");
@@ -121,6 +123,7 @@ public class ItemPickup : MonoBehaviour
         {
             currentGrinder.ShowUITip();
             wasLookingAtGrinder = true;
+            crosshairSwitcher.ShowSwitchCrosshair();
         }
 
         //grinder ui
@@ -128,6 +131,7 @@ public class ItemPickup : MonoBehaviour
         {
             previousGrinder.HideUITip();
             wasLookingAtGrinder = false;
+            crosshairSwitcher.HideSwitchCrosshair();
         }
 
         // Update previous lever reference
@@ -146,6 +150,7 @@ public class ItemPickup : MonoBehaviour
         {
             currentLever.ShowUIKeybind();
             wasLookingAtLever = true;
+            crosshairSwitcher.ShowSwitchCrosshair();
         }
 
         // Handle HideUIKeybind call (when stopping looking at a lever)
@@ -153,6 +158,7 @@ public class ItemPickup : MonoBehaviour
         {
             previousLever.HideUIKeybind();
             wasLookingAtLever = false;
+            crosshairSwitcher.HideSwitchCrosshair();
         }
 
         // Update previous lever reference

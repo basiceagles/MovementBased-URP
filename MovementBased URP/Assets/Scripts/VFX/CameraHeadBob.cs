@@ -33,8 +33,9 @@ public class CameraHeadBob : MonoBehaviour
 
         float speed = playerController.currentSpeed;
         bool isMoving = speed > 0.1f && playerController.grounded;
+        bool isSliding = playerController.isSliding;
 
-        if (isMoving)
+        if (isMoving && !isSliding)
         {
             bool isRunning = speed > playerController.maxSpeed * 0.7f;
             float bobSpeed = isRunning ? runBobSpeed : walkBobSpeed;

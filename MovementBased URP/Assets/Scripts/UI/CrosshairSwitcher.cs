@@ -6,20 +6,16 @@ public class CrosshairSwitcher : MonoBehaviour
     [SerializeField] private GameObject selectedCrosshair;
     [SerializeField] private bool isCrosshairSwitched = true;
 
-    public void SwitchCrosshair()
+    public void ShowSwitchCrosshair()
     {
-        
-        if (!isCrosshairSwitched)
-        {
-            isCrosshairSwitched = !isCrosshairSwitched;
-            normalCrosshair.SetActive(true);
-            selectedCrosshair.SetActive(false);
-        }
-        else
-        {
-            isCrosshairSwitched = !isCrosshairSwitched;
-            normalCrosshair.SetActive(false);
-            selectedCrosshair.SetActive(true);
-        }
+        isCrosshairSwitched = !isCrosshairSwitched;
+        normalCrosshair.SetActive(false);
+        selectedCrosshair.SetActive(true);
+    }
+    public void HideSwitchCrosshair()
+    {
+        isCrosshairSwitched = !isCrosshairSwitched;
+        normalCrosshair.SetActive(true);
+        selectedCrosshair.SetActive(false);
     }
 }

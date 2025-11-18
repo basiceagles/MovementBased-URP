@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float gravity;
     [SerializeField] private float airControlStrength = 2f;
     public bool isGrounded;
+    public bool isOnAir = false;
 
     [Header("Jump")]
     [SerializeField] private float jumpHeight;
