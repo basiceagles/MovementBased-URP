@@ -30,18 +30,18 @@ public class SlideMetalDoorManager : MonoBehaviour
     void Start()
     {
         // Validate chances
-        if (alreadyChecked) return;
+        //if (alreadyChecked) return;
         ValidateChances();
         SpawnOpenDoor();
-        alreadyChecked = !alreadyChecked;
+        //alreadyChecked = true;
     }
 
     void OnEnable()
     {
-        if (alreadyChecked) return;
+        //if (alreadyChecked) return;
         ValidateChances();
         SpawnOpenDoor();
-        alreadyChecked = !alreadyChecked;
+        //alreadyChecked = true;
     }
 
     public void OpenSlideDoor()
@@ -113,6 +113,7 @@ public class SlideMetalDoorManager : MonoBehaviour
         if (spawnOpen)
         {
             doorAnimator.SetBool("MetalSlideSpawnOpen", true);
+            doorAnimator.SetBool("MetalSlideClose", false);
             Debug.LogWarning("DOOR OPENED YES IT DID TRUST ME");
         }
         

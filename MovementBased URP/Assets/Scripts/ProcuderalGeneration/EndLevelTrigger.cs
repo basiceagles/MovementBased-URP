@@ -57,7 +57,7 @@ public class EndLevelTrigger : MonoBehaviour
         slideMetalDoorManager.CloseDoor();
 
         //ПЕРЕДЕЛАТЬ
-        cycleIntText.text = currentCycle.ToString();
+        //cycleIntText.text = currentCycle.ToString();
         
         musicManagerScript.StopPlayingMusic();
 

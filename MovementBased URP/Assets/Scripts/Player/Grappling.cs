@@ -13,6 +13,7 @@ public class Grappling : MonoBehaviour
     [SerializeField] private float maxGrappleDistance;
     [SerializeField] private float grappleSpeed;
     [SerializeField] private float grapplingCd;
+    public bool canPickupNode;
     
     [Header("Rope Animation")]
     [SerializeField] private int ropeSegments;
@@ -136,7 +137,7 @@ public class Grappling : MonoBehaviour
         {
             Invoke(nameof(StopGrapple), 0.5f);
         }
-        else if (hit && ((1 << hitInfo.collider.gameObject.layer) & nodeLayer) != 0)
+        else if (hit && canPickupNode && ((1 << hitInfo.collider.gameObject.layer) & nodeLayer) != 0)
         {
             StartCarryNode(hitInfo.collider.transform);
         }

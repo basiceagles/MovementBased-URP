@@ -46,6 +46,7 @@ public class PerkSelectorScript : MonoBehaviour
     public bool spawnNodes = false;
     [Header("Red Eye Perk References")]
     [Range(0, 100)] public int redEyeSpawnChance = 50;
+    [SerializeField] private int redEyeTimeToAdd= 20;
     public bool spawnRedEye = false;
     [Header("Prop Spawn References")]
     [Range(0, 100)] public float propSpawnChance = 50f;
@@ -62,6 +63,8 @@ public class PerkSelectorScript : MonoBehaviour
     [Range(0, 100)] [SerializeField] private int grappleChance = 25;
     [Header("Red Walls Perk References")]
     [Range(0, 100)][SerializeField] private int redWallsSpawnChances;
+    [SerializeField] private int redWallTimeToAdd= 20;
+    [Header("Pickup Nodes Perk References")]
     [Header("Add Levels Perk References")]
     [SerializeField] private int levelsToAdd1;
     [SerializeField] private int levelsToAdd2;
@@ -78,8 +81,11 @@ public class PerkSelectorScript : MonoBehaviour
     private ItemPickup itemPickup;
     private GameObject timerTarget;
     private Timer timer;
+    private GameObject grappleTarget;
     [Header("Debug Only")]
     [SerializeField] public bool isPerkMenuOpen;
+    [Header("Other References")]
+    [SerializeField] private Grappling grappling;
 
     void Start()
     {
@@ -96,6 +102,9 @@ public class PerkSelectorScript : MonoBehaviour
 
         timerTarget = GameObject.Find("TimerManager");
         timer = timerTarget.GetComponent<Timer>();
+
+        //grappleTarget = GameObject.Find("Grapple");
+        //grappling = grappleTarget.GetComponent<Grappling>();
 
 
         InitializeButtonHierarchy();
@@ -572,9 +581,15 @@ public class PerkSelectorScript : MonoBehaviour
     {
         levelGenerator.redEyeChance = levelGenerator.redEyeChance + redEyeSpawnChance;
         spawnRedEye = true;
+        timer.totalSeconds = timer.totalSeconds + redEyeTimeToAdd;
     }
     public void ButtonRedWallsSpawner()
     {
         levelGenerator.redWallsChance = levelGenerator.redWallsChance + redWallsSpawnChances;
+        timer.totalSeconds = timer.totalSeconds + redWallTimeToAdd;
+    }
+    public void ButtonPickupNodesPerk()
+    {
+        grappling.canPickupNode = true;
     }
 }

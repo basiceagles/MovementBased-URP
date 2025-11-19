@@ -258,6 +258,7 @@ MonoBehaviour:
   airControlStrength: 25
   isGrounded: 0
   isOnAir: 0
+  isSafeFromRunner: 0
   jumpHeight: 1.5
   slideJumpHeight: 1
   slideJumpGravity: -20
@@ -269,7 +270,7 @@ MonoBehaviour:
   crouchSpeed: 2
   currentSlideSpeed: 0
   isSliding: 0
-  groundCheckDistance: 0.3
+  groundCheckDistance: 0.4
   groundCheckRadius: 0.7
   gizmoLineCount: 8
   groundLayer:
@@ -1534,6 +1535,7 @@ MonoBehaviour:
   maxGrappleDistance: 25
   grappleSpeed: 20
   grapplingCd: 0.5
+  canPickupNode: 0
   ropeSegments: 25
   ropeWaveSpeed: 20
   ropeWaveHeight: 0.5
