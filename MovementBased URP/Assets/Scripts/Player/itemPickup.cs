@@ -38,12 +38,26 @@ public class ItemPickup : MonoBehaviour
 
     void Start()
     {
+        UpdateReferences();
+    }
+
+    private void UpdateReferences()
+    {
         swing = GameObject.Find("Swing");
         grapple = GameObject.Find("Grapple");
         playerCamera = GetComponent<Camera>();
         
         // Find or create holdPointBuffer
         holdPointBuffer = GameObject.Find("holdPointBuffer");
+    }
+
+    private void OnEnable()
+    {
+        LevelGenerator.RestartGenerationEvent += UpdateReferences;
+    }
+    private void OnDisable()
+    {
+        LevelGenerator.RestartGenerationEvent -= UpdateReferences;
     }
 
     private void Update()

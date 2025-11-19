@@ -161,6 +161,8 @@ GameObject:
   - component: {fileID: 8111721364753445406}
   - component: {fileID: 7542690196524630233}
   - component: {fileID: 3613623963466415105}
+  - component: {fileID: 7951722939564130811}
+  - component: {fileID: 3407343985781969289}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -215,8 +217,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_Materials: []
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -280,7 +281,7 @@ MonoBehaviour:
   rampLayer:
     serializedVersion: 2
     m_Bits: 0
-  enableSurfaceAlignment: 1
+  enableSurfaceAlignment: 0
   alignmentSmoothness: 8
   maxSlopeAngle: 60
   alignmentLayers:
@@ -338,6 +339,7 @@ MonoBehaviour:
   wallTiltAngle: 15
   tiltSpeed: 5
   cam: {fileID: 4005968262995598657}
+  jumpFallSounds: {fileID: 7951722939564130811}
 --- !u!114 &7164832184900963903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -502,6 +504,37 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
+--- !u!114 &7951722939564130811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557733885150758004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88e98a9a5bcccfd4bbaa821d4099b230, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerController: {fileID: 3343798156140563583}
+--- !u!114 &3407343985781969289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557733885150758004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d52d1b3378371b48be6ba5375887de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDistance: 100
+  checkInterval: 0.2
+  occlusionLayers:
+    serializedVersion: 2
+    m_Bits: 16384
+  showDebugGizmos: 1
 --- !u!1 &1786397657753048215
 GameObject:
   m_ObjectHideFlags: 0
@@ -1162,6 +1195,7 @@ MonoBehaviour:
   shakeDuration: 0.5
   shakeMagnitude: 0.1
   dampingSpeed: 1
+  multiplier: 2
   earthquakeAS: {fileID: 8519127748877941695}
 --- !u!114 &1516462321147874581
 MonoBehaviour:
@@ -1175,7 +1209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 557b9a661c357b442b48ccca03eaf054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionRange: 30
+  detectionRange: 15
   targetTag: RedEye
   obstacleLayers:
     serializedVersion: 2
@@ -1494,7 +1528,7 @@ MonoBehaviour:
     m_Bits: 512
   nodeLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
   lr: {fileID: 3566058100906187380}
   grappleKey: 324
   maxGrappleDistance: 25

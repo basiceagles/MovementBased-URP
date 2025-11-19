@@ -63,6 +63,8 @@ public class EndLevelTrigger : MonoBehaviour
 
         targetTimer.StopAndReset();
 
+        levelGenerator.UpdateCycleCount();
+
         Destroy(gameObject);
     }
 }

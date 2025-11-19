@@ -7,6 +7,7 @@ public class CameraShake : MonoBehaviour
     [SerializeField] private float shakeDuration = 0.5f;
     [SerializeField] private float shakeMagnitude = 0.1f;
     [SerializeField] private float dampingSpeed = 1.0f;
+    [SerializeField] private float multiplier = 2.0f;
     [SerializeField] private AudioSource earthquakeAS;
     
     private Vector3 initialPosition;
@@ -178,6 +179,19 @@ public class CameraShake : MonoBehaviour
         // Start new shake coroutine
         shakeCoroutine = StartCoroutine(ShakeCoroutine(shakeDuration, shakeMagnitude));
     }
+
+    public void HeavyShake()
+    {
+        // Stop any existing shake coroutine
+        if (shakeCoroutine != null)
+        {
+            StopCoroutine(shakeCoroutine);
+        }
+        
+        // Start new shake coroutine
+        shakeCoroutine = StartCoroutine(ShakeCoroutine(shakeDuration, shakeMagnitude * multiplier));
+    }
+
 
     /// <summary>
     /// Triggers the camera shake effect with custom parameters

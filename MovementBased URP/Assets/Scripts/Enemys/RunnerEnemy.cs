@@ -123,7 +123,11 @@ public class RunnerEnemy : MonoBehaviour
 
             CallCameraShake callCameraShake;
             callCameraShake = currentWaypoint.GetComponent<CallCameraShake>();
-            callCameraShake.CallCameraShaker();
+            callCameraShake.CallHeavyCameraShaker();
+
+            OpenDoor openDoor;
+            openDoor = currentWaypoint.GetComponent<OpenDoor>();
+            if (openDoor != null) openDoor.CallOpenDoor();
 
             DestroyEnemy();
         }

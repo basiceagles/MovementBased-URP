@@ -16,6 +16,20 @@ public class OcclusionSystem : MonoBehaviour
 
     void Start()
     {
+        Invoke("FindOccludableObjects", 0.1f);
+    }
+
+    private void OnEnable()
+    {
+        LevelGenerator.RestartGenerationEvent += FindOccludableObjects;
+    }
+    private void OnDisable()
+    {
+        LevelGenerator.RestartGenerationEvent -= FindOccludableObjects;
+    }
+
+    void FindOccludableObjects()
+    {
         // Find all objects with the Occludable tag
         GameObject[] foundObjects = GameObject.FindGameObjectsWithTag("StaticForOcclusion");
         occludableObjects.AddRange(foundObjects);
