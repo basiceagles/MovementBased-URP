@@ -65,6 +65,7 @@ public class PerkSelectorScript : MonoBehaviour
     [Range(0, 100)][SerializeField] private int redWallsSpawnChances;
     [SerializeField] private int redWallTimeToAdd= 20;
     [Header("Pickup Nodes Perk References")]
+    [SerializeField] private int nodePickupTimerToRemove = 10;
     [Header("Add Levels Perk References")]
     [SerializeField] private int levelsToAdd1;
     [SerializeField] private int levelsToAdd2;
@@ -591,5 +592,6 @@ public class PerkSelectorScript : MonoBehaviour
     public void ButtonPickupNodesPerk()
     {
         grappling.canPickupNode = true;
+        timer.totalSeconds = timer.totalSeconds - nodePickupTimerToRemove;
     }
 }

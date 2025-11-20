@@ -428,11 +428,39 @@ public class LevelGenerator : MonoBehaviour
             weights.Add(easyChance);
         }
 
+        // Medium levels - check spawn flag AND chance > 0
+        if (spawnMediumLevels && mediumLevels.Count > 0 && mediumChance > 0)
+        {
+            availableTypes.Add("Medium");
+            weights.Add(mediumChance);
+        }
+
+        // Hard levels - check spawn flag AND chance > 0
+        if (spawnHardLevels && hardLevels.Count > 0 && hardChance > 0)
+        {
+            availableTypes.Add("Hard");
+            weights.Add(hardChance);
+        }
+
         // Closed levels - check spawn flag, special prefabs AND chance > 0
         if (spawnClosedLevels && closedLevels.Count > 0 && startClosedRoom != null && endClosedRoom != null && closedChance > 0)
         {
             availableTypes.Add("Closed");
             weights.Add(closedChance);
+        }
+
+        // Closed Medium levels - check spawn flag AND chance > 0
+        if (spawnClosedMediumLevels && closedMediumLevels.Count > 0 && closedMediumChance > 0)
+        {
+            availableTypes.Add("ClosedMedium");
+            weights.Add(closedMediumChance);
+        }
+
+        // Closed Hard levels - check spawn flag AND chance > 0
+        if (spawnClosedHardLevels && closedHardLevels.Count > 0 && closedHardChance > 0)
+        {
+            availableTypes.Add("ClosedHard");
+            weights.Add(closedHardChance);
         }
 
         // FIX 1: If no available types, try to find a fallback
@@ -463,9 +491,9 @@ public class LevelGenerator : MonoBehaviour
         string selectedType = GetWeightedRandomType(availableTypes, weights);
 
         // Handle closed levels separately
-        if (selectedType == "Closed")
+        if (selectedType == "Closed" || selectedType == "ClosedMedium" || selectedType == "ClosedHard")
         {
-            return StartClosedSection();
+            return StartClosedSection(selectedType);
         }
 
         // Return random level from the selected type
@@ -510,8 +538,20 @@ public class LevelGenerator : MonoBehaviour
             case "Easy":
                 levelList = easyLevels;
                 break;
+            case "Medium":
+                levelList = mediumLevels;
+                break;
+            case "Hard":
+                levelList = hardLevels;
+                break;
             case "Closed":
                 levelList = closedLevels;
+                break;
+            case "ClosedMedium":
+                levelList = closedMediumLevels;
+                break;
+            case "ClosedHard":
+                levelList = closedHardLevels;
                 break;
         }
 
@@ -564,7 +604,7 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private GameObject StartClosedSection()
+    private GameObject StartClosedSection(string closedType)
     {
         // Check if we can start a closed section based on remaining levels
         int remainingLevels = numberOfLevels - currentLevelIndex;
@@ -590,7 +630,7 @@ public class LevelGenerator : MonoBehaviour
         closedRoomsSpawned = 0;
         hasSpawnedStartClosedRoom = false; // Reset for new closed section
 
-        Debug.Log($"Starting closed section at level {currentLevelIndex + 1}, will spawn up to {availableClosedRooms} closed rooms");
+        Debug.Log($"Starting {closedType} section at level {currentLevelIndex + 1}, will spawn up to {availableClosedRooms} closed rooms");
 
         // Return the start closed room
         hasSpawnedStartClosedRoom = true;
