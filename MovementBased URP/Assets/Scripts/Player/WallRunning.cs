@@ -20,6 +20,7 @@ public class WallRunning : MonoBehaviour
     
     [Header("References")]
     [SerializeField] private Transform cam;
+    [SerializeField] private JumpFallSounds jumpFallSounds;
     private KeyCode jumpKey = KeyCode.Space;
 
     private PlayerController pc;
@@ -86,13 +87,7 @@ public class WallRunning : MonoBehaviour
             }
             
             lastWall = null;
-            
             currentTilt = 0f;
-            Vector3 rotation = transform.localEulerAngles;
-            rotation.x = 0f;
-            rotation.z = 0f;
-            transform.localEulerAngles = rotation;
-            
             return;
         }
         
@@ -215,6 +210,8 @@ public class WallRunning : MonoBehaviour
         
         pc.SetWallJumped();
         StopWallRun();
+
+        jumpFallSounds.CallJumpSoundMethod();
     }
     
     private void ApplyWallTilt()
@@ -241,10 +238,13 @@ public class WallRunning : MonoBehaviour
             currentTilt = Mathf.Lerp(currentTilt, 0f, tiltSpeed * Time.deltaTime);
         }
         
-        Vector3 rotation = transform.localEulerAngles;
-        rotation.x = 0f;  
-        rotation.z = currentTilt;  
-        transform.localEulerAngles = rotation;
+        if (!pc.grounded && Mathf.Abs(currentTilt) > 0.01f)
+        {
+            Vector3 rotation = transform.localEulerAngles;
+            rotation.x = 0f;  
+            rotation.z = currentTilt;  
+            transform.localEulerAngles = rotation;
+        }
     }
     
     private void OnDrawGizmos()

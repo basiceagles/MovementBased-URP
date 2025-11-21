@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: RunnerVolume
   m_EditorClassIdentifier: 
   components:
-  - {fileID: 6522321361382113012}
---- !u!114 &6522321361382113012
+  - {fileID: 8853349815625594835}
+  - {fileID: 1727389144433980592}
+--- !u!114 &1727389144433980592
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -23,19 +24,38 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29fa0085f50d5e54f8144f766051a691, type: 3}
-  m_Name: FilmGrain
+  m_Script: {fileID: 11500000, guid: c5e1dc532bcb41949b58bc4f2abfbb7e, type: 3}
+  m_Name: LensDistortion
   m_EditorClassIdentifier: 
   active: 1
-  type:
+  intensity:
     m_OverrideState: 1
-    m_Value: 10
+    m_Value: -0.51
+  xMultiplier:
+    m_OverrideState: 1
+    m_Value: 1
+  yMultiplier:
+    m_OverrideState: 1
+    m_Value: 1
+  center:
+    m_OverrideState: 1
+    m_Value: {x: 0.5, y: 0.5}
+  scale:
+    m_OverrideState: 1
+    m_Value: 1
+--- !u!114 &8853349815625594835
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81180773991d8724ab7f2d216912b564, type: 3}
+  m_Name: ChromaticAberration
+  m_EditorClassIdentifier: 
+  active: 1
   intensity:
     m_OverrideState: 1
     m_Value: 1
-  response:
-    m_OverrideState: 1
-    m_Value: 1
-  texture:
-    m_OverrideState: 1
-    m_Value: {fileID: 2800000, guid: 74ccfc1f4ecaff84da479579cf38344e, type: 3}

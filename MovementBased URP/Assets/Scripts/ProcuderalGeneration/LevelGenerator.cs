@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -33,23 +34,39 @@ public class LevelGenerator : MonoBehaviour
 
     [Header("Level Arrays")]
     public List<LevelData> easyLevels = new List<LevelData>();
+    public List<LevelData> mediumLevels = new List<LevelData>();
+    public List<LevelData> hardLevels = new List<LevelData>();
     public List<LevelData> closedLevels = new List<LevelData>();
+    public List<LevelData> closedMediumLevels = new List<LevelData>();
+    public List<LevelData> closedHardLevels = new List<LevelData>();
     public GameObject startClosedRoom;
     public GameObject endClosedRoom;
 
     [Header("Level Spawn Flags")]
     public bool spawnEasyLevels = true;
+    public bool spawnMediumLevels = true;
+    public bool spawnHardLevels = true;
     public bool spawnClosedLevels = true;
+    public bool spawnClosedMediumLevels = true;
+    public bool spawnClosedHardLevels = true;
 
     [Header("Runner Prefabs")]
-    public GameObject runnerStartPrefab;
-    public GameObject runnerEndPrefab;
+    public GameObject[] runnerStartPrefabs;
+    public GameObject[] runnerEndPrefabs;
 
     [Header("Spawn Chances")]
     [Range(0, 100)]
     public int easyChance = 25;
     [Range(0, 100)]
+    public int mediumChance = 25;
+    [Range(0, 100)]
+    public int hardChance = 25;
+    [Range(0, 100)]
     public int closedChance = 25;
+    [Range(0, 100)]
+    public int closedMediumChance = 25;
+    [Range(0, 100)]
+    public int closedHardChance = 25;
     [Range(0, 100)]
     public int runnerStartChance = 25;
 
@@ -111,9 +128,13 @@ public class LevelGenerator : MonoBehaviour
     // Material cache for batching optimization
     private Dictionary<string, Material> materialCache = new Dictionary<string, Material>();
 
+    [Header("Other References")]
+    [SerializeField] private TextMeshProUGUI cycleText;
+
     //Events
     public delegate void RestartGenerationDelegate();
     public static event RestartGenerationDelegate RestartGenerationEvent;
+    
     
 
     private void Start()
@@ -134,6 +155,8 @@ public class LevelGenerator : MonoBehaviour
     public void UpdateCycleCount()
     {
         cycle++;
+        // Update cycle text
+        cycleText.text = cycle.ToString();
     }
 
     private void InitializeBatchingSettings()
@@ -398,33 +421,79 @@ public class LevelGenerator : MonoBehaviour
         List<string> availableTypes = new List<string>();
         List<int> weights = new List<int>();
 
-        // Easy levels - check spawn flag
-        if (spawnEasyLevels && easyLevels.Count > 0)
+        // Easy levels - check spawn flag AND chance > 0
+        if (spawnEasyLevels && easyLevels.Count > 0 && easyChance > 0)
         {
             availableTypes.Add("Easy");
             weights.Add(easyChance);
         }
 
-        // Closed levels - check spawn flag and special prefabs
-        if (spawnClosedLevels && closedLevels.Count > 0 && startClosedRoom != null && endClosedRoom != null)
+        // Medium levels - check spawn flag AND chance > 0
+        if (spawnMediumLevels && mediumLevels.Count > 0 && mediumChance > 0)
+        {
+            availableTypes.Add("Medium");
+            weights.Add(mediumChance);
+        }
+
+        // Hard levels - check spawn flag AND chance > 0
+        if (spawnHardLevels && hardLevels.Count > 0 && hardChance > 0)
+        {
+            availableTypes.Add("Hard");
+            weights.Add(hardChance);
+        }
+
+        // Closed levels - check spawn flag, special prefabs AND chance > 0
+        if (spawnClosedLevels && closedLevels.Count > 0 && startClosedRoom != null && endClosedRoom != null && closedChance > 0)
         {
             availableTypes.Add("Closed");
             weights.Add(closedChance);
         }
 
+        // Closed Medium levels - check spawn flag AND chance > 0
+        if (spawnClosedMediumLevels && closedMediumLevels.Count > 0 && closedMediumChance > 0)
+        {
+            availableTypes.Add("ClosedMedium");
+            weights.Add(closedMediumChance);
+        }
+
+        // Closed Hard levels - check spawn flag AND chance > 0
+        if (spawnClosedHardLevels && closedHardLevels.Count > 0 && closedHardChance > 0)
+        {
+            availableTypes.Add("ClosedHard");
+            weights.Add(closedHardChance);
+        }
+
+        // FIX 1: If no available types, try to find a fallback
         if (availableTypes.Count == 0)
         {
-            Debug.LogError("No available level types!");
-            return null;
+            Debug.LogWarning("No available level types! Looking for fallback options...");
+            
+            // Try easy levels as fallback if they exist
+            if (easyLevels.Count > 0)
+            {
+                Debug.Log("Using easy levels as fallback");
+                return GetRandomLevelFromType("Easy");
+            }
+            // Try closed levels as fallback if they exist
+            else if (closedLevels.Count > 0 && startClosedRoom != null && endClosedRoom != null)
+            {
+                Debug.Log("Using closed levels as fallback");
+                return GetRandomLevelFromType("Closed");
+            }
+            else
+            {
+                Debug.LogError("No fallback level types available!");
+                return null;
+            }
         }
 
         // Select random level type based on weights
         string selectedType = GetWeightedRandomType(availableTypes, weights);
 
         // Handle closed levels separately
-        if (selectedType == "Closed")
+        if (selectedType == "Closed" || selectedType == "ClosedMedium" || selectedType == "ClosedHard")
         {
-            return StartClosedSection();
+            return StartClosedSection(selectedType);
         }
 
         // Return random level from the selected type
@@ -469,8 +538,20 @@ public class LevelGenerator : MonoBehaviour
             case "Easy":
                 levelList = easyLevels;
                 break;
+            case "Medium":
+                levelList = mediumLevels;
+                break;
+            case "Hard":
+                levelList = hardLevels;
+                break;
             case "Closed":
                 levelList = closedLevels;
+                break;
+            case "ClosedMedium":
+                levelList = closedMediumLevels;
+                break;
+            case "ClosedHard":
+                levelList = closedHardLevels;
                 break;
         }
 
@@ -485,15 +566,19 @@ public class LevelGenerator : MonoBehaviour
         foreach (LevelData levelData in levelList)
         {
             int spawnChance = GetSpawnChanceForLevelType(levelData.levelType);
-            for (int i = 0; i < spawnChance; i++)
+            // FIX: Only add to weighted list if spawn chance is greater than 0
+            if (spawnChance > 0)
             {
-                weightedPrefabs.Add(levelData.levelPrefab);
+                for (int i = 0; i < spawnChance; i++)
+                {
+                    weightedPrefabs.Add(levelData.levelPrefab);
+                }
             }
         }
 
         if (weightedPrefabs.Count == 0)
         {
-            Debug.LogError($"No weighted prefabs available for {type} category!");
+            Debug.LogError($"No weighted prefabs available for {type} category! All spawn chances may be 0.");
             return null;
         }
 
@@ -519,7 +604,7 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private GameObject StartClosedSection()
+    private GameObject StartClosedSection(string closedType)
     {
         // Check if we can start a closed section based on remaining levels
         int remainingLevels = numberOfLevels - currentLevelIndex;
@@ -545,7 +630,7 @@ public class LevelGenerator : MonoBehaviour
         closedRoomsSpawned = 0;
         hasSpawnedStartClosedRoom = false; // Reset for new closed section
 
-        Debug.Log($"Starting closed section at level {currentLevelIndex + 1}, will spawn up to {availableClosedRooms} closed rooms");
+        Debug.Log($"Starting {closedType} section at level {currentLevelIndex + 1}, will spawn up to {availableClosedRooms} closed rooms");
 
         // Return the start closed room
         hasSpawnedStartClosedRoom = true;
@@ -565,7 +650,8 @@ public class LevelGenerator : MonoBehaviour
         int remainingLevels = numberOfLevels - currentLevelIndex;
 
         // Check if we need to end the closed section
-        bool shouldEnd = closedRoomsSpawned >= maxClosedRooms || remainingLevels <= 1;
+        // FIX: Don't end closed section if we're in a runner section OR if runner section has started
+        bool shouldEnd = (closedRoomsSpawned >= maxClosedRooms || remainingLevels <= 1) && !isInRunnerSection;
 
         if (shouldEnd)
         {
@@ -582,7 +668,7 @@ public class LevelGenerator : MonoBehaviour
     private bool ShouldStartRunnerSection()
     {
         // Check if runner prefabs are available
-        if (runnerStartPrefab == null || runnerEndPrefab == null)
+        if (runnerStartPrefabs == null || runnerStartPrefabs.Length == 0 || runnerEndPrefabs == null || runnerEndPrefabs.Length == 0)
         {
             return false;
         }
@@ -602,17 +688,23 @@ public class LevelGenerator : MonoBehaviour
             return false;
         }
 
-        // Check if we're approaching the end (don't start runner if we're too close to maxClosedRooms)
-        int levelsUsed = currentLevelIndex;
-        int maxAllowedForRunner = maxClosedRooms - 1; // Leave room for at least one non-runner level
-
-        if (levelsUsed >= maxAllowedForRunner)
-        {
-            return false;
-        }
+        // FIX 2: Improved runner section chance calculation for high level counts
+        // Increase chance based on how many levels we have left
+        float chanceMultiplier = Mathf.Clamp01((float)remainingLevels / numberOfLevels);
+        int adjustedChance = Mathf.RoundToInt(runnerStartChance * chanceMultiplier);
+        
+        // Ensure minimum chance so it can still spawn in high level counts
+        adjustedChance = Mathf.Max(10, adjustedChance);
 
         // Random chance to start runner section
-        return Random.Range(0, 100) < runnerStartChance;
+        bool shouldStart = Random.Range(0, 100) < adjustedChance;
+        
+        if (shouldStart)
+        {
+            Debug.Log($"Runner section chance: {adjustedChance}% (base: {runnerStartChance}%, multiplier: {chanceMultiplier:F2})");
+        }
+        
+        return shouldStart;
     }
 
     private GameObject StartRunnerSection()
@@ -625,7 +717,7 @@ public class LevelGenerator : MonoBehaviour
 
         Debug.Log($"Starting runner section at level {currentLevelIndex + 1}, will spawn {runnerRoomsRequired} closed rooms before end");
 
-        return runnerStartPrefab;
+        return GetRandomRunnerStartPrefab();
     }
 
     private GameObject GetRunnerRoomPrefab()
@@ -637,11 +729,33 @@ public class LevelGenerator : MonoBehaviour
         {
             Debug.Log($"Ending runner section after {runnerRoomsSpawned - 1} closed rooms");
             isInRunnerSection = false;
-            return runnerEndPrefab;
+            return GetRandomRunnerEndPrefab();
         }
 
         // Return a random closed level for the middle rooms based on level type spawn chances
         return GetRandomLevelFromType("Closed");
+    }
+
+    private GameObject GetRandomRunnerStartPrefab()
+    {
+        if (runnerStartPrefabs == null || runnerStartPrefabs.Length == 0)
+        {
+            Debug.LogError("No runner start prefabs available!");
+            return null;
+        }
+
+        return runnerStartPrefabs[Random.Range(0, runnerStartPrefabs.Length)];
+    }
+
+    private GameObject GetRandomRunnerEndPrefab()
+    {
+        if (runnerEndPrefabs == null || runnerEndPrefabs.Length == 0)
+        {
+            Debug.LogError("No runner end prefabs available!");
+            return null;
+        }
+
+        return runnerEndPrefabs[Random.Range(0, runnerEndPrefabs.Length)];
     }
 
     private void SpawnEndClosedRoom(ref Vector3 currentEndPosition)
@@ -677,6 +791,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void SpawnRunnerEndRoom(ref Vector3 currentEndPosition)
     {
+        GameObject runnerEndPrefab = GetRandomRunnerEndPrefab();
         if (runnerEndPrefab != null)
         {
             // Use the same consistent approach: instantiate then adjust
@@ -707,10 +822,7 @@ public class LevelGenerator : MonoBehaviour
 
     public void RestartGeneration()
     {
-        RestartGenerationEvent?.Invoke();
-        
         UpdateLevelsCounts();
-        UpdateCycleCount();
 
         // Find the current end room (which will become the new start)
         GameObject currentEndRoom = null;
@@ -746,6 +858,13 @@ public class LevelGenerator : MonoBehaviour
 
         // Start level generation again - this will use the new start room and generate new levels
         GenerateLevels();
+
+        Invoke("DelayedRestartGeneration", 0.5f);
+    }
+    
+    private void DelayedRestartGeneration()
+    {
+        RestartGenerationEvent?.Invoke();
     }
 
     public void GenerateLevelsSimple()
@@ -850,6 +969,7 @@ public class LevelGenerator : MonoBehaviour
         if (isInRunnerSection)
         {
             Transform lastEnd = FindEndPoint(currentLevel);
+            GameObject runnerEndPrefab = GetRandomRunnerEndPrefab();
             if (runnerEndPrefab != null)
             {
                 // Use the same consistent approach: instantiate then adjust

@@ -25,12 +25,23 @@ public class SlideMetalDoorManager : MonoBehaviour
     public AudioSource normalAudioSource;
     public AudioSource brokenAudioSource;
     public AudioSource closeAudioSource;
+    private bool alreadyChecked = false;
 
     void Start()
     {
         // Validate chances
+        //if (alreadyChecked) return;
         ValidateChances();
         SpawnOpenDoor();
+        //alreadyChecked = true;
+    }
+
+    void OnEnable()
+    {
+        //if (alreadyChecked) return;
+        ValidateChances();
+        SpawnOpenDoor();
+        //alreadyChecked = true;
     }
 
     public void OpenSlideDoor()
@@ -102,14 +113,16 @@ public class SlideMetalDoorManager : MonoBehaviour
         if (spawnOpen)
         {
             doorAnimator.SetBool("MetalSlideSpawnOpen", true);
+            doorAnimator.SetBool("MetalSlideClose", false);
+            Debug.LogWarning("DOOR OPENED YES IT DID TRUST ME");
         }
+        
     }
 
     public void CloseDoor()
     {
         doorAnimator.SetBool("MetalSlideSpawnOpen", false);
         doorAnimator.SetBool("MetalSlideClose", true);
-        Debug.LogWarning("DOOR CLOSED NIGGA");
         closeAudioSource.Play();
     }
     

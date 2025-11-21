@@ -8,7 +8,7 @@ public class Swinging : MonoBehaviour
     [SerializeField] private LayerMask whatIsGrappleable;
     [SerializeField] private LineRenderer lr;          
     [SerializeField] private KeyCode swingKey = KeyCode.Mouse1; 
-    [SerializeField] private float maxSwingDistance; 
+    [SerializeField] public float maxSwingDistance; 
     [SerializeField] private float swingForce = 15f; 
     [SerializeField] private float swingSpeedBonus = 25f; 
     private int ropeSegments = 25;     

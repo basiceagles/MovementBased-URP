@@ -5,6 +5,7 @@ public class CallCameraShake : MonoBehaviour
     private GameObject mainCamera;
     private CameraShake cameraShake;
 
+
     void Start()
     {
         mainCamera = GameObject.Find("Main Camera");
@@ -14,5 +15,10 @@ public class CallCameraShake : MonoBehaviour
     public void CallCameraShaker()
     {
         cameraShake.Shake();
+    }
+
+    public void CallHeavyCameraShaker()
+    {
+        cameraShake.HeavyShake();
     }
 }

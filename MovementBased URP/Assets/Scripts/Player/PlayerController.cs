@@ -1,3 +1,4 @@
+using SmallHedge.SoundManager;
 using UnityEngine; 
 
 public class PlayerController : MonoBehaviour
@@ -10,6 +11,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float gravity;
     [SerializeField] private float airControlStrength = 2f;
     public bool isGrounded;
+    public bool isOnAir = false;
+    public bool isSafeFromRunner = false;
 
     [Header("Jump")]
     [SerializeField] private float jumpHeight;
@@ -143,8 +146,8 @@ public class PlayerController : MonoBehaviour
         
         if (enableSurfaceAlignment)
         {
-            targetSurfaceNormal = (isGrounded && ((1 << hit.collider.gameObject.layer) & alignmentLayers) != 0) 
-                ? ClampNormal(hit.normal) : Vector3.up;
+            bool isOnAlignmentLayer = isGrounded && ((1 << hit.collider.gameObject.layer) & alignmentLayers) != 0;
+            targetSurfaceNormal = isOnAlignmentLayer ? ClampNormal(hit.normal) : Vector3.up;
         }
     }
     
@@ -423,10 +426,24 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                if (enableSurfaceAlignment && !isJumping && Vector3.Angle(Vector3.up, currentSurfaceNormal) > 5f && currentSpeed > walkSpeed * 0.8f)
+                float scaleMultiplier = transform.localScale.y / originalScale.y;
+                Vector3 origin = transform.position + Vector3.up * (controller.radius * 0.5f * scaleMultiplier);
+                float checkDist = groundCheckDistance + controller.radius * 0.5f * scaleMultiplier;
+                float sphereRadius = controller.radius * groundCheckRadius * scaleMultiplier;
+                bool onSlideLayer = Physics.SphereCast(origin, sphereRadius, Vector3.down, out RaycastHit hit, checkDist, slideLayer);
+                
+                if (onSlideLayer)
+                {
+                    velocity.y = -30f;
+                }
+                else if (enableSurfaceAlignment && !isJumping && Vector3.Angle(Vector3.up, currentSurfaceNormal) > 5f && currentSpeed > walkSpeed * 0.8f)
+                {
                     velocity.y = -10f;
+                }
                 else
+                {
                     velocity.y = -2f;
+                }
             }
             isJumping = false;
         }
@@ -478,7 +495,6 @@ public class PlayerController : MonoBehaviour
         Quaternion target = Quaternion.LookRotation(forward, currentSurfaceNormal);
         Vector3 euler = target.eulerAngles;
         euler.y = transform.eulerAngles.y;
-        euler.z = transform.eulerAngles.z;
         
         transform.rotation = Quaternion.Euler(euler);
     }

@@ -17,6 +17,7 @@ namespace SmallHedge.SoundManager
         LIGHTBREAK,
         FOOTSTEPMETAL,
         TVGLITCH,
-        EARTHQUAKE
+        EARTHQUAKE,
+        PERKSELECTCLICK
     }
 }

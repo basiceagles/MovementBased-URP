@@ -27,6 +27,9 @@ public class PerkSelectorScript : MonoBehaviour
     public SpawnableObject[] objectsArray; // Assign your GameObjects here in inspector
     public int amountToActivate = 2; // Adjustable amount of objects to activate
     
+    [Header("Special References")]
+    public GameObject ButtonPerkNone; // Reference to the "None" perk button
+    
     [Header("Button Hierarchy System")]
     public ButtonHierarchy[] buttonHierarchies; // Define button parent-child relationships
     
@@ -42,7 +45,8 @@ public class PerkSelectorScript : MonoBehaviour
     public bool spawnGrinder = false;
     public bool spawnNodes = false;
     [Header("Red Eye Perk References")]
-    [Range(0, 100)] public float redEyeSpawnChance = 50f;
+    [Range(0, 100)] public int redEyeSpawnChance = 50;
+    [SerializeField] private int redEyeTimeToAdd= 20;
     public bool spawnRedEye = false;
     [Header("Prop Spawn References")]
     [Range(0, 100)] public float propSpawnChance = 50f;
@@ -57,6 +61,11 @@ public class PerkSelectorScript : MonoBehaviour
     public bool useGrapple = false;
     [SerializeField] private GameObject grappleGameobject;
     [Range(0, 100)] [SerializeField] private int grappleChance = 25;
+    [Header("Red Walls Perk References")]
+    [Range(0, 100)][SerializeField] private int redWallsSpawnChances;
+    [SerializeField] private int redWallTimeToAdd= 20;
+    [Header("Pickup Nodes Perk References")]
+    [SerializeField] private int nodePickupTimerToRemove = 10;
     [Header("Add Levels Perk References")]
     [SerializeField] private int levelsToAdd1;
     [SerializeField] private int levelsToAdd2;
@@ -73,13 +82,17 @@ public class PerkSelectorScript : MonoBehaviour
     private ItemPickup itemPickup;
     private GameObject timerTarget;
     private Timer timer;
+    private GameObject grappleTarget;
     [Header("Debug Only")]
     [SerializeField] public bool isPerkMenuOpen;
+    [Header("Other References")]
+    [SerializeField] private Grappling grappling;
 
     void Start()
     {
         mainCamera = GameObject.Find("Main Camera");
         cameraController = mainCamera.GetComponent<CameraController>();
+        itemPickup = mainCamera.GetComponent<ItemPickup>();
 
         targetProcuderalGeneration = GameObject.Find("ProcuderalGeneration");
         levelGenerator = targetProcuderalGeneration.GetComponent<LevelGenerator>();
@@ -90,6 +103,9 @@ public class PerkSelectorScript : MonoBehaviour
 
         timerTarget = GameObject.Find("TimerManager");
         timer = timerTarget.GetComponent<Timer>();
+
+        //grappleTarget = GameObject.Find("Grapple");
+        //grappling = grappleTarget.GetComponent<Grappling>();
 
 
         InitializeButtonHierarchy();
@@ -115,9 +131,49 @@ public class PerkSelectorScript : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         cameraController.enabled = false;
+        
+        // NEW: Check if all objects have spawnAtMenuOpen set to false
+        CheckAndEnableNonePerk();
+        
         ActivateRandomObjects();
         //itemPickup.enabled = false; DELETE
         isPerkMenuOpen = true;
+    }
+    
+    // NEW METHOD: Check if all objects have spawnAtMenuOpen false and enable ButtonPerkNone
+    private void CheckAndEnableNonePerk()
+    {
+        if (ButtonPerkNone == null)
+        {
+            Debug.LogWarning("ButtonPerkNone reference is not set!");
+            return;
+        }
+
+        bool allDisabled = true;
+        
+        // Check all objects in objectsArray (except ButtonPerkNone itself)
+        foreach (SpawnableObject spawnable in objectsArray)
+        {
+            if (spawnable.gameObject != null && spawnable.gameObject != ButtonPerkNone)
+            {
+                if (spawnable.spawnAtMenuOpen)
+                {
+                    allDisabled = false;
+                    break;
+                }
+            }
+        }
+        
+        // If all other perks are disabled, enable ButtonPerkNone
+        if (allDisabled)
+        {
+            SetSpawnAtMenuOpenForObject(ButtonPerkNone, true);
+            Debug.Log("All perks disabled - enabling ButtonPerkNone");
+        }
+        else
+        {
+            SetSpawnAtMenuOpenForObject(ButtonPerkNone, false);
+        }
     }
     
     public void ClosePerkMenu()
@@ -521,5 +577,21 @@ public class PerkSelectorScript : MonoBehaviour
     {
         levelGenerator.numberOfLevels = levelGenerator.numberOfLevels + levelsToAdd2;
         timer.totalSeconds = timer.totalSeconds + timeToAdd3;
+    }
+    public void ButtonRedEyeSpawner()
+    {
+        levelGenerator.redEyeChance = levelGenerator.redEyeChance + redEyeSpawnChance;
+        spawnRedEye = true;
+        timer.totalSeconds = timer.totalSeconds + redEyeTimeToAdd;
+    }
+    public void ButtonRedWallsSpawner()
+    {
+        levelGenerator.redWallsChance = levelGenerator.redWallsChance + redWallsSpawnChances;
+        timer.totalSeconds = timer.totalSeconds + redWallTimeToAdd;
+    }
+    public void ButtonPickupNodesPerk()
+    {
+        grappling.canPickupNode = true;
+        timer.totalSeconds = timer.totalSeconds - nodePickupTimerToRemove;
     }
 }
