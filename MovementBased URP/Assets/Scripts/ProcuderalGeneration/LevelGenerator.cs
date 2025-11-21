@@ -463,22 +463,34 @@ public class LevelGenerator : MonoBehaviour
             weights.Add(closedHardChance);
         }
 
-        // FIX 1: If no available types, try to find a fallback
+        // FIX: Only use fallback if spawnEasyLevels is actually true
         if (availableTypes.Count == 0)
         {
             Debug.LogWarning("No available level types! Looking for fallback options...");
             
-            // Try easy levels as fallback if they exist
-            if (easyLevels.Count > 0)
+            // Try easy levels as fallback ONLY if spawnEasyLevels is true
+            if (spawnEasyLevels && easyLevels.Count > 0)
             {
                 Debug.Log("Using easy levels as fallback");
                 return GetRandomLevelFromType("Easy");
             }
-            // Try closed levels as fallback if they exist
-            else if (closedLevels.Count > 0 && startClosedRoom != null && endClosedRoom != null)
+            // Try closed levels as fallback ONLY if spawnClosedLevels is true
+            else if (spawnClosedLevels && closedLevels.Count > 0 && startClosedRoom != null && endClosedRoom != null)
             {
                 Debug.Log("Using closed levels as fallback");
                 return GetRandomLevelFromType("Closed");
+            }
+            // Try medium levels as fallback ONLY if spawnMediumLevels is true
+            else if (spawnMediumLevels && mediumLevels.Count > 0)
+            {
+                Debug.Log("Using medium levels as fallback");
+                return GetRandomLevelFromType("Medium");
+            }
+            // Try hard levels as fallback ONLY if spawnHardLevels is true
+            else if (spawnHardLevels && hardLevels.Count > 0)
+            {
+                Debug.Log("Using hard levels as fallback");
+                return GetRandomLevelFromType("Hard");
             }
             else
             {

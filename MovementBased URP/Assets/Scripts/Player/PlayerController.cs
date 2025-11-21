@@ -146,8 +146,8 @@ public class PlayerController : MonoBehaviour
         
         if (enableSurfaceAlignment)
         {
-            targetSurfaceNormal = (isGrounded && ((1 << hit.collider.gameObject.layer) & alignmentLayers) != 0) 
-                ? ClampNormal(hit.normal) : Vector3.up;
+            bool isOnAlignmentLayer = isGrounded && ((1 << hit.collider.gameObject.layer) & alignmentLayers) != 0;
+            targetSurfaceNormal = isOnAlignmentLayer ? ClampNormal(hit.normal) : Vector3.up;
         }
     }
     
@@ -481,7 +481,6 @@ public class PlayerController : MonoBehaviour
         Quaternion target = Quaternion.LookRotation(forward, currentSurfaceNormal);
         Vector3 euler = target.eulerAngles;
         euler.y = transform.eulerAngles.y;
-        euler.z = transform.eulerAngles.z;
         
         transform.rotation = Quaternion.Euler(euler);
     }

@@ -20592,7 +20592,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   runnerPrefab: {fileID: 6758774785029903696, guid: 10dff65b8f77ff5488cbb8b2b8e25ee0, type: 3}
-  runnerParticles: {fileID: 1233856671040489181, guid: 5be2df021ede0184c81d9c1aede6ce1e, type: 3}
   runnerSpawnPoint: {fileID: 0}
   runnerSpeed: 12
   runnerRushSpeed: 50
@@ -24953,6 +24952,10 @@ PrefabInstance:
     - target: {fileID: 1557733885150758004, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 3343798156140563583, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+      propertyPath: enableSurfaceAlignment
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3407343985781969289, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: m_Enabled
