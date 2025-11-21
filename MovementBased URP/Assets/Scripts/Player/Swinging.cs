@@ -27,6 +27,7 @@ public class Swinging : MonoBehaviour
     private bool hookFlying;
     private float hookFlyProgress;
     private Grappling grappling;
+    private ItemPickup itemPickup;
 
     void Start()
     {
@@ -45,6 +46,7 @@ public class Swinging : MonoBehaviour
     private void RefreshReferences()
     {
         grappling = FindObjectOfType<Grappling>();
+        itemPickup = FindObjectOfType<ItemPickup>();
         if (swingGunTip == null) 
         {
             swingGunTip = transform;
@@ -151,6 +153,12 @@ public class Swinging : MonoBehaviour
 
     void StartSwing()
     {
+        // Block swing if holding a node
+        if (itemPickup != null && itemPickup.isHolding)
+        {
+            return;
+        }
+        
         if (cam == null || swinging || !Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, maxSwingDistance, whatIsGrappleable))
         {
             return;

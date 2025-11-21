@@ -106,6 +106,12 @@ public class Grappling : MonoBehaviour
 
     private void StartGrapple()
     {
+        // Block grapple if holding a node
+        if (itemPickup != null && itemPickup.isHolding)
+        {
+            return;
+        }
+        
         if (cam == null || pc == null || grapplingCdTimer > 0 || grappling)
         {
             return;

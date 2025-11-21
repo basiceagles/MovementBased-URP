@@ -39,7 +39,7 @@ public class ItemPickup : MonoBehaviour
     private bool isCollected;
 
     public bool disableGrappleAndSwing = false;
-
+    
     [SerializeField] private CrosshairSwitcher crosshairSwitcher;
 
     void Start()
@@ -77,7 +77,7 @@ public class ItemPickup : MonoBehaviour
     private void Update()
     {
         HandleRaycast();
-
+        
         if (Input.GetKeyDown(interactKey))
         {
             if (currentLever != null)
@@ -272,18 +272,6 @@ public class ItemPickup : MonoBehaviour
         heldItem.transform.rotation = holdPoint.rotation;
 
         isHolding = true;
-
-        if (disableGrappleAndSwing)
-        {
-            if (grapple != null)
-            {
-                grapple.SetActive(false);
-            }
-            if (swing != null)
-            {
-                swing.SetActive(false);
-            }
-        }
     }
 
     private void Drop()
@@ -311,18 +299,6 @@ public class ItemPickup : MonoBehaviour
         heldItem = null;
         isHolding = false;
         itemCollider = null;
-
-        if (disableGrappleAndSwing)
-        {
-            if (grapple != null)
-            {
-                grapple.SetActive(true);
-            }
-            if (swing != null)
-            {
-                swing.SetActive(true);
-            }
-        }
     }
 
     private void InsertNode()
@@ -338,14 +314,5 @@ public class ItemPickup : MonoBehaviour
         Destroy(heldItem);
         isHolding = false;
         itemCollider = null;
-
-        if (grapple != null)
-        {
-            grapple.SetActive(true);
-        }
-        if (swing != null)
-        {
-            swing.SetActive(true);
-        }
     }
 }

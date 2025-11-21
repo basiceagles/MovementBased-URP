@@ -185,7 +185,8 @@ public class PlayerController : MonoBehaviour
     
     private Vector3 GetInputDirection()
     {
-        return transform.right * Input.GetAxisRaw("Horizontal") + transform.forward * Input.GetAxisRaw("Vertical");
+        Vector3 inputDir = transform.right * Input.GetAxisRaw("Horizontal") + transform.forward * Input.GetAxisRaw("Vertical");
+        return inputDir.normalized;
     }
     
     private void HandleAirMovement(Vector3 inputDir)

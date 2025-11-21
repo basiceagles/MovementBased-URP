@@ -246,16 +246,16 @@ public class LevelGenerator : MonoBehaviour
             Debug.Log($"Level {i+1}: Start at {FindStartPoint(level).position}, End at {currentEndPosition}");
         }
 
-        // If we're still in a closed section at the end, close it
-        if (isInClosedSection)
-        {
-            SpawnEndClosedRoom(ref currentEndPosition);
-        }
-
-        // If we're still in a runner section at the end, end it
+        // If we're still in a runner section at the end, end it first
         if (isInRunnerSection)
         {
             SpawnRunnerEndRoom(ref currentEndPosition);
+        }
+
+        // If we're still in a closed section at the end, close it after runner
+        if (isInClosedSection)
+        {
+            SpawnEndClosedRoom(ref currentEndPosition);
         }
 
         // Generate End Room using same consistent approach
@@ -463,40 +463,11 @@ public class LevelGenerator : MonoBehaviour
             weights.Add(closedHardChance);
         }
 
-        // FIX: Only use fallback if spawnEasyLevels is actually true
+        // If no level types are available, stop generation instead of forcing a fallback
         if (availableTypes.Count == 0)
         {
-            Debug.LogWarning("No available level types! Looking for fallback options...");
-            
-            // Try easy levels as fallback ONLY if spawnEasyLevels is true
-            if (spawnEasyLevels && easyLevels.Count > 0)
-            {
-                Debug.Log("Using easy levels as fallback");
-                return GetRandomLevelFromType("Easy");
-            }
-            // Try closed levels as fallback ONLY if spawnClosedLevels is true
-            else if (spawnClosedLevels && closedLevels.Count > 0 && startClosedRoom != null && endClosedRoom != null)
-            {
-                Debug.Log("Using closed levels as fallback");
-                return GetRandomLevelFromType("Closed");
-            }
-            // Try medium levels as fallback ONLY if spawnMediumLevels is true
-            else if (spawnMediumLevels && mediumLevels.Count > 0)
-            {
-                Debug.Log("Using medium levels as fallback");
-                return GetRandomLevelFromType("Medium");
-            }
-            // Try hard levels as fallback ONLY if spawnHardLevels is true
-            else if (spawnHardLevels && hardLevels.Count > 0)
-            {
-                Debug.Log("Using hard levels as fallback");
-                return GetRandomLevelFromType("Hard");
-            }
-            else
-            {
-                Debug.LogError("No fallback level types available!");
-                return null;
-            }
+            Debug.LogWarning("No available level types! Skipping level generation for this index.");
+            return null;
         }
 
         // Select random level type based on weights
@@ -624,8 +595,8 @@ public class LevelGenerator : MonoBehaviour
         // If this is the last level, don't start a closed section
         if (remainingLevels <= 1)
         {
-            Debug.Log("Cannot start closed section on last level, falling back to easy level");
-            return GetRandomLevelFromType("Easy");
+            Debug.Log("Cannot start closed section on last level, skipping closed section.");
+            return null;
         }
 
         // Calculate how many closed rooms we can actually spawn
@@ -633,8 +604,8 @@ public class LevelGenerator : MonoBehaviour
 
         if (availableClosedRooms <= 0)
         {
-            Debug.Log("Not enough space for closed section, falling back to easy level");
-            return GetRandomLevelFromType("Easy");
+            Debug.Log("Not enough space for closed section, skipping closed section.");
+            return null;
         }
 
         // Start closed section
