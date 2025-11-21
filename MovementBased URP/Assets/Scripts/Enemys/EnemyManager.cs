@@ -21,6 +21,8 @@ public class EnemyManager : MonoBehaviour
         //Спавним и берем рефернсы для раннера, чтобы их потом менять
         if (runnerPrefab != null)
         {
+            GameObject runnerEnemyTarget;
+
             Transform spawnpointTransform;
             spawnpointTransform = runnerSpawnPoint.GetComponent<Transform>();
             spawnedRunnerGameobject = Instantiate(runnerPrefab, spawnpointTransform.position, runnerPrefab.transform.rotation);

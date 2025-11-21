@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 public class RunnerEnemy : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class RunnerEnemy : MonoBehaviour
     public float searchRadius = 5f;
     public string waypointTag = "Waypoint";
     public string endWaypointName = "WaypointEnd";
+    [SerializeField] private GameObject runnerPrefab;
 
     [Header("Debug")]
     public bool showGizmos = true;
@@ -17,6 +19,8 @@ public class RunnerEnemy : MonoBehaviour
     public Transform currentWaypoint;
     public Transform previousWaypoint;
     public bool isMoving = false;
+    private bool alreadyReached = false;
+    [SerializeField] private DestroyAfterTime destroyAfterTime;
 
     private List<Transform> visitedWaypoints = new List<Transform>();
 
@@ -117,6 +121,8 @@ public class RunnerEnemy : MonoBehaviour
         // Check if this is the end waypoint
         if (currentWaypoint.name == endWaypointName)
         {
+            if (alreadyReached) return;
+
             AudioSource audioSource;
             audioSource = currentWaypoint.GetComponent<AudioSource>();
             audioSource.Play();
@@ -130,6 +136,8 @@ public class RunnerEnemy : MonoBehaviour
             if (openDoor != null) openDoor.CallOpenDoor();
 
             DestroyEnemy();
+
+            alreadyReached = true;
         }
         else
         {
@@ -142,7 +150,6 @@ public class RunnerEnemy : MonoBehaviour
     {
         Debug.Log("Reached end waypoint. Destroying enemy.");
         Destroy(gameObject);
-        
     }
 
     // Public method to manually set waypoints (useful for testing)
