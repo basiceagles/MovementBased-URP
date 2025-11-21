@@ -426,10 +426,24 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                if (enableSurfaceAlignment && !isJumping && Vector3.Angle(Vector3.up, currentSurfaceNormal) > 5f && currentSpeed > walkSpeed * 0.8f)
+                float scaleMultiplier = transform.localScale.y / originalScale.y;
+                Vector3 origin = transform.position + Vector3.up * (controller.radius * 0.5f * scaleMultiplier);
+                float checkDist = groundCheckDistance + controller.radius * 0.5f * scaleMultiplier;
+                float sphereRadius = controller.radius * groundCheckRadius * scaleMultiplier;
+                bool onSlideLayer = Physics.SphereCast(origin, sphereRadius, Vector3.down, out RaycastHit hit, checkDist, slideLayer);
+                
+                if (onSlideLayer)
+                {
+                    velocity.y = -30f;
+                }
+                else if (enableSurfaceAlignment && !isJumping && Vector3.Angle(Vector3.up, currentSurfaceNormal) > 5f && currentSpeed > walkSpeed * 0.8f)
+                {
                     velocity.y = -10f;
+                }
                 else
+                {
                     velocity.y = -2f;
+                }
             }
             isJumping = false;
         }
