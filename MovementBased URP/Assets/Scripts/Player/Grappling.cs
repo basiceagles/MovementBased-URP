@@ -10,7 +10,7 @@ public class Grappling : MonoBehaviour
     [SerializeField] private LayerMask nodeLayer;
     [SerializeField] public LineRenderer lr;           
     [SerializeField] private KeyCode grappleKey = KeyCode.Mouse0;
-    [SerializeField] private float maxGrappleDistance;
+    [SerializeField] public float maxGrappleDistance;
     [SerializeField] private float grappleSpeed;
     [SerializeField] private float grapplingCd;
     public bool canPickupNode;

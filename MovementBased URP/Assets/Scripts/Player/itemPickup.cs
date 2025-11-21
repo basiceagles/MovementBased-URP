@@ -8,6 +8,7 @@ public class ItemPickup : MonoBehaviour
     public LayerMask interactableLayer;
     public LayerMask grinderLayer;
     public LayerMask leverLayer;
+    public LayerMask grappleableLayer;
     public KeyCode interactKey = KeyCode.E;
     
     private GameObject heldItem;
@@ -22,10 +23,15 @@ public class ItemPickup : MonoBehaviour
     private bool wasLookingAtGrinder = false;
     private bool isLookingAtGrinder;
     private bool isLookingAtLever;
+    private bool isLookingAtGrappleable;
+    private bool wasLookingAtGrappleable = false;
 
     private GameObject swing;
     private GameObject grapple;
     private GameObject holdPointBuffer; 
+    private Grappling grapplingScript;
+    private Swinging swingingScript;
+    private float maxGrappleRange; 
 
     private Lever currentLever;
     private Lever previousLever;
@@ -49,6 +55,14 @@ public class ItemPickup : MonoBehaviour
         
         // Find or create holdPointBuffer
         holdPointBuffer = GameObject.Find("holdPointBuffer");
+        
+        grapplingScript = FindObjectOfType<Grappling>();
+        swingingScript = FindObjectOfType<Swinging>();
+        
+        if (grapplingScript != null && swingingScript != null)
+        {
+            maxGrappleRange = Mathf.Max(grapplingScript.maxGrappleDistance, swingingScript.maxSwingDistance);
+        }
     }
 
     private void OnEnable()
@@ -131,6 +145,12 @@ public class ItemPickup : MonoBehaviour
                 isLookingAtLever = true;
             }
         }
+        
+        isLookingAtGrappleable = false;
+        if (maxGrappleRange > 0 && Physics.Raycast(ray, maxGrappleRange, grappleableLayer))
+        {
+            isLookingAtGrappleable = true;
+        }
 
         //grinder ui
         if (isLookingAtGrinder && currentGrinder != null && !wasLookingAtGrinder && isHolding)
@@ -184,6 +204,18 @@ public class ItemPickup : MonoBehaviour
         else
         {
             previousLever = currentLever;
+        }
+        
+        if (isLookingAtGrappleable && !wasLookingAtGrappleable)
+        {
+            crosshairSwitcher.ShowSwitchCrosshair();
+            wasLookingAtGrappleable = true;
+        }
+        
+        if (!isLookingAtGrappleable && wasLookingAtGrappleable)
+        {
+            crosshairSwitcher.HideSwitchCrosshair();
+            wasLookingAtGrappleable = false;
         }
     }
     

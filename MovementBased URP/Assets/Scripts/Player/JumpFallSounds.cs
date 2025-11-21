@@ -7,6 +7,8 @@ public class JumpFallSounds : MonoBehaviour
     private bool isJumping;
     private bool isGrounded;
     private bool wasInAir;
+    private bool hasPlayedJumpSound;
+    private bool hasPlayedFallSound;
 
     void Update()
     {
@@ -18,9 +20,6 @@ public class JumpFallSounds : MonoBehaviour
 
     private void HandlePlayJumpAndFallSounds()
     {
-        bool hasPlayedSound = false;
-        bool hasPlayedJumpSound = false;
-
         if (isJumping && isGrounded && !hasPlayedJumpSound)
         {
             SoundManager.PlaySound(SoundType.JUMP);
@@ -32,15 +31,16 @@ public class JumpFallSounds : MonoBehaviour
             hasPlayedJumpSound = false;
         }
         
-        if (wasInAir && isGrounded && !isJumping && !hasPlayedSound)
+        if (wasInAir && isGrounded && !isJumping && !hasPlayedFallSound)
         {
             SoundManager.PlaySound(SoundType.FALL);
+            hasPlayedFallSound = true;
         }
          // Reset flags when player leaves ground
         if (!isGrounded)
         {
             wasInAir = true;
-            hasPlayedSound = false;
+            hasPlayedFallSound = false;
         }
         // Reset wasInAir when grounded for a while (optional)
         if (isGrounded && !isJumping)
