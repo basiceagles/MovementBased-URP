@@ -4278,17 +4278,29 @@ MonoBehaviour:
   startRoomPrefab: {fileID: 0}
   endRoomPrefab: {fileID: 0}
   easyLevels: []
+  mediumLevels: []
+  hardLevels: []
   closedLevels:
   - levelPrefab: {fileID: 0}
     levelType: 0
+  closedMediumLevels: []
+  closedHardLevels: []
   startClosedRoom: {fileID: 0}
   endClosedRoom: {fileID: 0}
   spawnEasyLevels: 1
+  spawnMediumLevels: 1
+  spawnHardLevels: 1
   spawnClosedLevels: 1
+  spawnClosedMediumLevels: 1
+  spawnClosedHardLevels: 1
   runnerStartPrefabs: []
   runnerEndPrefabs: []
   easyChance: 25
+  mediumChance: 25
+  hardChance: 25
   closedChance: 25
+  closedMediumChance: 25
+  closedHardChance: 25
   runnerStartChance: 25
   standardChance: 25
   swingChance: 25
@@ -10730,6 +10742,8 @@ MonoBehaviour:
     levelType: 0
   - levelPrefab: {fileID: 2747161626659885058, guid: bb90718fa7ca976438b57908d4138ff7, type: 3}
     levelType: 1
+  mediumLevels: []
+  hardLevels: []
   closedLevels:
   - levelPrefab: {fileID: 9034075263092138857, guid: 8aadc14c68525f24695600aeeb5e998e, type: 3}
     levelType: 0
@@ -10749,14 +10763,24 @@ MonoBehaviour:
     levelType: 8
   - levelPrefab: {fileID: 6827742087343365466, guid: 4952afaa724b2ab41944fa2034814928, type: 3}
     levelType: 9
+  closedMediumLevels: []
+  closedHardLevels: []
   startClosedRoom: {fileID: 2324539671385129734, guid: 9a5ed9e7aff2d1a47badf9c3efb4a71e, type: 3}
   endClosedRoom: {fileID: 1083109575596404650, guid: 93e7de0659009d84e87f6a20c0d85a58, type: 3}
   spawnEasyLevels: 1
+  spawnMediumLevels: 1
+  spawnHardLevels: 1
   spawnClosedLevels: 1
+  spawnClosedMediumLevels: 1
+  spawnClosedHardLevels: 1
   runnerStartPrefabs: []
   runnerEndPrefabs: []
   easyChance: 25
+  mediumChance: 25
+  hardChance: 25
   closedChance: 25
+  closedMediumChance: 25
+  closedHardChance: 25
   runnerStartChance: 30
   standardChance: 25
   swingChance: 25
@@ -30038,6 +30062,7 @@ MonoBehaviour:
   grappleChance: 25
   redWallsSpawnChances: 30
   redWallTimeToAdd: 20
+  nodePickupTimerToRemove: 10
   levelsToAdd1: 10
   levelsToAdd2: 20
   levelsToAdd3: 30
@@ -30045,6 +30070,7 @@ MonoBehaviour:
   timeToAdd2: 40
   timeToAdd3: 60
   isPerkMenuOpen: 0
+  grappling: {fileID: 0}
 --- !u!4 &1318990441
 Transform:
   m_ObjectHideFlags: 0
@@ -45722,7 +45748,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3469260907815785715, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -11.993481
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3469260907815785715, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: m_LocalPosition.y

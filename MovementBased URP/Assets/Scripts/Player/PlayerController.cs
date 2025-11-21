@@ -378,9 +378,6 @@ public class PlayerController : MonoBehaviour
             }
         }
         
-        if (enableSurfaceAlignment && ((1 << hit.collider.gameObject.layer) & alignmentLayers) != 0)
-            targetSurfaceNormal = ClampNormal(hit.normal);
-        
         Vector3 camDir = transform.forward;
         camDir.y = 0;
         Vector3 slopeDir = Vector3.ProjectOnPlane(camDir.normalized, hit.normal).normalized;
@@ -391,9 +388,6 @@ public class PlayerController : MonoBehaviour
     
     private void HandleGroundSliding(RaycastHit hit)
     {
-        if (enableSurfaceAlignment && ((1 << hit.collider.gameObject.layer) & alignmentLayers) != 0)
-            targetSurfaceNormal = ClampNormal(hit.normal);
-        
         Vector3 camDir = transform.forward;
         camDir.y = 0;
         camDir.Normalize();

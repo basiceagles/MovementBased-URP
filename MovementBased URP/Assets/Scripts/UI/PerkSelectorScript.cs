@@ -550,13 +550,13 @@ public class PerkSelectorScript : MonoBehaviour
     public void ButtonGrapplePerk()
     {
         grappleGameobject.SetActive(true);
-        levelGenerator.swingChance = swingChance;
+        levelGenerator.grappleChance = grappleChance;
         levelGenerator.numberOfLevelsToAdd = levelGenerator.numberOfLevelsToAdd + 3;
     }
     public void ButtonSwingPerk()
     {
         swingGameobject.SetActive(true);
-        levelGenerator.grappleChance = grappleChance;
+        levelGenerator.swingChance = swingChance;
     }
     public void ButtonAdditionalPerksPerk()
     {

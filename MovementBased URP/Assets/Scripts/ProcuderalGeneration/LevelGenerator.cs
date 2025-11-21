@@ -661,9 +661,9 @@ public class LevelGenerator : MonoBehaviour
 
         int remainingLevels = numberOfLevels - currentLevelIndex;
 
-        // Check if we need to end the closed section
-        // FIX: Don't end closed section if we're in a runner section OR if runner section has started
-        bool shouldEnd = (closedRoomsSpawned >= maxClosedRooms || remainingLevels <= 1) && !isInRunnerSection;
+        // FIX: Check if we need to end the closed section
+        // Only end if we're NOT in a runner section AND we've spawned enough rooms OR we're at the last level
+        bool shouldEnd = !isInRunnerSection && (closedRoomsSpawned >= maxClosedRooms || remainingLevels <= 1);
 
         if (shouldEnd)
         {
