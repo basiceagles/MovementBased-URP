@@ -282,7 +282,7 @@ MonoBehaviour:
   rampLayer:
     serializedVersion: 2
     m_Bits: 0
-  enableSurfaceAlignment: 0
+  enableSurfaceAlignment: 1
   alignmentSmoothness: 8
   maxSlopeAngle: 60
   alignmentLayers:
@@ -1247,6 +1247,9 @@ MonoBehaviour:
   leverLayer:
     serializedVersion: 2
     m_Bits: 1024
+  grappleableLayer:
+    serializedVersion: 2
+    m_Bits: 512
   interactKey: 101
   isHolding: 0
   disableGrappleAndSwing: 1
@@ -1470,7 +1473,7 @@ Transform:
   m_GameObject: {fileID: 5901046440723327766}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.001, y: -1.082, z: 0.643}
+  m_LocalPosition: {x: -0.001, y: -1.082, z: 0.94}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

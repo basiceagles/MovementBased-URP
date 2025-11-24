@@ -1350,8 +1350,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outsideColor: {x: 170, y: 170, z: 170}
+  outsideFogColor: {x: 91, y: 91, z: 91}
   roomColor: {x: 131, y: 131, z: 131}
-  fadeTime: 0.2
+  roomFogColor: {x: 0, y: 0, z: 0}
+  enableFogTransition: 1
+  outsideFogDensity: 0.05
+  roomFogDensity: 0.02
+  fadeTime: 0.5
 --- !u!1 &8328919867132936535
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,7 +5,14 @@ public class LightingFader : MonoBehaviour
 {
     [Header("Lighting Colors")]
     public Vector3 outsideColor = new Vector3(121f, 121f, 121f); // Sky blue
+    public Vector3 outsideFogColor = new Vector3(91f, 91f, 91f); 
     public Vector3 roomColor = new Vector3(57f, 57f, 57f); // Warm white
+    public Vector3 roomFogColor = new Vector3(35f, 35f, 35f);
+    
+    [Header("Fog Settings")]
+    public bool enableFogTransition = true;
+    public float outsideFogDensity = 0.05f;
+    public float roomFogDensity = 0.05f;
     
     [Header("Fade Settings")]
     public float fadeTime = 1.5f;
@@ -20,10 +27,17 @@ public class LightingFader : MonoBehaviour
             StopCoroutine(currentFadeCoroutine);
         }
         
-        Color startColor = Vector3ToColor(outsideColor);
-        Color targetColor = Vector3ToColor(roomColor);
+        Color startLightColor = Vector3ToColor(outsideColor);
+        Color targetLightColor = Vector3ToColor(roomColor);
+        Color startFogColor = Vector3ToColor(outsideFogColor);
+        Color targetFogColor = Vector3ToColor(roomFogColor);
         
-        currentFadeCoroutine = StartCoroutine(FadeLightingColor(startColor, targetColor, fadeTime));
+        currentFadeCoroutine = StartCoroutine(FadeLightingAndFog(
+            startLightColor, targetLightColor, 
+            startFogColor, targetFogColor,
+            outsideFogDensity, roomFogDensity, 
+            fadeTime));
+
     }
     
     // Call this method to fade from roomColor to outsideColor
@@ -34,14 +48,24 @@ public class LightingFader : MonoBehaviour
             StopCoroutine(currentFadeCoroutine);
         }
         
-        Color startColor = Vector3ToColor(roomColor);
-        Color targetColor = Vector3ToColor(outsideColor);
+        Color startLightColor = Vector3ToColor(roomColor);
+        Color targetLightColor = Vector3ToColor(outsideColor);
+        Color startFogColor = Vector3ToColor(roomFogColor);
+        Color targetFogColor = Vector3ToColor(outsideFogColor);
         
-        currentFadeCoroutine = StartCoroutine(FadeLightingColor(startColor, targetColor, fadeTime));
+        currentFadeCoroutine = StartCoroutine(FadeLightingAndFog(
+            startLightColor, targetLightColor, 
+            startFogColor, targetFogColor,
+            roomFogDensity, outsideFogDensity, 
+            fadeTime));
+
     }
     
-    // Coroutine to handle the fade transition
-    private IEnumerator FadeLightingColor(Color startColor, Color targetColor, float duration)
+    // Coroutine to handle the fade transition for both lighting and fog
+    private IEnumerator FadeLightingAndFog(Color startLightColor, Color targetLightColor, 
+                                         Color startFogColor, Color targetFogColor,
+                                         float startFogDensity, float targetFogDensity, 
+                                         float duration)
     {
         float elapsedTime = 0f;
         
@@ -50,17 +74,36 @@ public class LightingFader : MonoBehaviour
             elapsedTime += Time.deltaTime;
             float t = Mathf.Clamp01(elapsedTime / duration);
             
-            // Lerp between colors
-            Color currentColor = Color.Lerp(startColor, targetColor, t);
+            // Lerp between lighting colors
+            Color currentLightColor = Color.Lerp(startLightColor, targetLightColor, t);
             
             // Apply to lighting environment
-            RenderSettings.ambientLight = currentColor;
+            RenderSettings.ambientLight = currentLightColor;
+            
+            // Handle fog transition if enabled
+            if (enableFogTransition)
+            {
+                // Lerp between fog colors
+                Color currentFogColor = Color.Lerp(startFogColor, targetFogColor, t);
+                RenderSettings.fogColor = currentFogColor;
+                
+                // Lerp between fog densities
+                float currentFogDensity = Mathf.Lerp(startFogDensity, targetFogDensity, t);
+                RenderSettings.fogDensity = currentFogDensity;
+            }
             
             yield return null;
         }
         
-        // Ensure we end exactly with the target color
-        RenderSettings.ambientLight = targetColor;
+        // Ensure we end exactly with the target values
+        RenderSettings.ambientLight = targetLightColor;
+        
+        if (enableFogTransition)
+        {
+            RenderSettings.fogColor = targetFogColor;
+            RenderSettings.fogDensity = targetFogDensity;
+        }
+        
         currentFadeCoroutine = null;
     }
     
@@ -69,5 +112,15 @@ public class LightingFader : MonoBehaviour
     {
         // Convert from 0-255 range to 0-1 range for Color
         return new Color(colorVector.x / 255f, colorVector.y / 255f, colorVector.z / 255f);
+    }
+    
+    // Optional: Initialize fog settings on start
+    private void Start()
+    {
+        // Ensure fog is enabled if we're using fog transitions
+        if (enableFogTransition)
+        {
+            RenderSettings.fog = true;
+        }
     }
 }
