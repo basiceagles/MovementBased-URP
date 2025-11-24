@@ -19,8 +19,7 @@ public class Grappling : MonoBehaviour
     [SerializeField] private int ropeSegments;
     [SerializeField] private float ropeWaveSpeed;
     [SerializeField] private float ropeWaveHeight;
-    
-    public float currentGrappleSpeed;
+    [SerializeField] private float currentGrappleSpeed;
     
     private Vector3 currentGrapplePosition;
     private Vector3 grapplePoint;
@@ -36,7 +35,7 @@ public class Grappling : MonoBehaviour
     private Rigidbody carriedNodeRb;
     private ItemPickup itemPickup;
 
-    void Start()
+    private void Start()
     {
         grappleGunTip = transform;
         lr = GetComponent<LineRenderer>();
@@ -48,7 +47,7 @@ public class Grappling : MonoBehaviour
         itemPickup = FindObjectOfType<ItemPickup>();
     }
 
-    bool IsValidVector(Vector3 vector)
+    private bool IsValidVector(Vector3 vector)
     {
         return !float.IsNaN(vector.x) && !float.IsNaN(vector.y) && !float.IsNaN(vector.z) &&
         !float.IsInfinity(vector.x) && !float.IsInfinity(vector.y) && !float.IsInfinity(vector.z);
@@ -106,12 +105,11 @@ public class Grappling : MonoBehaviour
 
     private void StartGrapple()
     {
-        // Block grapple if holding a node
         if (itemPickup != null && itemPickup.isHolding)
         {
             return;
         }
-        
+
         if (cam == null || pc == null || grapplingCdTimer > 0 || grappling)
         {
             return;
@@ -133,7 +131,7 @@ public class Grappling : MonoBehaviour
                 targetLever = lever;
             }
         }
-        
+
         lr.enabled = true; lr.positionCount = ropeSegments;
         currentGrapplePosition = grappleGunTip.position;
         hookFlying = true;
