@@ -111,7 +111,6 @@ public class Settings : MonoBehaviour
             PlayerPrefs.Save();
         }
 
-        // Initialize audio before loading settings
         InitializeAudio();
         SetupAntiAliasingDropdown();
         LoadSettings();
@@ -123,7 +122,6 @@ public class Settings : MonoBehaviour
         lastDisplayCount = Display.displays.Length;
         lastMonitorRefreshRate = Screen.currentResolution.refreshRate;
 
-        //fix after switching scenes
         Time.timeScale = 1f;
         UnPauseAllAudioSource();
     }
@@ -135,15 +133,12 @@ public class Settings : MonoBehaviour
 
     private void InitializeAudio()
     {
-        // Add listeners for audio sliders
         masterSlider.onValueChanged.AddListener(MasterMixerVolume);
         sfxSlider.onValueChanged.AddListener(SfxMixerVolume);
         musicSlider.onValueChanged.AddListener(MusicMixerVolume);
         
-        // Add listener for anti-aliasing dropdown
         antiAliasingDropdown.onValueChanged.AddListener(SetAntiAliasing);
         
-        // Add listener for shadows toggle
         shadowsToggle.onValueChanged.AddListener(SetShadows);
     }
 
@@ -170,13 +165,10 @@ public class Settings : MonoBehaviour
 
     private float ConvertToDecibels(float linearVolume)
     {
-        // Improved volume curve for better perceived loudness
         if (linearVolume <= 0.001f)
             return -80f;
         
-        // Use a more gradual curve that provides better volume at higher values
-        // This will make 100% volume actually sound like 100%
-        float adjustedVolume = Mathf.Pow(linearVolume, 0.7f); // Adjust the exponent for desired curve
+        float adjustedVolume = Mathf.Pow(linearVolume, 0.7f); 
         return Mathf.Log10(adjustedVolume) * 20f;
     }
 
@@ -286,7 +278,6 @@ public class Settings : MonoBehaviour
         sensitivitySlider.SetValueWithoutNotify(sensitivity);
         SetSensitivity(sensitivity);
 
-        // Load audio settings with proper default values
         float masterVolume = PlayerPrefs.GetFloat("MasterVolume", 0.8f);
         masterSlider.SetValueWithoutNotify(masterVolume);
         MasterMixerVolume(masterVolume);
@@ -325,7 +316,6 @@ public class Settings : MonoBehaviour
         PlayerPrefs.SetInt("AntiAliasing", antiAliasingDropdown.value);
         PlayerPrefs.SetInt("Shadows", shadowsToggle.isOn ? 1 : 0);
 
-        // Audio volumes are already saved when sliders change
         PlayerPrefs.Save();
 
         settingsUI.SetActive(false);

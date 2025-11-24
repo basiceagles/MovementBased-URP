@@ -149,6 +149,16 @@ public class RunnerEnemy : MonoBehaviour
     void DestroyEnemy()
     {
         Debug.Log("Reached end waypoint. Destroying enemy.");
+        GameObject mainCamera = GameObject.Find("Main Camera");
+        if (mainCamera != null)
+        {
+            CameraShake cameraShake = mainCamera.GetComponent<CameraShake>();
+            if (cameraShake != null)
+            {
+                cameraShake.StopShake();
+            }
+        }
+        
         Destroy(gameObject);
     }
 

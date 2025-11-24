@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask alignmentLayers;
 
     [SerializeField] private float initialAirVelocity;
-    private CharacterController controller;
+    [SerializeField] public CharacterController controller;
     public Vector3 velocity;
     private Vector3 originalScale;
     private bool wasGrounded;
@@ -443,19 +443,16 @@ public class PlayerController : MonoBehaviour
             isJumping = false;
         }
         
-        Vector3 previousPosition = transform.position;
-        controller.Move(velocity * Time.deltaTime);
-        
-        CheckCeilingCollision(previousPosition);
+        CollisionFlags collisionFlags = controller.Move(velocity * Time.deltaTime);
+        CheckCeilingCollision(collisionFlags);
     }
     
-    private void CheckCeilingCollision(Vector3 previousPosition)
+    private void CheckCeilingCollision(CollisionFlags collisionFlags)
     {
-        if (velocity.y > 3f && !isJumping && Mathf.Abs(transform.position.y - previousPosition.y) < 0.01f)
+        if ((collisionFlags & CollisionFlags.Above) != 0 && velocity.y > 0)
         {
-            velocity.y = 0;
-            velocity.x *= 0.7f;
-            velocity.z *= 0.7f;
+            velocity.y = 0f;
+            isJumping = false; 
         }
     }
     
