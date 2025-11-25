@@ -12,12 +12,16 @@ public class TimedEvent
 public class DelayedEvents : MonoBehaviour
 {
     [SerializeField] private TimedEvent[] events;
+    [SerializeField] private bool callOnStart = true;
 
     void Start()
     {
-        foreach (TimedEvent timedEvent in events)
+        if (callOnStart)
         {
-            StartCoroutine(ExecuteEvent(timedEvent.unityEvent, timedEvent.delay));
+            foreach (TimedEvent timedEvent in events)
+            {
+                StartCoroutine(ExecuteEvent(timedEvent.unityEvent, timedEvent.delay));
+            }
         }
     }
 
@@ -25,5 +29,13 @@ public class DelayedEvents : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         unityEvent.Invoke();
+    }
+
+    public void CallDelayedEvent ()
+    {
+        foreach (TimedEvent timedEvent in events)
+        {
+            StartCoroutine(ExecuteEvent(timedEvent.unityEvent, timedEvent.delay));
+        }
     }
 }
