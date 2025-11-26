@@ -9,6 +9,7 @@ public class ItemPickup : MonoBehaviour
     public LayerMask grinderLayer;
     public LayerMask leverLayer;
     public LayerMask grappleableLayer;
+    public LayerMask npcLayer;
     public KeyCode interactKey = KeyCode.E;
     
     private GameObject heldItem;
@@ -24,6 +25,8 @@ public class ItemPickup : MonoBehaviour
     private bool isLookingAtGrinder;
     private bool isLookingAtLever;
     private bool isLookingAtGrappleable;
+    private bool isLookingAtNPC;
+    private bool wasLookingAtNPC = false;
     private bool wasLookingAtGrappleable = false;
 
     private GameObject swing;
@@ -195,6 +198,22 @@ public class ItemPickup : MonoBehaviour
             crosshairSwitcher.HideSwitchCrosshair();
         }
 
+        //NPC RAYCAST
+        if (isLookingAtLever && currentLever != null && !wasLookingAtLever && !isCollected)
+        {
+            currentLever.ShowUIKeybind();
+            wasLookingAtLever = true;
+            crosshairSwitcher.ShowSwitchCrosshair();
+        }
+
+        //NPC RAYCAST
+        if (!isLookingAtLever && wasLookingAtLever && previousLever != null)
+        {
+            previousLever.HideUIKeybind();
+            wasLookingAtLever = false;
+            crosshairSwitcher.HideSwitchCrosshair();
+        }
+
         // Update previous lever reference
         if (!isLookingAtLever)
         {
@@ -217,6 +236,20 @@ public class ItemPickup : MonoBehaviour
             crosshairSwitcher.HideSwitchCrosshair();
             wasLookingAtGrappleable = false;
         }
+
+        if (isLookingAtGrappleable && !wasLookingAtGrappleable)
+        {
+            crosshairSwitcher.ShowSwitchCrosshair();
+            wasLookingAtGrappleable = true;
+        }
+        
+        if (!isLookingAtGrappleable && wasLookingAtGrappleable)
+        {
+            crosshairSwitcher.HideSwitchCrosshair();
+            wasLookingAtGrappleable = false;
+        }
+
+
     }
     
     private void TryPickup()
