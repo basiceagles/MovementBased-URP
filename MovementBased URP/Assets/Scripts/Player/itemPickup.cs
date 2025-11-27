@@ -41,6 +41,9 @@ public class ItemPickup : MonoBehaviour
     private bool wasLookingAtLever = false;
     private bool isCollected;
 
+    private PerkShopUi currentPerkShop;
+    private PerkShopUi previousPerkShop;
+
     public bool disableGrappleAndSwing = false;
     
     [SerializeField] private CrosshairSwitcher crosshairSwitcher;
@@ -83,6 +86,11 @@ public class ItemPickup : MonoBehaviour
         
         if (Input.GetKeyDown(interactKey))
         {
+            if (isLookingAtNPC)
+            {
+                currentPerkShop.OpenPerkShop();
+            }
+
             if (currentLever != null)
             {
                 currentLever.Collect();
@@ -149,6 +157,18 @@ public class ItemPickup : MonoBehaviour
             }
         }
         
+        isLookingAtNPC = false;
+        PerkShopUi hitPerkShop = null;
+        if (Physics.Raycast(ray, out hit, pickupRange, npcLayer))
+        {
+            hitPerkShop = hit.collider.GetComponent<PerkShopUi>();
+            if (hitPerkShop != null)
+            {
+                currentPerkShop = hitPerkShop;
+                isLookingAtNPC = true;
+            }
+        }
+
         isLookingAtGrappleable = false;
         if (maxGrappleRange > 0 && Physics.Raycast(ray, maxGrappleRange, grappleableLayer))
         {
@@ -198,22 +218,6 @@ public class ItemPickup : MonoBehaviour
             crosshairSwitcher.HideSwitchCrosshair();
         }
 
-        //NPC RAYCAST
-        if (isLookingAtLever && currentLever != null && !wasLookingAtLever && !isCollected)
-        {
-            currentLever.ShowUIKeybind();
-            wasLookingAtLever = true;
-            crosshairSwitcher.ShowSwitchCrosshair();
-        }
-
-        //NPC RAYCAST
-        if (!isLookingAtLever && wasLookingAtLever && previousLever != null)
-        {
-            previousLever.HideUIKeybind();
-            wasLookingAtLever = false;
-            crosshairSwitcher.HideSwitchCrosshair();
-        }
-
         // Update previous lever reference
         if (!isLookingAtLever)
         {
@@ -224,32 +228,51 @@ public class ItemPickup : MonoBehaviour
         {
             previousLever = currentLever;
         }
-        
-        if (isLookingAtGrappleable && !wasLookingAtGrappleable)
+  
+        // Update previous NPC reference
+        if (!isLookingAtNPC)
         {
-            crosshairSwitcher.ShowSwitchCrosshair();
-            wasLookingAtGrappleable = true;
+            previousPerkShop = currentPerkShop;
+            currentPerkShop = null;
         }
-        
-        if (!isLookingAtGrappleable && wasLookingAtGrappleable)
+        else
         {
-            crosshairSwitcher.HideSwitchCrosshair();
-            wasLookingAtGrappleable = false;
-        }
-
-        if (isLookingAtGrappleable && !wasLookingAtGrappleable)
-        {
-            crosshairSwitcher.ShowSwitchCrosshair();
-            wasLookingAtGrappleable = true;
-        }
-        
-        if (!isLookingAtGrappleable && wasLookingAtGrappleable)
-        {
-            crosshairSwitcher.HideSwitchCrosshair();
-            wasLookingAtGrappleable = false;
+            previousPerkShop = currentPerkShop;
         }
 
+        if (isLookingAtNPC != wasLookingAtNPC)
+        {
+            if (isLookingAtNPC)
+            {
+                if (currentPerkShop != null)
+                {
+                    currentPerkShop.ShowKeybindHint();
+                }
+                crosshairSwitcher.ShowSwitchCrosshair();
+            }
+            else
+            {
+                if (previousPerkShop != null)
+                {
+                    previousPerkShop.HideKeybindHint();
+                }
+                crosshairSwitcher.HideSwitchCrosshair();
+            }
+            wasLookingAtNPC = isLookingAtNPC;
+        }
 
+        if (isLookingAtGrappleable != wasLookingAtGrappleable)
+        {
+            if (isLookingAtGrappleable)
+            {
+                crosshairSwitcher.ShowSwitchCrosshair();
+            }
+            else
+            {
+                crosshairSwitcher.HideSwitchCrosshair();
+            }
+            wasLookingAtGrappleable = isLookingAtGrappleable;
+        }
     }
     
     private void TryPickup()
