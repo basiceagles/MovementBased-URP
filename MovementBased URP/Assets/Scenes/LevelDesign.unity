@@ -605,6 +605,7 @@ MonoBehaviour:
   loadScene: 0
   restartScene: 1
   sceneName: 
+  saveMoneyOnRestart: 1
 --- !u!1 &21469413
 GameObject:
   m_ObjectHideFlags: 0
@@ -6106,6 +6107,8 @@ MonoBehaviour:
   overrideMaterial: {fileID: 0}
   generatedLevels: []
   cycleText: {fileID: 752769251}
+  currentDifficultyType: 0
+  currentLevelInSequence: 0
 --- !u!1 &360105370
 GameObject:
   m_ObjectHideFlags: 0
@@ -11174,6 +11177,8 @@ MonoBehaviour:
   overrideMaterial: {fileID: 0}
   generatedLevels: []
   cycleText: {fileID: 0}
+  currentDifficultyType: 0
+  currentLevelInSequence: 0
 --- !u!1 &606679697
 GameObject:
   m_ObjectHideFlags: 0
@@ -25281,6 +25286,7 @@ MonoBehaviour:
   loadScene: 1
   restartScene: 0
   sceneName: MainMenu
+  saveMoneyOnRestart: 1
 --- !u!1 &1189964259
 GameObject:
   m_ObjectHideFlags: 0
@@ -33170,6 +33176,11 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &1618864850 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1557733885150758004, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+  m_PrefabInstance: {fileID: 1123764456140826848}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1620941911
 GameObject:
   m_ObjectHideFlags: 0
@@ -36623,7 +36634,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3343798156140563583, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
   m_PrefabInstance: {fileID: 1123764456140826848}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1618864850}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 542f55fd64623e4418728cb12eae1fca, type: 3}
@@ -36634,12 +36645,42 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1802631790307948027, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
   m_PrefabInstance: {fileID: 1123764456140826848}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1618864850}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e083a2996d4c34f41aa6078edc7ada77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1773325617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1618864850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da90c7d084a6b424d80f74bbed7da1ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  easyMoneyValue: 100
+  mediumMoneyValue: 150
+  hardMoneyValue: 200
+  closedMoneyValue: 100
+  closedMediumMoneyValue: 150
+  closedHardMoneyValue: 200
+  moneyMultiplier: 1.5
+  totalMoney: 0
+  levelsCompleted: 0
+  currentDifficulty: 0
+  OnTotalMoneyChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!143 &1773325624 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 4932755873622917610, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+  m_PrefabInstance: {fileID: 1123764456140826848}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1778011162
 GameObject:
   m_ObjectHideFlags: 0
@@ -44487,6 +44528,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 3343798156140563583, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 1773325624}
     - target: {fileID: 3469260907815785715, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 10
@@ -44534,7 +44579,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1557733885150758004, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1773325617}
   m_SourcePrefab: {fileID: 100100000, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
 --- !u!1 &1123764456140826849 stripped
 GameObject:

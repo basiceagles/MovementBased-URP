@@ -51,6 +51,9 @@ public class EndLevelTrigger : MonoBehaviour
     {
         if (!other.gameObject.CompareTag(tagFilter)) return;
 
+        // Notify level completion for money tracking
+        levelGenerator.NotifyLevelCompleted();
+
         perkSelector.OpenPerkMenu();
         perkSelectorAnimator.Play("PerkSelectorMenu");
         
