@@ -20,6 +20,16 @@ public class LevelGenerator : MonoBehaviour
         NodeExchanger
     }
 
+    public enum DifficultyType
+    {
+        Easy,
+        Medium,
+        Hard,
+        Closed,
+        ClosedMedium,
+        ClosedHard
+    }
+
     [System.Serializable]
     public class LevelData
     {
@@ -135,7 +145,13 @@ public class LevelGenerator : MonoBehaviour
     public delegate void RestartGenerationDelegate();
     public static event RestartGenerationDelegate RestartGenerationEvent;
     
-    
+    public delegate void LevelCompletedDelegate(DifficultyType difficultyType);
+    public static event LevelCompletedDelegate OnLevelCompleted;
+
+    // Current difficulty tracking
+    [Header("Current Difficulty Tracking")]
+    public DifficultyType currentDifficultyType = DifficultyType.Easy;
+    public int currentLevelInSequence = 0;
 
     private void Start()
     {
@@ -476,9 +492,13 @@ public class LevelGenerator : MonoBehaviour
         // Handle closed levels separately
         if (selectedType == "Closed" || selectedType == "ClosedMedium" || selectedType == "ClosedHard")
         {
+            currentDifficultyType = StringToDifficultyType(selectedType);
             return StartClosedSection(selectedType);
         }
 
+        // Update current difficulty type
+        currentDifficultyType = StringToDifficultyType(selectedType);
+        
         // Return random level from the selected type
         return GetRandomLevelFromType(selectedType);
     }
@@ -839,6 +859,9 @@ public class LevelGenerator : MonoBehaviour
 
         Debug.Log($"Restarting generation: EndRoom '{newStartRoom.name}' is now the new StartRoom");
 
+        // Reset level sequence for new generation
+        ResetLevelSequence();
+        
         // Start level generation again - this will use the new start room and generate new levels
         GenerateLevels();
 
@@ -1121,5 +1144,40 @@ public class LevelGenerator : MonoBehaviour
     private void LogBatchingStatisticsEditor()
     {
         LogBatchingStatistics();
+    }
+
+    // Convert string type to DifficultyType enum
+    private DifficultyType StringToDifficultyType(string type)
+    {
+        switch (type)
+        {
+            case "Easy": return DifficultyType.Easy;
+            case "Medium": return DifficultyType.Medium;
+            case "Hard": return DifficultyType.Hard;
+            case "Closed": return DifficultyType.Closed;
+            case "ClosedMedium": return DifficultyType.ClosedMedium;
+            case "ClosedHard": return DifficultyType.ClosedHard;
+            default: return DifficultyType.Easy;
+        }
+    }
+
+    // Call this method when a level is completed to notify MoneyManager
+    public void NotifyLevelCompleted()
+    {
+        currentLevelInSequence++;
+        OnLevelCompleted?.Invoke(currentDifficultyType);
+        Debug.Log($"Level completed! Type: {currentDifficultyType}, Total completed: {currentLevelInSequence}");
+    }
+
+    // Reset level sequence counter (call on new game/restart)
+    public void ResetLevelSequence()
+    {
+        currentLevelInSequence = 0;
+    }
+
+    // Get current difficulty type
+    public DifficultyType GetCurrentDifficultyType()
+    {
+        return currentDifficultyType;
     }
 }

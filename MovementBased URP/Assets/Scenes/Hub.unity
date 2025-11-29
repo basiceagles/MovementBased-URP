@@ -775,6 +775,7 @@ MonoBehaviour:
   loadScene: 0
   restartScene: 1
   sceneName: 
+  saveMoneyOnRestart: 1
 --- !u!1001 &24388531
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2699,7 +2700,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 225, y: 24.99997}
+  m_AnchoredPosition: {x: 225, y: 25}
   m_SizeDelta: {x: 400, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &106390122
@@ -7296,6 +7297,8 @@ MonoBehaviour:
   overrideMaterial: {fileID: 0}
   generatedLevels: []
   cycleText: {fileID: 0}
+  currentDifficultyType: 0
+  currentLevelInSequence: 0
 --- !u!1001 &361260107
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12458,9 +12461,9 @@ RectTransform:
   - {fileID: 66455286}
   m_Father: {fileID: 213441933}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: -450}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &580027583
@@ -13790,10 +13793,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1314978934}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 105.505, y: 0}
-  m_SizeDelta: {x: 171.01, y: 24.01}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &618647708
 MonoBehaviour:
@@ -25074,6 +25077,7 @@ MonoBehaviour:
   loadScene: 1
   restartScene: 0
   sceneName: MainMenu
+  saveMoneyOnRestart: 1
 --- !u!1001 &1187677265
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30843,7 +30847,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1464710144
 RectTransform:
   m_ObjectHideFlags: 0
@@ -35654,9 +35658,9 @@ RectTransform:
   - {fileID: 1473994516}
   m_Father: {fileID: 213441933}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: -350}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1733373266
