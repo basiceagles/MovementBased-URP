@@ -78,15 +78,32 @@ public class PlayerController : MonoBehaviour
     }
     public float currentSpeed => horizontalVelocity.magnitude;
     public float maxSpeed => runSpeed;
+
+    [SerializeField] private bool usePlayerController = true;
     
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         originalScale = transform.localScale;
     }
+
+    public void SetMovementEnabled(bool value)
+    {
+        if (value)
+        {
+            usePlayerController = true;
+        }
+        else
+        {
+            usePlayerController = false;
+            velocity = Vector3.zero;
+        }
+    }
     
     private void Update()
     {
+        if (!usePlayerController) return;
+
         bool previouslyGrounded = wasGrounded;
         bool previouslyOnRamp = wasOnRamp;
         CheckGround();

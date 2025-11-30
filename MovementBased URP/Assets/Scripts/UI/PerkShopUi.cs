@@ -26,20 +26,16 @@ public class PerkShopUi : MonoBehaviour
     {
         moneyTextAnimator.Play(openTextAnimation.name);
         perkSelectorAnimator.Play(openPerkSelectorAnimation.name);
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
 
-        cameraController.enabled = false;
+        cameraController.SetCameraMovementEnabled(false);
     }
 
     public void ClosePerkShop()
     {
         moneyTextAnimator.Play(closeTextAnimation.name);
         perkSelectorAnimator.Play(closePerkSelectorAnimation.name);
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
 
-        cameraController.enabled = true;
+        cameraController.SetCameraMovementEnabled(true);
     }
 
 }

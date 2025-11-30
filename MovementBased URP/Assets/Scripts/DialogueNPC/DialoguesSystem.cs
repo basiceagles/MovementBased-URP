@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System;
+using System.Collections;
 
 public class DialoguesSystem : MonoBehaviour
 {
@@ -19,6 +20,10 @@ public class DialoguesSystem : MonoBehaviour
     private int currentDialogueIndex = -1;
     private int currentLineIndex = 0;
     private bool isDialogueActive = false;
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource dialogueAudioSource;
+    private Coroutine stopAudioCoroutine;
 
     public event Action DialogueStarted;
     public event Action DialogueEnded;
@@ -56,6 +61,8 @@ public class DialoguesSystem : MonoBehaviour
         UpdateNpcName();
 
         DialogueStarted?.Invoke();
+
+        PlayCurrentLineAudio();
     }
 
     public void StartDefaultDialogue()
@@ -84,6 +91,18 @@ public class DialoguesSystem : MonoBehaviour
         currentDialogueIndex = -1;
         currentLineIndex = 0;
 
+        // Stop any pending audio and timers when dialogue is closed
+        if (stopAudioCoroutine != null)
+        {
+            StopCoroutine(stopAudioCoroutine);
+            stopAudioCoroutine = null;
+        }
+
+        if (dialogueAudioSource != null)
+        {
+            dialogueAudioSource.Stop();
+        }
+
         if (wasActive)
         {
             DialogueEnded?.Invoke();
@@ -111,6 +130,7 @@ public class DialoguesSystem : MonoBehaviour
         else
         {
             UpdateDialogueText();
+            PlayCurrentLineAudio();
         }
     }
 
@@ -143,6 +163,63 @@ public class DialoguesSystem : MonoBehaviour
         if (npcNameText != null)
         {
             npcNameText.text = data.npcName;
+        }
+    }
+
+    public void SetDialogueAudioSource(AudioSource source)
+    {
+        dialogueAudioSource = source;
+    }
+
+    private void PlayCurrentLineAudio()
+    {
+        if (dialogueAudioSource == null || !isDialogueActive || currentDialogueIndex < 0)
+            return;
+
+        DialogueDataNPC data = dialogues[currentDialogueIndex];
+        if (data == null)
+            return;
+
+        if (stopAudioCoroutine != null)
+        {
+            StopCoroutine(stopAudioCoroutine);
+            stopAudioCoroutine = null;
+        }
+
+        AudioClip clip = null;
+        if (data.voiceClips != null && currentLineIndex >= 0 && currentLineIndex < data.voiceClips.Length)
+        {
+            clip = data.voiceClips[currentLineIndex];
+        }
+
+        dialogueAudioSource.Stop();
+
+        if (clip != null)
+        {
+            dialogueAudioSource.clip = clip;
+            dialogueAudioSource.Play();
+        }
+
+        float duration = 0f;
+        if (data.audioClipPlayDurations != null && currentLineIndex >= 0 && currentLineIndex < data.audioClipPlayDurations.Length)
+        {
+            duration = data.audioClipPlayDurations[currentLineIndex];
+        }
+
+        if (duration > 0f)
+        {
+            stopAudioCoroutine = StartCoroutine(StopAudioAfterDuration(duration));
+        }
+    }
+
+    private IEnumerator StopAudioAfterDuration(float duration)
+    {
+        int lineIndexAtStart = currentLineIndex;
+        yield return new WaitForSeconds(duration);
+
+        if (isDialogueActive && currentDialogueIndex >= 0 && lineIndexAtStart == currentLineIndex && dialogueAudioSource != null)
+        {
+            dialogueAudioSource.Stop();
         }
     }
 }
