@@ -43,6 +43,8 @@ public class ItemPickup : MonoBehaviour
 
     private PerkShopUi currentPerkShop;
     private PerkShopUi previousPerkShop;
+    private DialogueStarterByName currentDialogueStarterByName;
+    private DialogueStarterByName previousDialogueStarterByName;
 
     public bool disableGrappleAndSwing = false;
     
@@ -88,7 +90,8 @@ public class ItemPickup : MonoBehaviour
         {
             if (isLookingAtNPC)
             {
-                currentPerkShop.OpenPerkShop();
+                if (currentPerkShop != null) currentPerkShop.OpenPerkShop();
+                if (currentDialogueStarterByName != null) currentDialogueStarterByName.StartDialogue();
             }
 
             if (currentLever != null)
@@ -159,12 +162,19 @@ public class ItemPickup : MonoBehaviour
         
         isLookingAtNPC = false;
         PerkShopUi hitPerkShop = null;
+        DialogueStarterByName hitDialogueStarter = null;
+
         if (Physics.Raycast(ray, out hit, pickupRange, npcLayer))
         {
-            hitPerkShop = hit.collider.GetComponent<PerkShopUi>();
-            if (hitPerkShop != null)
+            // Use GetComponentInParent so NPC scripts can live on a parent object
+            // while the collider is on a child.
+            hitPerkShop = hit.collider.GetComponentInParent<PerkShopUi>();
+            hitDialogueStarter = hit.collider.GetComponentInParent<DialogueStarterByName>();
+
+            if (hitPerkShop != null || hitDialogueStarter != null)
             {
                 currentPerkShop = hitPerkShop;
+                currentDialogueStarterByName = hitDialogueStarter;
                 isLookingAtNPC = true;
             }
         }
@@ -234,30 +244,46 @@ public class ItemPickup : MonoBehaviour
         {
             previousPerkShop = currentPerkShop;
             currentPerkShop = null;
+
+            previousDialogueStarterByName = currentDialogueStarterByName;
+            currentDialogueStarterByName = null;
         }
         else
         {
             previousPerkShop = currentPerkShop;
+
+            previousDialogueStarterByName = currentDialogueStarterByName;
         }
 
         if (isLookingAtNPC != wasLookingAtNPC)
         {
             if (isLookingAtNPC)
             {
+                crosshairSwitcher.ShowSwitchCrosshair();
                 if (currentPerkShop != null)
                 {
                     currentPerkShop.ShowKeybindHint();
                 }
-                crosshairSwitcher.ShowSwitchCrosshair();
+
+                if (currentDialogueStarterByName != null)
+                {
+                    currentDialogueStarterByName.ShowUITip();
+                }
             }
             else
             {
+                crosshairSwitcher.HideSwitchCrosshair();
                 if (previousPerkShop != null)
                 {
                     previousPerkShop.HideKeybindHint();
                 }
-                crosshairSwitcher.HideSwitchCrosshair();
+
+                if (previousDialogueStarterByName != null)
+                {
+                    previousDialogueStarterByName.HideUITip();
+                }
             }
+            
             wasLookingAtNPC = isLookingAtNPC;
         }
 

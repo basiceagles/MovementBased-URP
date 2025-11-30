@@ -15,6 +15,8 @@ public class CameraController : MonoBehaviour
     private float tiltVelocity;
     private float rotationX;
 
+    [SerializeField] private bool canMoveCamera = true;
+
     public void SetSensitivity(float value)
     {
         sens = value;
@@ -32,8 +34,16 @@ public class CameraController : MonoBehaviour
             transform.localRotation = Quaternion.identity;
         }
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (canMoveCamera)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
         
         // Safe initialization of rotationX
         Vector3 localEuler = transform.localEulerAngles;
@@ -45,6 +55,11 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
+        if (!canMoveCamera)
+        {
+            return;
+        }
+
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
@@ -90,6 +105,22 @@ public class CameraController : MonoBehaviour
         {
             // Emergency reset if rotation becomes invalid
             ResetCameraRotation();
+        }
+    }
+
+    public void SetCameraMovementEnabled(bool value)
+    {
+        canMoveCamera = value;
+
+        if (canMoveCamera)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
     }
 

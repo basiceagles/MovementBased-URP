@@ -270,7 +270,7 @@ MonoBehaviour:
   crouchSpeed: 2
   currentSlideSpeed: 0
   isSliding: 0
-  groundCheckDistance: 0.4
+  groundCheckDistance: 0.5
   groundCheckRadius: 0.7
   gizmoLineCount: 8
   groundLayer:
@@ -289,6 +289,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   initialAirVelocity: 25
+  controller: {fileID: 0}
   velocity: {x: 0, y: 0, z: 0}
   wallRunning: 0
   activeGrappling: 0
@@ -916,10 +917,10 @@ Camera:
   field of view: 80
   orthographic: 0
   orthographic size: 5
-  m_Depth: -1
+  m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 8151
+    m_Bits: 65495
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -959,7 +960,7 @@ MonoBehaviour:
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
-  m_Dithering: 0
+  m_Dithering: 1
   m_ClearDepth: 1
   m_AllowXRRendering: 1
   m_AllowHDROutput: 1
@@ -1250,6 +1251,9 @@ MonoBehaviour:
   grappleableLayer:
     serializedVersion: 2
     m_Bits: 512
+  npcLayer:
+    serializedVersion: 2
+    m_Bits: 32768
   interactKey: 101
   isHolding: 0
   disableGrappleAndSwing: 1
