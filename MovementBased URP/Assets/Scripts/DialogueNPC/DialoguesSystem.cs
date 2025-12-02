@@ -25,6 +25,9 @@ public class DialoguesSystem : MonoBehaviour
     [SerializeField] private AudioSource dialogueAudioSource;
     private Coroutine stopAudioCoroutine;
 
+    private Coroutine typewriterCoroutine;
+    private bool isTyping = false;
+
     public event Action DialogueStarted;
     public event Action DialogueEnded;
 
@@ -40,7 +43,14 @@ public class DialoguesSystem : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            ShowNextLine();
+            if (isTyping)
+            {
+                CompleteCurrentLineInstantly();
+            }
+            else
+            {
+                ShowNextLine();
+            }
         }
     }
 
@@ -103,6 +113,14 @@ public class DialoguesSystem : MonoBehaviour
             dialogueAudioSource.Stop();
         }
 
+        if (typewriterCoroutine != null)
+        {
+            StopCoroutine(typewriterCoroutine);
+            typewriterCoroutine = null;
+        }
+
+        isTyping = false;
+
         if (wasActive)
         {
             DialogueEnded?.Invoke();
@@ -147,8 +165,92 @@ public class DialoguesSystem : MonoBehaviour
 
         if (dialogueText != null)
         {
+            if (typewriterCoroutine != null)
+            {
+                StopCoroutine(typewriterCoroutine);
+                typewriterCoroutine = null;
+            }
+
+            string lineText = data.lines[currentLineIndex];
+
+            float duration = 0f;
+            if (data.audioClipPlayDurations != null && currentLineIndex >= 0 && currentLineIndex < data.audioClipPlayDurations.Length)
+            {
+                duration = data.audioClipPlayDurations[currentLineIndex];
+            }
+
+            if (duration <= 0f)
+            {
+                dialogueText.text = lineText;
+                isTyping = false;
+            }
+            else
+            {
+                typewriterCoroutine = StartCoroutine(TypeLine(lineText, duration));
+            }
+        }
+    }
+
+    private void CompleteCurrentLineInstantly()
+    {
+        if (!isDialogueActive || currentDialogueIndex < 0)
+            return;
+
+        DialogueDataNPC data = dialogues[currentDialogueIndex];
+        if (data == null || data.lines == null || data.lines.Length == 0)
+            return;
+
+        if (typewriterCoroutine != null)
+        {
+            StopCoroutine(typewriterCoroutine);
+            typewriterCoroutine = null;
+        }
+
+        if (dialogueText != null)
+        {
+            currentLineIndex = Mathf.Clamp(currentLineIndex, 0, data.lines.Length - 1);
             dialogueText.text = data.lines[currentLineIndex];
         }
+
+        isTyping = false;
+    }
+
+    private IEnumerator TypeLine(string text, float duration)
+    {
+        isTyping = true;
+
+        if (dialogueText != null)
+        {
+            dialogueText.text = string.Empty;
+        }
+
+        if (string.IsNullOrEmpty(text) || duration <= 0f)
+        {
+            if (dialogueText != null)
+            {
+                dialogueText.text = text;
+            }
+
+            isTyping = false;
+            typewriterCoroutine = null;
+            yield break;
+        }
+
+        int length = text.Length;
+        float delay = duration / Mathf.Max(1, length);
+
+        for (int i = 0; i < length; i++)
+        {
+            if (dialogueText != null)
+            {
+                dialogueText.text = text.Substring(0, i + 1);
+            }
+
+            yield return new WaitForSeconds(delay);
+        }
+
+        isTyping = false;
+        typewriterCoroutine = null;
     }
 
     private void UpdateNpcName()

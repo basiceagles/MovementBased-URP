@@ -133,12 +133,12 @@ public class DialogueStarterByName : MonoBehaviour
             cameraController.SetCameraMovementEnabled(true);
         }
 
-        if (playerController != null)
+        if (EnableCameraAtEnd && playerController != null)
         {
             playerController.SetMovementEnabled(true);
         }
 
-        if (itemPickup != null)
+        if (EnableCameraAtEnd && itemPickup != null)
         {
             itemPickup.SetInteractionEnabled(true);
         }

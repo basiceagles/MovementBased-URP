@@ -5,6 +5,8 @@ public class PerkShopUi : MonoBehaviour
 {
     [SerializeField] private GameObject keybindHint;
     [SerializeField] private CameraController cameraController;
+    [SerializeField] private PlayerController playerController;
+    [SerializeField] private ItemPickup itemPickup;
     [SerializeField] private Animator moneyTextAnimator;
     [SerializeField] private Animator perkSelectorAnimator;
     [SerializeField] private AnimationClip openTextAnimation;
@@ -28,6 +30,8 @@ public class PerkShopUi : MonoBehaviour
         perkSelectorAnimator.Play(openPerkSelectorAnimation.name);
 
         cameraController.SetCameraMovementEnabled(false);
+        itemPickup.SetInteractionEnabled(false);
+        playerController.SetMovementEnabled(false);
     }
 
     public void ClosePerkShop()
@@ -36,6 +40,8 @@ public class PerkShopUi : MonoBehaviour
         perkSelectorAnimator.Play(closePerkSelectorAnimation.name);
 
         cameraController.SetCameraMovementEnabled(true);
+        itemPickup.SetInteractionEnabled(true);
+        playerController.SetMovementEnabled(true);
     }
 
 }
