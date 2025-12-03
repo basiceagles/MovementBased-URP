@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     public bool isSafeFromRunner = false;
 
     [Header("Jump")]
-    [SerializeField] private float jumpHeight;
+    [SerializeField] public float jumpHeight;
     [SerializeField] private float slideJumpHeight;
     [SerializeField] private float slideJumpGravity;
     public bool isJumping;
@@ -26,9 +26,9 @@ public class PlayerController : MonoBehaviour
     private KeyCode jumpKey = KeyCode.Space;
     
     [Header("Slide")]
-    [SerializeField] private float slideSpeed;
-    [SerializeField] private float slideAcceleration;
-    [SerializeField] private float maxSlideSpeed;
+    [SerializeField] public float slideSpeed;
+    [SerializeField] public float slideAcceleration;
+    [SerializeField] public float maxSlideSpeed;
     [SerializeField] private float crouchScale;
     [SerializeField] private float crouchSpeed;
     public float currentSlideSpeed;
@@ -80,7 +80,7 @@ public class PlayerController : MonoBehaviour
     public float maxSpeed => runSpeed;
 
     [SerializeField] private bool usePlayerController = true;
-    
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();

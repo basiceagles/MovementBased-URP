@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using TMPro;
 using static LevelGenerator;
 public class MoneyManager : MonoBehaviour
 {
@@ -25,10 +26,20 @@ public class MoneyManager : MonoBehaviour
 
     [Header("Events")]
     public UnityEvent<int> OnTotalMoneyChanged;
+    [Header("UI References")]
+    [SerializeField] private TextMeshProUGUI totalMoneyText;
+    [SerializeField] private Color notEnoughMoneyColor = Color.red;
+    [SerializeField] private float notEnoughMoneyDuration = 0.2f;
+    [SerializeField] private float notEnoughMoneyShakeAmount = 10f;
     public static MoneyManager Instance { get; private set; }
     public int TotalMoney => totalMoney;
     public int LevelsCompleted => levelsCompleted;
     public DifficultyType CurrentDifficulty => currentDifficulty;
+
+    private Vector3 originalMoneyTextPosition;
+    private Color originalMoneyTextColor;
+    private bool moneyTextInitialized;
+    private Coroutine notEnoughMoneyRoutine;
 
     private void Awake()
     {
@@ -79,6 +90,7 @@ public class MoneyManager : MonoBehaviour
         currentDifficulty = DifficultyType.Easy;
         
         OnTotalMoneyChanged?.Invoke(totalMoney);
+        UpdateMoneyText();
     }
 
     private void OnLevelCompleted(DifficultyType difficultyType)
@@ -105,6 +117,7 @@ public class MoneyManager : MonoBehaviour
     {
         totalMoney = PlayerPrefs.GetInt(TOTAL_MONEY_KEY, 0);
         OnTotalMoneyChanged?.Invoke(totalMoney);
+        UpdateMoneyText();
     }
     
     private void CalculateAndAddMoneyFromPreviousRun()
@@ -124,6 +137,7 @@ public class MoneyManager : MonoBehaviour
             PlayerPrefs.Save();
             
             OnTotalMoneyChanged?.Invoke(totalMoney);
+            UpdateMoneyText();
         }
         levelsCompleted = 0;
         currentDifficulty = DifficultyType.Easy;
@@ -151,8 +165,83 @@ public class MoneyManager : MonoBehaviour
             PlayerPrefs.SetInt(TOTAL_MONEY_KEY, totalMoney);
             PlayerPrefs.Save();
             OnTotalMoneyChanged?.Invoke(totalMoney);
+            UpdateMoneyText();
             return true;
         }
         return false;
+    }
+
+    private void UpdateMoneyText()
+    {
+        if (totalMoneyText == null) return;
+        InitializeMoneyTextState();
+        totalMoneyText.text = "Stable Coins: " + FormatMoney(totalMoney);
+    }
+
+    private void InitializeMoneyTextState()
+    {
+        if (moneyTextInitialized || totalMoneyText == null) return;
+
+        originalMoneyTextPosition = totalMoneyText.rectTransform.anchoredPosition;
+        originalMoneyTextColor = totalMoneyText.color;
+        moneyTextInitialized = true;
+    }
+
+    private string FormatMoney(int value)
+    {
+        if (value >= 1000000000)
+        {
+            return (value / 1000000000) + "B";
+        }
+        if (value >= 1000000)
+        {
+            return (value / 1000000) + "M";
+        }
+        if (value >= 1000)
+        {
+            return (value / 1000) + "K";
+        }
+
+        return value.ToString();
+    }
+
+    public void PlayNotEnoughMoneyFeedback()
+    {
+        if (totalMoneyText == null) return;
+
+        InitializeMoneyTextState();
+
+        if (notEnoughMoneyRoutine != null)
+        {
+            StopCoroutine(notEnoughMoneyRoutine);
+        }
+
+        notEnoughMoneyRoutine = StartCoroutine(NotEnoughMoneyCoroutine());
+    }
+
+    private System.Collections.IEnumerator NotEnoughMoneyCoroutine()
+    {
+        float elapsed = 0f;
+        RectTransform rect = totalMoneyText.rectTransform;
+
+        // Set color to warning color
+        totalMoneyText.color = notEnoughMoneyColor;
+
+        while (elapsed < notEnoughMoneyDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = elapsed / notEnoughMoneyDuration;
+
+            // Simple left-right shake using sine
+            float offset = Mathf.Sin(t * Mathf.PI * 10f) * notEnoughMoneyShakeAmount;
+            rect.anchoredPosition = originalMoneyTextPosition + new Vector3(offset, 0f, 0f);
+
+            yield return null;
+        }
+
+        // Restore original state
+        rect.anchoredPosition = originalMoneyTextPosition;
+        totalMoneyText.color = originalMoneyTextColor;
+        notEnoughMoneyRoutine = null;
     }
 }

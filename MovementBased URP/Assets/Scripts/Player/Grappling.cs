@@ -14,6 +14,7 @@ public class Grappling : MonoBehaviour
     [SerializeField] private float grappleSpeed;
     [SerializeField] private float grapplingCd;
     public bool canPickupNode;
+    [SerializeField] private bool grapplingEnabled = false;
     
     [Header("Rope Animation")]
     [SerializeField] private int ropeSegments;
@@ -55,6 +56,11 @@ public class Grappling : MonoBehaviour
 
     private void Update()
     {
+        if (!grapplingEnabled)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(grappleKey))
         {
             StartGrapple();
@@ -324,5 +330,20 @@ public class Grappling : MonoBehaviour
     public void SetGrappleKey(KeyCode newKey)
     {
         grappleKey = newKey;
+    }
+
+    public void SetGrapplingEnabled(bool enabled)
+    {
+        grapplingEnabled = enabled;
+
+        if (!enabled && grappling)
+        {
+            StopGrapple();
+        }
+    }
+
+    public bool IsGrapplingEnabled()
+    {
+        return grapplingEnabled;
     }
 }

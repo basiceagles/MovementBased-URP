@@ -14,6 +14,7 @@ public class Swinging : MonoBehaviour
     private int ropeSegments = 25;     
     private float ropeWaveSpeed = 10f;
     private float ropeWaveHeight = 0.5f; 
+    [SerializeField] private bool swingingEnabled = false;
     
     public float currentSwingSpeed;
     public float swingAngle;
@@ -86,6 +87,11 @@ public class Swinging : MonoBehaviour
 
     void Update()
     {
+        if (!swingingEnabled)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(swingKey))
         {
             StartSwing();
@@ -300,5 +306,20 @@ public class Swinging : MonoBehaviour
     public void SetSwingKey(KeyCode newKey)
     {
         swingKey = newKey;
+    }
+
+    public void SetSwingingEnabled(bool enabled)
+    {
+        swingingEnabled = enabled;
+
+        if (!enabled && swinging)
+        {
+            StopSwing();
+        }
+    }
+
+    public bool IsSwingingEnabled()
+    {
+        return swingingEnabled;
     }
 }
