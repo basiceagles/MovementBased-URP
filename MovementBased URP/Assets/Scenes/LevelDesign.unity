@@ -1774,6 +1774,64 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &91247936
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 91247937}
+  - component: {fileID: 91247938}
+  m_Layer: 0
+  m_Name: MetaPerksManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &91247937
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 91247936}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 960567248}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &91247938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 91247936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 029f05dfa8682b540b3e0549d7cd04a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerController: {fileID: 1773325611}
+  moneyManager: {fileID: 1308895072}
+  grappling: {fileID: 1008693407}
+  swinging: {fileID: 1125720348}
+  metaPerkButtons: []
+  metaPerkCosts: 
+  metaPerkCostTexts: []
+  metaPerkStatTypes: 
+  metaPerkStatValues: []
+  runSpeedIncrement: 5
+  jumpHeightIncrement: 0.5
+  slideSpeedIncrement: 1
+  slideAccelerationIncrement: 1
+  maxSlideSpeedIncrement: 1
 --- !u!1 &96488642
 GameObject:
   m_ObjectHideFlags: 0
@@ -1883,6 +1941,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 96488642}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 96488642}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -4254,6 +4324,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 291845150}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &291845152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6094,7 +6176,7 @@ MonoBehaviour:
   redEyeChance: 0
   redWallsChance: 0
   nodeExchangerChance: 0
-  numberOfLevels: 10
+  numberOfLevels: 0
   numberOfLevelsToAdd: 1
   generateOnStart: 1
   cycle: 0
@@ -6658,7 +6740,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &398386447
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6678,9 +6760,9 @@ RectTransform:
   - {fileID: 117364227}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -1199.3329}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &398386448
@@ -6845,6 +6927,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 398386446}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 398386446}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -9508,6 +9602,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 525324889}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &535407630
 GameObject:
   m_ObjectHideFlags: 0
@@ -11513,7 +11619,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &619060233
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11533,9 +11639,9 @@ RectTransform:
   - {fileID: 628999942}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -1099.3329}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &619060234
@@ -11700,6 +11806,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 619060232}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 619060232}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -12838,6 +12956,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 679312237}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &685278650
 GameObject:
   m_ObjectHideFlags: 0
@@ -13124,6 +13254,18 @@ MonoBehaviour:
       - m_Target: {fileID: 2045860301}
         m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
         m_MethodName: DeactivateObjectByReference
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 688369912}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 688369912}
@@ -13491,7 +13633,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &705028539
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13511,9 +13653,9 @@ RectTransform:
   - {fileID: 449640194}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -499.3329}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &705028540
@@ -13678,6 +13820,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 705028538}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 705028538}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -19467,6 +19621,7 @@ Transform:
   - {fileID: 1782605683}
   - {fileID: 1875624471}
   - {fileID: 1308895071}
+  - {fileID: 91247937}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &964826973
@@ -19666,7 +19821,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &992501727
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19686,9 +19841,9 @@ RectTransform:
   - {fileID: 675509613}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -599.3329}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &992501728
@@ -19853,6 +20008,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 992501726}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 992501726}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -23399,7 +23566,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1140129444
 RectTransform:
   m_ObjectHideFlags: 0
@@ -23419,9 +23586,9 @@ RectTransform:
   - {fileID: 1647210159}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -999.3329}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1140129445
@@ -23586,6 +23753,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 1140129443}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1140129443}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -25730,7 +25909,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1197548460
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25750,9 +25929,9 @@ RectTransform:
   - {fileID: 1175407130}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -199.3329}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1197548461
@@ -25917,6 +26096,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 1197548459}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1197548459}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -27199,6 +27390,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1252162123}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1253797607
 GameObject:
   m_ObjectHideFlags: 0
@@ -27889,6 +28092,11 @@ MonoBehaviour:
   OnTotalMoneyChanged:
     m_PersistentCalls:
       m_Calls: []
+  totalMoneyText: {fileID: 0}
+  multiplierText: {fileID: 1432080068}
+  notEnoughMoneyColor: {r: 1, g: 0, b: 0, a: 1}
+  notEnoughMoneyDuration: 0.2
+  notEnoughMoneyShakeAmount: 10
 --- !u!1 &1312029485
 GameObject:
   m_ObjectHideFlags: 0
@@ -35106,6 +35314,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1721731881}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1722404080
 GameObject:
   m_ObjectHideFlags: 0
@@ -35737,7 +35957,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1749684090
 RectTransform:
   m_ObjectHideFlags: 0
@@ -35757,9 +35977,9 @@ RectTransform:
   - {fileID: 1198313178}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -699.3329}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1749684091
@@ -35924,6 +36144,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 1749684089}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1749684089}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -36125,7 +36357,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1760249558
 RectTransform:
   m_ObjectHideFlags: 0
@@ -36145,9 +36377,9 @@ RectTransform:
   - {fileID: 357183534}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -799.3329}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1760249559
@@ -36312,6 +36544,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 1760249557}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1760249557}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -37223,7 +37467,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1815176073
 RectTransform:
   m_ObjectHideFlags: 0
@@ -37243,9 +37487,9 @@ RectTransform:
   - {fileID: 1354111916}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -899.3329}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1815176074
@@ -37410,6 +37654,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 1815176072}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1815176072}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -41142,6 +41398,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 2008262645}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2008262647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41953,74 +42221,134 @@ MonoBehaviour:
     spawnAtMenuOpen: 1
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
+    moneyMultiplierDelta: -10
+    moneyMultiplierText: {fileID: 795222985}
   - gameObject: {fileID: 339199927}
-    spawnAtMenuOpen: 1
+    spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
+    moneyMultiplierDelta: 0
+    moneyMultiplierText: {fileID: 0}
   - gameObject: {fileID: 497708269}
-    spawnAtMenuOpen: 1
+    spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
+    moneyMultiplierDelta: 0
+    moneyMultiplierText: {fileID: 0}
   - gameObject: {fileID: 1783734465}
     spawnAtMenuOpen: 0
     timesAmountToDeactivate: 9999
     currentDeactivationCount: 0
+    moneyMultiplierDelta: 0
+    moneyMultiplierText: {fileID: 0}
   - gameObject: {fileID: 1721731881}
     spawnAtMenuOpen: 1
     timesAmountToDeactivate: 2
     currentDeactivationCount: 0
+    moneyMultiplierDelta: -5
+    moneyMultiplierText: {fileID: 777810452}
   - gameObject: {fileID: 1252162123}
     spawnAtMenuOpen: 1
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
+    moneyMultiplierDelta: 5
+    moneyMultiplierText: {fileID: 702097148}
   - gameObject: {fileID: 679312237}
     spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
+    moneyMultiplierDelta: 5
+    moneyMultiplierText: {fileID: 1203768365}
   - gameObject: {fileID: 525324889}
     spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
+    moneyMultiplierDelta: 5
+    moneyMultiplierText: {fileID: 1569216472}
   - gameObject: {fileID: 2008262645}
     spawnAtMenuOpen: 1
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
+    moneyMultiplierDelta: 10
+    moneyMultiplierText: {fileID: 484455241}
   - gameObject: {fileID: 291845150}
     spawnAtMenuOpen: 1
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
+    moneyMultiplierDelta: 3
+    moneyMultiplierText: {fileID: 1551630734}
   - gameObject: {fileID: 96488642}
     spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
+    moneyMultiplierDelta: -3
+    moneyMultiplierText: {fileID: 37181653}
   - gameObject: {fileID: 1197548459}
     spawnAtMenuOpen: 1
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
+    moneyMultiplierDelta: 12
+    moneyMultiplierText: {fileID: 2075667190}
   - gameObject: {fileID: 2099889391}
     spawnAtMenuOpen: 1
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
+    moneyMultiplierDelta: 8
+    moneyMultiplierText: {fileID: 518068212}
   - gameObject: {fileID: 2146543365}
     spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
+    moneyMultiplierDelta: 15
+    moneyMultiplierText: {fileID: 1350412147}
   - gameObject: {fileID: 705028538}
     spawnAtMenuOpen: 1
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
-  - gameObject: {fileID: 705028538}
+    moneyMultiplierDelta: 4
+    moneyMultiplierText: {fileID: 76142019}
+  - gameObject: {fileID: 992501726}
     spawnAtMenuOpen: 1
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
-  - gameObject: {fileID: 705028538}
+    moneyMultiplierDelta: -15
+    moneyMultiplierText: {fileID: 776860191}
+  - gameObject: {fileID: 1749684089}
     spawnAtMenuOpen: 1
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
-  - gameObject: {fileID: 705028538}
-    spawnAtMenuOpen: 0
+    moneyMultiplierDelta: 8
+    moneyMultiplierText: {fileID: 751760701}
+  - gameObject: {fileID: 1760249557}
+    spawnAtMenuOpen: 1
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
+    moneyMultiplierDelta: -30
+    moneyMultiplierText: {fileID: 314614903}
+  - gameObject: {fileID: 1815176072}
+    spawnAtMenuOpen: 1
+    timesAmountToDeactivate: 1
+    currentDeactivationCount: 0
+    moneyMultiplierDelta: 10
+    moneyMultiplierText: {fileID: 1194348709}
+  - gameObject: {fileID: 1140129443}
+    spawnAtMenuOpen: 1
+    timesAmountToDeactivate: 1
+    currentDeactivationCount: 0
+    moneyMultiplierDelta: 15
+    moneyMultiplierText: {fileID: 1544072949}
+  - gameObject: {fileID: 619060232}
+    spawnAtMenuOpen: 1
+    timesAmountToDeactivate: 1
+    currentDeactivationCount: 0
+    moneyMultiplierDelta: 15
+    moneyMultiplierText: {fileID: 567081044}
+  - gameObject: {fileID: 398386446}
+    spawnAtMenuOpen: 1
+    timesAmountToDeactivate: 1
+    currentDeactivationCount: 0
+    moneyMultiplierDelta: 12
+    moneyMultiplierText: {fileID: 2000206127}
   amountToActivate: 3
   ButtonPerkNone: {fileID: 1783734465}
   buttonHierarchies:
@@ -42073,6 +42401,7 @@ MonoBehaviour:
   timeToAdd3: 60
   isPerkMenuOpen: 0
   grappling: {fileID: 1008693407}
+  moneyManager: {fileID: 0}
 --- !u!4 &2045860302
 Transform:
   m_ObjectHideFlags: 0
@@ -43424,7 +43753,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2099889392
 RectTransform:
   m_ObjectHideFlags: 0
@@ -43444,9 +43773,9 @@ RectTransform:
   - {fileID: 1116395949}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -299.3329}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2099889393
@@ -43611,6 +43940,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 2099889391}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 2099889391}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -44021,7 +44362,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2146543366
 RectTransform:
   m_ObjectHideFlags: 0
@@ -44041,9 +44382,9 @@ RectTransform:
   - {fileID: 268158838}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -399.3329}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2146543367
@@ -44208,6 +44549,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 2146543365}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnSpawnablePerkButtonClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 2146543365}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0

@@ -12,6 +12,8 @@ public class PerkSelectorScript : MonoBehaviour
         public bool spawnAtMenuOpen = true;
         public int timesAmountToDeactivate = 0;
         [HideInInspector] public int currentDeactivationCount = 0;
+        public int moneyMultiplierDelta = 0;
+        public TextMeshProUGUI moneyMultiplierText;
     }
 
     [System.Serializable]
@@ -87,6 +89,7 @@ public class PerkSelectorScript : MonoBehaviour
     [SerializeField] public bool isPerkMenuOpen;
     [Header("Other References")]
     [SerializeField] private Grappling grappling;
+    [SerializeField] private MoneyManager moneyManager;
 
     void Start()
     {
@@ -104,11 +107,16 @@ public class PerkSelectorScript : MonoBehaviour
         timerTarget = GameObject.Find("TimerManager");
         timer = timerTarget.GetComponent<Timer>();
 
+        if (moneyManager == null)
+        {
+            moneyManager = MoneyManager.Instance != null ? MoneyManager.Instance : FindObjectOfType<MoneyManager>();
+        }
+
         //grappleTarget = GameObject.Find("Grapple");
         //grappling = grappleTarget.GetComponent<Grappling>();
 
-
         InitializeButtonHierarchy();
+        InitializeMoneyMultiplierTexts();
     }
 
     private void InitializeButtonHierarchy()
@@ -124,7 +132,24 @@ public class PerkSelectorScript : MonoBehaviour
         }
     }
 
+    private void InitializeMoneyMultiplierTexts()
+    {
+        foreach (SpawnableObject spawnable in objectsArray)
+        {
+            if (spawnable.moneyMultiplierText == null)
+            {
+                continue;
+            }
 
+            int delta = spawnable.moneyMultiplierDelta;
+            spawnable.moneyMultiplierText.text = delta.ToString() + "%";
+
+            if (delta < 0)
+            {
+                spawnable.moneyMultiplierText.color = Color.red;
+            }
+        }
+    }
 
     public void OpenPerkMenu()
     {
@@ -337,7 +362,6 @@ public class PerkSelectorScript : MonoBehaviour
         }
     }
 
-
     // Button hierarchy methods
     public void OnParentButtonClick(int hierarchyIndex)
     {
@@ -442,7 +466,7 @@ public class PerkSelectorScript : MonoBehaviour
         }
     }
 
-   // New method to deactivate specific GameObject by index with timesAmountToDeactivate logic
+    // New method to deactivate specific GameObject by index with timesAmountToDeactivate logic
     public void DeactivateObjectByIndex(int objectIndex)
     {
         if (objectIndex >= 0 && objectIndex < objectsArray.Length)
@@ -519,6 +543,36 @@ public class PerkSelectorScript : MonoBehaviour
             }
         }
         Debug.LogWarning($"Object not found in objectsArray or already deactivated: {targetObject.name}");
+    }
+
+    public void OnSpawnablePerkButtonClicked(GameObject buttonObject)
+    {
+        if (buttonObject == null) return;
+
+        if (moneyManager == null)
+        {
+            moneyManager = MoneyManager.Instance != null ? MoneyManager.Instance : FindObjectOfType<MoneyManager>();
+        }
+
+        if (moneyManager == null)
+        {
+            return;
+        }
+
+        foreach (SpawnableObject spawnable in objectsArray)
+        {
+            if (spawnable.gameObject == buttonObject)
+            {
+                if (spawnable.moneyMultiplierDelta != 0)
+                {
+                    float delta = spawnable.moneyMultiplierDelta / 100f;
+                    float newMultiplier = moneyManager.moneyMultiplier + delta;
+                    moneyManager.SetMoneyMultiplier(newMultiplier);
+                }
+
+                break;
+            }
+        }
     }
 
     private void ResetButtonHierarchy()

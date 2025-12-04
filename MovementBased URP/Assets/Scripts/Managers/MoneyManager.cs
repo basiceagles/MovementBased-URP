@@ -28,6 +28,7 @@ public class MoneyManager : MonoBehaviour
     public UnityEvent<int> OnTotalMoneyChanged;
     [Header("UI References")]
     [SerializeField] private TextMeshProUGUI totalMoneyText;
+    [SerializeField] private TextMeshProUGUI multiplierText;
     [SerializeField] private Color notEnoughMoneyColor = Color.red;
     [SerializeField] private float notEnoughMoneyDuration = 0.2f;
     [SerializeField] private float notEnoughMoneyShakeAmount = 10f;
@@ -68,6 +69,7 @@ public class MoneyManager : MonoBehaviour
     {
         LoadTotalMoney();
         CalculateAndAddMoneyFromPreviousRun();
+        UpdateMultiplierText();
     }
     
     private void Update()
@@ -118,6 +120,7 @@ public class MoneyManager : MonoBehaviour
         totalMoney = PlayerPrefs.GetInt(TOTAL_MONEY_KEY, 0);
         OnTotalMoneyChanged?.Invoke(totalMoney);
         UpdateMoneyText();
+        UpdateMultiplierText();
     }
     
     private void CalculateAndAddMoneyFromPreviousRun()
@@ -166,6 +169,7 @@ public class MoneyManager : MonoBehaviour
             PlayerPrefs.Save();
             OnTotalMoneyChanged?.Invoke(totalMoney);
             UpdateMoneyText();
+            UpdateMultiplierText();
             return true;
         }
         return false;
@@ -203,6 +207,20 @@ public class MoneyManager : MonoBehaviour
         }
 
         return value.ToString();
+    }
+
+    private void UpdateMultiplierText()
+    {
+        if (multiplierText == null) return;
+
+        int percent = Mathf.RoundToInt(moneyMultiplier * 100f);
+        multiplierText.text = percent.ToString() + "%";
+    }
+
+    public void SetMoneyMultiplier(float value)
+    {
+        moneyMultiplier = value;
+        UpdateMultiplierText();
     }
 
     public void PlayNotEnoughMoneyFeedback()

@@ -21,7 +21,8 @@ public class MetaPerkSystem : MonoBehaviour
         SlideAcceleration,
         MaxSlideSpeed,
         EnableGrapple,
-        EnableSwing
+        EnableSwing,
+        MoneyMultiplier
     }
 
     [Header("Meta Perk Buttons")]
@@ -46,6 +47,7 @@ public class MetaPerkSystem : MonoBehaviour
     private const string PerkBoughtKeyPrefix = "MetaPerk_Bought_";
     private const string GrappleEnabledKey = "Meta_GrappleEnabled";
     private const string SwingEnabledKey = "Meta_SwingEnabled";
+    private const string MoneyMultiplierKey = "Meta_MoneyMultiplier";
 
     private void Awake()
     {
@@ -140,6 +142,7 @@ public class MetaPerkSystem : MonoBehaviour
         PlayerPrefs.Save();
 
         LoadAbilityPerks();
+        LoadMoneyMultiplierPerk();
     }
 
     private void LoadAbilityPerks()
@@ -154,6 +157,32 @@ public class MetaPerkSystem : MonoBehaviour
         {
             bool enabled = PlayerPrefs.GetInt(SwingEnabledKey, 0) == 1;
             swinging.SetSwingingEnabled(enabled);
+        }
+    }
+
+    private void LoadMoneyMultiplierPerk()
+    {
+        if (moneyManager == null)
+        {
+            moneyManager = MoneyManager.Instance;
+        }
+
+        if (moneyManager == null)
+        {
+            return;
+        }
+
+        float currentMultiplier = moneyManager.moneyMultiplier;
+
+        if (PlayerPrefs.HasKey(MoneyMultiplierKey))
+        {
+            float savedMultiplier = PlayerPrefs.GetFloat(MoneyMultiplierKey, currentMultiplier);
+            moneyManager.SetMoneyMultiplier(savedMultiplier);
+        }
+        else
+        {
+            PlayerPrefs.SetFloat(MoneyMultiplierKey, currentMultiplier);
+            PlayerPrefs.Save();
         }
     }
 
@@ -440,7 +469,8 @@ public class MetaPerkSystem : MonoBehaviour
             type == PerkStatType.JumpHeight ||
             type == PerkStatType.SlideSpeed ||
             type == PerkStatType.SlideAcceleration ||
-            type == PerkStatType.MaxSlideSpeed)
+            type == PerkStatType.MaxSlideSpeed ||
+            type == PerkStatType.MoneyMultiplier)
         {
             if (Mathf.Approximately(value, 0f))
             {
@@ -465,6 +495,19 @@ public class MetaPerkSystem : MonoBehaviour
             case PerkStatType.MaxSlideSpeed:
                 playerController.maxSlideSpeed = value;
                 break;
+            case PerkStatType.MoneyMultiplier:
+                if (moneyManager == null)
+                {
+                    moneyManager = MoneyManager.Instance;
+                }
+
+                if (moneyManager != null)
+                {
+                    moneyManager.SetMoneyMultiplier(value);
+                    PlayerPrefs.SetFloat(MoneyMultiplierKey, value);
+                    PlayerPrefs.Save();
+                }
+                return;
             case PerkStatType.EnableGrapple:
                 if (grappling != null)
                 {
