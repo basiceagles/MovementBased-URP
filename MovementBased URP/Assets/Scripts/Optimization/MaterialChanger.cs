@@ -18,7 +18,7 @@ public class MaterialChanger : MonoBehaviour
     private static bool useFirstSet = true;
     private const float SwitchInterval = 1f;
 
-    void Awake()
+    void Start()
     {
         objectRenderer = GetComponent<Renderer>();
         // Cache material instance (creates a copy)

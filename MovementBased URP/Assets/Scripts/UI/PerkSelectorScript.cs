@@ -142,7 +142,7 @@ public class PerkSelectorScript : MonoBehaviour
             }
 
             int delta = spawnable.moneyMultiplierDelta;
-            spawnable.moneyMultiplierText.text = delta.ToString() + "%";
+            spawnable.moneyMultiplierText.text = delta.ToString() + "%SC";
 
             if (delta < 0)
             {
