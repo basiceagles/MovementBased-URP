@@ -10,6 +10,9 @@ public class RedEyeDetector : MonoBehaviour
     [Header("Detection Settings")]
     [SerializeField] private float detectionRange = 10f;
     [SerializeField] private string targetTag = "RedEye";
+    [SerializeField] private string blueEyeTag = "BlueEye";
+    [SerializeField] private float blueEyeRadius = 10f;
+    [SerializeField] private float blueEyeFillDuration = 0.8f;
     [SerializeField] private LayerMask obstacleLayers = -1;
     [SerializeField] private float bufferTime = 0.1f;
     
@@ -27,10 +30,16 @@ public class RedEyeDetector : MonoBehaviour
     
     private Camera mainCamera;
     public List<GameObject> redEyeObjects;
+    public List<GameObject> blueEyeObjects;
     private GameObject currentRedEyeObject;
+    private GameObject currentBlueEyeObject;
     private Coroutine fillCoroutine;
+    private bool isInsideBlueEyeRadius = false;
+    private bool hasLookedAtCurrentBlueEye = false;
+    private float currentBlueEyeFillValue = 0f;
     private CameraShake cameraShake;
     private PlayerController playerController;
+    
     private float lastVisibleTime = 0f;
     private GameObject enemyOverlayManagerTarget;
     private EnemyOverlayManager enemyOverlayManager;
@@ -70,6 +79,8 @@ public class RedEyeDetector : MonoBehaviour
 
         redEyeObjects = new List<GameObject>();
         Invoke("FindRedEyeGameobjects", 0.1f);
+
+        blueEyeObjects = new List<GameObject>();
     }
     
     public void FindRedEyeGameobjects()
@@ -88,8 +99,106 @@ public class RedEyeDetector : MonoBehaviour
         }
     }
     
+    public void OnBlueEyeEnter(GameObject blueEye)
+    {
+        if (blueEye == null)
+            return;
+
+        if (blueEyeObjects == null)
+        {
+            blueEyeObjects = new List<GameObject>();
+        }
+
+        if (!blueEyeObjects.Contains(blueEye))
+        {
+            blueEyeObjects.Add(blueEye);
+        }
+
+        isInsideBlueEyeRadius = true;
+
+        // Only set a new current BlueEye when we don't already track one.
+        // This ensures that overlapping BlueEye colliders don't
+        // overwrite the first one and break exit damage logic.
+        if (currentBlueEyeObject == null)
+        {
+            currentBlueEyeObject = blueEye;
+            hasLookedAtCurrentBlueEye = false;
+            currentBlueEyeFillValue = 0f;
+        }
+    }
+
+    public void OnBlueEyeExit(GameObject blueEye)
+    {
+        if (blueEye == null)
+            return;
+
+        if (blueEyeObjects != null && blueEyeObjects.Contains(blueEye))
+        {
+            blueEyeObjects.Remove(blueEye);
+        }
+
+        if (currentBlueEyeObject == blueEye)
+        {
+            bool everLooked = hasLookedAtCurrentBlueEye;
+
+            currentBlueEyeObject = null;
+            currentBlueEyeFillValue = 0f;
+            hasLookedAtCurrentBlueEye = false;
+            isInsideBlueEyeRadius = false;
+
+            if (!everLooked)
+            {
+                Destroy(blueEye);
+
+                if (playerController.isDamaged)
+                {
+                    SceneManager.LoadScene(deadSceneName);
+                }
+                else
+                {
+                    playerController.isDamaged = true;
+                    enemyOverlayManager.CallRedEyeOverlay();
+                }
+            }
+        }
+    }
+
+    private void HandleBlueEyeLogic()
+    {
+        if (playerTarget == null || mainCamera == null)
+        {
+            return;
+        }
+        if (!isInsideBlueEyeRadius || currentBlueEyeObject == null)
+        {
+            return;
+        }
+
+        bool isLookingAtBlueEye = IsObjectVisible(currentBlueEyeObject);
+
+        if (isLookingAtBlueEye)
+        {
+            hasLookedAtCurrentBlueEye = true;
+            currentBlueEyeFillValue += Time.deltaTime / blueEyeFillDuration;
+            currentBlueEyeFillValue = Mathf.Clamp01(currentBlueEyeFillValue);
+
+            if (currentBlueEyeFillValue >= 1f)
+            {
+                GameObject toDestroy = currentBlueEyeObject;
+                blueEyeObjects.Remove(toDestroy);
+                currentBlueEyeObject = null;
+                currentBlueEyeFillValue = 0f;
+                hasLookedAtCurrentBlueEye = false;
+
+                Destroy(toDestroy);
+            }
+        }
+    }
+
     void Update()
     {
+        HandleBlueEyeLogic();
+
         redEyeObjects.RemoveAll(obj => obj == null);
 
         // Store previous state

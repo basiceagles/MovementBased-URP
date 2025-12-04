@@ -27848,7 +27848,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1197548460
 RectTransform:
   m_ObjectHideFlags: 0
@@ -27868,9 +27868,9 @@ RectTransform:
   - {fileID: 1175407130}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: -199.3329}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1197548461
@@ -27993,7 +27993,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2045860301}
         m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
-        m_MethodName: ButtonPickupNodesPerk
+        m_MethodName: ButtonBlueEyeSpawner
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -40143,11 +40143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e083a2996d4c34f41aa6078edc7ada77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!143 &1773325624 stripped
-CharacterController:
-  m_CorrespondingSourceObject: {fileID: 4932755873622917610, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
-  m_PrefabInstance: {fileID: 1123764456140826848}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1778011162
 GameObject:
   m_ObjectHideFlags: 0
@@ -45385,7 +45380,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2008262646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45583,9 +45578,9 @@ RectTransform:
   - {fileID: 484455239}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: -999.3329}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2009734308
@@ -46460,6 +46455,9 @@ MonoBehaviour:
   redEyeSpawnChance: 20
   redEyeTimeToAdd: 20
   spawnRedEye: 0
+  blueEyeSpawnChance: 50
+  blueEyeTimeToAdd: 20
+  spawnBlueEye: 0
   propSpawnChance: 50
   spawnProps: 1
   spawnSwingLevels: 0
@@ -48989,10 +48987,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 3343798156140563583, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
-      propertyPath: controller
-      value: 
-      objectReference: {fileID: 1773325624}
     - target: {fileID: 3469260907815785715, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 10

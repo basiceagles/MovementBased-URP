@@ -6,6 +6,7 @@ public class LeverRandomSpawner : MonoBehaviour
     [Header("Spawn Settings")]
     public GameObject leverPrefab;
     public int maxLeversToSpawn = 2;
+    [SerializeField] private bool useMaxLeversToSpawnFromPerkManager = false;
     
     [Header("Spawn Points")]
     public GameObject[] spawnPoints;
@@ -15,6 +16,10 @@ public class LeverRandomSpawner : MonoBehaviour
     
     void Awake()
     {
+        if (useMaxLeversToSpawnFromPerkManager)
+        {
+            
+        }
         SpawnLevers();
     }
     

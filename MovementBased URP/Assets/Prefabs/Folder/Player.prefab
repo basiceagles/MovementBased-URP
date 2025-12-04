@@ -594,6 +594,7 @@ MonoBehaviour:
   maxSwingDistance: 25
   swingForce: 3
   swingSpeedBonus: 3
+  swingingEnabled: 0
   currentSwingSpeed: 18
   swingAngle: 0
   currentRopeLengthDebug: 0
@@ -1215,6 +1216,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   detectionRange: 15
   targetTag: RedEye
+  blueEyeTag: BlueEye
+  blueEyeRadius: 10
+  blueEyeFillDuration: 0.8
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -1227,6 +1231,7 @@ MonoBehaviour:
   deadSceneName: TimerDead
   playerTarget: {fileID: 1557733885150758004}
   redEyeObjects: []
+  blueEyeObjects: []
 --- !u!114 &7639928502226673217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1546,6 +1551,7 @@ MonoBehaviour:
   grappleSpeed: 20
   grapplingCd: 0.5
   canPickupNode: 0
+  grapplingEnabled: 0
   ropeSegments: 25
   ropeWaveSpeed: 20
   ropeWaveHeight: 0.5

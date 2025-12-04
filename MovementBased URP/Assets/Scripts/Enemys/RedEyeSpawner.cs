@@ -5,6 +5,7 @@ public class RandomSpawner : MonoBehaviour
 {
     [Header("Spawn Settings")]
     [SerializeField] private GameObject objectPrefab;
+
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private int maxObjectsToSpawn = 5;
     [SerializeField] private bool spawnOnStart = true;
@@ -13,9 +14,16 @@ public class RandomSpawner : MonoBehaviour
     [Header("Advanced Settings")]
     [SerializeField] private bool parentToSpawnPoint = true;
     [SerializeField] private bool avoidOverlappingSpawns = true;
-    [Header("Spawn Type Settings")]
+    [Header("Spawn Type Settings!")]
     [SerializeField] private bool redEyeSpawner = false;
+    [SerializeField] private bool spawnBlueEyeSpawner = false;
     [SerializeField] private bool nodeSpawner = false;
+
+    [Header("Red Eye Settings")]
+    [SerializeField] private GameObject redEyePrefab;
+
+    [Header("Blue Eye Settings")]
+    [SerializeField] private GameObject blueEyePrefab;
 
     private PerkSelectorScript perkSelectorScript;
     private GameObject perkSelectorScriptTarget;
@@ -27,17 +35,57 @@ public class RandomSpawner : MonoBehaviour
         perkSelectorScriptTarget = GameObject.Find("PerkSelectorManager");
         perkSelectorScript = perkSelectorScriptTarget.GetComponent<PerkSelectorScript>();
 
-        if (redEyeSpawner) spawnChance = perkSelectorScript.redEyeSpawnChance;
-        if (nodeSpawner) spawnChance = perkSelectorScript.nodeSpawnChance;
+        // Configure prefab and spawn chance based on spawner type
+        if (redEyeSpawner)
+        {
+            if (redEyePrefab != null)
+            {
+                objectPrefab = redEyePrefab;
+            }
+            spawnChance = perkSelectorScript.redEyeSpawnChance;
+        }
 
+        if (spawnBlueEyeSpawner)
+        {
+            if (blueEyePrefab != null)
+            {
+                objectPrefab = blueEyePrefab;
+            }
+            spawnChance = perkSelectorScript.blueEyeSpawnChance;
+        }
+
+        if (nodeSpawner)
+        {
+            spawnChance = perkSelectorScript.nodeSpawnChance;
+        }
+
+        // Node spawning stays independent
         if (perkSelectorScript.spawnNodes && nodeSpawner)
         {
             SpawnObjects();
         }
 
-        if (perkSelectorScript.spawnRedEye && redEyeSpawner)
+        // If this spawner is configured to handle BOTH RedEye and BlueEye,
+        // call SpawnObjects only once and let the mixed logic inside decide
+        if (redEyeSpawner && spawnBlueEyeSpawner)
         {
-            SpawnObjects();
+            if (perkSelectorScript.spawnRedEye || perkSelectorScript.spawnBlueEye)
+            {
+                SpawnObjects();
+            }
+        }
+        else
+        {
+            // Separate RedEye-only and BlueEye-only spawners keep their own calls
+            if (perkSelectorScript.spawnRedEye && redEyeSpawner)
+            {
+                SpawnObjects();
+            }
+
+            if (perkSelectorScript.spawnBlueEye && spawnBlueEyeSpawner)
+            {
+                SpawnObjects();
+            }
         }
     }
 
@@ -58,30 +106,112 @@ public class RandomSpawner : MonoBehaviour
             return;
         }
 
-        // Calculate how many objects we can actually spawn
+        // Calculate how many objects we can actually spawn this call
         int actualSpawnCount = Mathf.Min(maxObjectsToSpawn, spawnPoints.Length);
 
-        // Create a list of available spawn points
-        List<Transform> availableSpawnPoints = new List<Transform>(spawnPoints);
+        // Create a list of available spawn points that have not reached their max children
+        List<Transform> availableSpawnPoints = new List<Transform>();
+        foreach (Transform sp in spawnPoints)
+        {
+            int currentChildren = parentToSpawnPoint ? sp.childCount : 0;
+            if (currentChildren < maxObjectsToSpawn)
+            {
+                availableSpawnPoints.Add(sp);
+            }
+        }
 
         for (int i = 0; i < actualSpawnCount; i++)
         {
             if (availableSpawnPoints.Count == 0) break;
 
-            // Check spawn chance
-            float randomValue = Random.Range(0f, 100f);
-            if (randomValue > spawnChance)
-            {
-                continue; // Skip this spawn based on chance
-            }
-
             // Pick a random spawn point from available ones
             int randomIndex = Random.Range(0, availableSpawnPoints.Count);
             Transform spawnPoint = availableSpawnPoints[randomIndex];
 
+            // Double-check the current number of children on this spawn point
+            int currentChildren = parentToSpawnPoint ? spawnPoint.childCount : 0;
+            if (currentChildren >= maxObjectsToSpawn)
+            {
+                availableSpawnPoints.RemoveAt(randomIndex);
+                i--;
+                continue;
+            }
+
+            GameObject prefabToSpawn = objectPrefab;
+            bool shouldSpawn = false;
+
+            bool allowRed = redEyeSpawner && perkSelectorScript.spawnRedEye;
+            bool allowBlue = spawnBlueEyeSpawner && perkSelectorScript.spawnBlueEye;
+
+            // Mixed RedEye/BlueEye logic: when both types are allowed by perks
+            if (allowRed && allowBlue)
+            {
+                // First try RedEye
+                if (redEyePrefab != null)
+                {
+                    float redRoll = Random.Range(0f, 100f);
+                    if (redRoll <= perkSelectorScript.redEyeSpawnChance)
+                    {
+                        prefabToSpawn = redEyePrefab;
+                        shouldSpawn = true;
+                    }
+                }
+
+                // If RedEye did not spawn, try BlueEye
+                if (!shouldSpawn && blueEyePrefab != null)
+                {
+                    float blueRoll = Random.Range(0f, 100f);
+                    if (blueRoll <= perkSelectorScript.blueEyeSpawnChance)
+                    {
+                        prefabToSpawn = blueEyePrefab;
+                        shouldSpawn = true;
+                    }
+                }
+            }
+            else if (allowRed)
+            {
+                // Only RedEye is allowed
+                if (redEyePrefab != null)
+                {
+                    float redRoll = Random.Range(0f, 100f);
+                    if (redRoll <= perkSelectorScript.redEyeSpawnChance)
+                    {
+                        prefabToSpawn = redEyePrefab;
+                        shouldSpawn = true;
+                    }
+                }
+            }
+            else if (allowBlue)
+            {
+                // Only BlueEye is allowed
+                if (blueEyePrefab != null)
+                {
+                    float blueRoll = Random.Range(0f, 100f);
+                    if (blueRoll <= perkSelectorScript.blueEyeSpawnChance)
+                    {
+                        prefabToSpawn = blueEyePrefab;
+                        shouldSpawn = true;
+                    }
+                }
+            }
+            else
+            {
+                // Fallback: original single-type behavior using spawnChance and objectPrefab
+                float randomValue = Random.Range(0f, 100f);
+                if (randomValue <= spawnChance)
+                {
+                    shouldSpawn = true;
+                }
+            }
+
+            if (!shouldSpawn)
+            {
+                continue; // Skip this spawn based on chance logic
+            }
+
             // Spawn the object
             GameObject spawnedObject = Instantiate(
-                objectPrefab, 
+                prefabToSpawn,
                 spawnPoint.position, 
                 spawnPoint.rotation
             );

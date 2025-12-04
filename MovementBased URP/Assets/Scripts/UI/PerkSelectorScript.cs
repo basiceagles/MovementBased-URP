@@ -50,6 +50,10 @@ public class PerkSelectorScript : MonoBehaviour
     [Range(0, 100)] public int redEyeSpawnChance = 50;
     [SerializeField] private int redEyeTimeToAdd= 20;
     public bool spawnRedEye = false;
+    [Header("Blue Eye Perk References")]
+    [Range(0, 100)] public int blueEyeSpawnChance = 50;
+    [SerializeField] private int blueEyeTimeToAdd= 20;
+    public bool spawnBlueEye = false;
     [Header("Prop Spawn References")]
     [Range(0, 100)] public float propSpawnChance = 50f;
     public bool spawnProps = false;
@@ -647,5 +651,10 @@ public class PerkSelectorScript : MonoBehaviour
     {
         grappling.canPickupNode = true;
         timer.totalSeconds = timer.totalSeconds - nodePickupTimerToRemove;
+    }
+    public void ButtonBlueEyeSpawner()
+    {
+        spawnBlueEye = true;
+        timer.totalSeconds = timer.totalSeconds + blueEyeTimeToAdd;
     }
 }
