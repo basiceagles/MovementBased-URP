@@ -23,6 +23,10 @@ public class MoneyManager : MonoBehaviour
     [SerializeField] private int totalMoney = 0;
     [SerializeField] private int levelsCompleted = 0;
     [SerializeField] private DifficultyType currentDifficulty = DifficultyType.Easy;
+    
+    [Header("Play Time Tracking")]
+    [SerializeField] private float totalPlayTime = 0f;
+    private bool isTimerRunning = false;
 
     [Header("Events")]
     public UnityEvent<int> OnTotalMoneyChanged;
@@ -78,6 +82,28 @@ public class MoneyManager : MonoBehaviour
         {
             ResetAllMoney();
         }
+        
+        // Track play time when timer is running
+        if (isTimerRunning)
+        {
+            totalPlayTime += Time.deltaTime;
+        }
+    }
+    
+    /// <summary>
+    /// Start the play timer. Call when player exits perk room.
+    /// </summary>
+    public void StartPlayTimer()
+    {
+        isTimerRunning = true;
+    }
+    
+    /// <summary>
+    /// Stop the play timer. Call when player enters perk room.
+    /// </summary>
+    public void StopPlayTimer()
+    {
+        isTimerRunning = false;
     }
     
     private void ResetAllMoney()
@@ -103,9 +129,24 @@ public class MoneyManager : MonoBehaviour
 
     public void OnPlayerDeath()
     {
+        // Stop timer on death
+        isTimerRunning = false;
+        
+        // Save to PlayerPrefs for money calculation on next run
         PlayerPrefs.SetInt(LEVELS_COMPLETED_KEY, levelsCompleted);
         PlayerPrefs.SetInt(CURRENT_DIFFICULTY_KEY, (int)currentDifficulty);
         PlayerPrefs.Save();
+        
+        // Calculate earned money
+        int moneyPerLevel = GetMoneyValueForDifficulty(currentDifficulty);
+        int earnedMoney = Mathf.RoundToInt(moneyPerLevel * levelsCompleted * moneyMultiplier);
+        
+        // Save to RunStats for death screen display
+        RunStats.LevelsCompleted = levelsCompleted;
+        RunStats.DifficultyType = (int)currentDifficulty;
+        RunStats.MoneyEarned = earnedMoney;
+        RunStats.MoneyTotal = totalMoney + earnedMoney;
+        RunStats.TotalPlayTime = totalPlayTime;
     }
     public static void SaveMoneyOnDeath()
     {

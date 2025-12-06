@@ -152,6 +152,7 @@ public class RedEyeDetector : MonoBehaviour
 
                 if (playerController.isDamaged)
                 {
+                    MoneyManager.SaveMoneyOnDeath();
                     SceneManager.LoadScene(deadSceneName);
                 }
                 else
@@ -252,6 +253,7 @@ public class RedEyeDetector : MonoBehaviour
 
             if (playerController.isDamaged)
             {
+                MoneyManager.SaveMoneyOnDeath();
                 SceneManager.LoadScene(deadSceneName);
             }
             else
@@ -281,8 +283,7 @@ public class RedEyeDetector : MonoBehaviour
             if (IsObjectVisible(redEye))
             {
                 float distance = Vector3.Distance(mainCamera.transform.position, redEye.transform.position);
-                
-                // Check if this is our current object
+
                 if (redEye == currentRedEyeObject)
                 {
                     foundCurrentObject = true;
@@ -296,17 +297,13 @@ public class RedEyeDetector : MonoBehaviour
             }
         }
 
-        // If current object is still visible, keep it
         if (foundCurrentObject && currentRedEyeObject != null)
         {
-            // Current object is still visible, no need to change
             return;
         }
 
-        // If we found a different visible RedEye
         if (closestVisibleRedEye != null && closestVisibleRedEye != currentRedEyeObject)
         {
-            // If we were tracking a different RedEye, stop the current fill
             if (currentRedEyeObject != null && fillCoroutine != null)
             {
                 StopFillCoroutine();
@@ -315,12 +312,10 @@ public class RedEyeDetector : MonoBehaviour
             currentRedEyeObject = closestVisibleRedEye;
             lastVisibleTime = Time.time;
             
-            // Don't start fill here - let Update handle it immediately
         }
-        // If no RedEye is visible at all
         else if (closestVisibleRedEye == null && currentRedEyeObject != null)
         {
-            // Current object is no longer visible - this will be handled in Update
+            
         }
     }
     
@@ -333,7 +328,6 @@ public class RedEyeDetector : MonoBehaviour
         
         Vector3 screenPoint = mainCamera.WorldToViewportPoint(targetObject.transform.position);
 
-        // Use slightly larger bounds for better edge detection
         bool onScreen = screenPoint.z > 0 &&
                        screenPoint.x >= -0.05f && screenPoint.x <= 1.05f &&
                        screenPoint.y >= -0.05f && screenPoint.y <= 1.05f;
@@ -364,7 +358,7 @@ public class RedEyeDetector : MonoBehaviour
             }
             else if (hit.distance < distance)
             {
-                return false; // Препятствие между камерой и RedEye
+                return false;
             }
         }
         
