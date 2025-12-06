@@ -33,6 +33,11 @@ public class MaterialChanger : MonoBehaviour
 
         StartGlobalRoutineIfNeeded();
     }
+    
+    private void OnEnable()
+    {
+        StartGlobalRoutineIfNeeded();
+    }
 
     private void StartGlobalRoutineIfNeeded()
     {

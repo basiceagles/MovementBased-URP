@@ -281,7 +281,7 @@ MonoBehaviour:
     m_Bits: 256
   rampLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 65536
   enableSurfaceAlignment: 1
   alignmentSmoothness: 8
   maxSlopeAngle: 60
@@ -922,7 +922,7 @@ Camera:
   m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 65495
+    m_Bits: 131031
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1039,7 +1039,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   normalFOV: 80
-  minFOV: 40
+  minFOV: 60
   speedThreshold: 12
   shrinkMultiplier: 3.5
   fovSmoothTime: 0.5
