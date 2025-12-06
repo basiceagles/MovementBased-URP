@@ -1067,6 +1067,7 @@ GameObject:
   - component: {fileID: 345819705}
   - component: {fileID: 345819704}
   - component: {fileID: 345819703}
+  - component: {fileID: 345819707}
   m_Layer: 5
   m_Name: MainMenuButton
   m_TagString: Untagged
@@ -1160,7 +1161,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 345819705}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 345819707}
+        m_TargetAssemblyTypeName: LoadScene, Assembly-CSharp
+        m_MethodName: LoadSceneSpecific
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &345819705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1199,6 +1212,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 345819701}
   m_CullTransparentMesh: 1
+--- !u!114 &345819707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 345819701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 359575cb1241c644ab32dc3dbfda917c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loadScene: 1
+  restartScene: 0
+  sceneName: LevelDesign
+  saveMoneyOnRestart: 1
 --- !u!1 &371202831
 GameObject:
   m_ObjectHideFlags: 0
@@ -1854,6 +1883,7 @@ GameObject:
   - component: {fileID: 667014583}
   - component: {fileID: 667014587}
   - component: {fileID: 667014588}
+  - component: {fileID: 667014589}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1999,6 +2029,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e8f9630cc3ef514f82467fc20a0a07b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &667014589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 667014582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0334b58cc989c7a4ea57dfa920dafa84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelsCompletedText: {fileID: 1131555436}
+  playTimeText: {fileID: 303030789}
+  moneyEarnedText: {fileID: 1738663894}
+  moneyTotalText: {fileID: 1786037056}
 --- !u!1 &1004269356
 GameObject:
   m_ObjectHideFlags: 0
@@ -2935,6 +2981,7 @@ GameObject:
   - component: {fileID: 1346234573}
   - component: {fileID: 1346234572}
   - component: {fileID: 1346234571}
+  - component: {fileID: 1346234575}
   m_Layer: 5
   m_Name: ReturnToHubButton
   m_TagString: Untagged
@@ -3067,6 +3114,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1346234569}
   m_CullTransparentMesh: 1
+--- !u!114 &1346234575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1346234569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 359575cb1241c644ab32dc3dbfda917c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loadScene: 1
+  restartScene: 0
+  sceneName: L
+  saveMoneyOnRestart: 1
 --- !u!1 &1346876438
 GameObject:
   m_ObjectHideFlags: 0

@@ -21,7 +21,6 @@ public class LoadScene : MonoBehaviour
     {
         Debug.Log("[LoadScene] LoadSceneSpecific called!");
         
-        // ALWAYS save money when loading any scene (player death)
         if (MoneyManager.Instance != null)
         {
             Debug.Log("[LoadScene] Calling MoneyManager.OnPlayerDeath()");
@@ -43,10 +42,7 @@ public class LoadScene : MonoBehaviour
             SceneManager.LoadScene(currentScene);
         }
     }
-    
-    /// <summary>
-    /// Restart scene with money save (call this for player death).
-    /// </summary>
+
     public void RestartWithMoneySave()
     {
         if (MoneyManager.Instance != null)
@@ -56,9 +52,6 @@ public class LoadScene : MonoBehaviour
         SceneManager.LoadScene(currentScene);
     }
     
-    /// <summary>
-    /// Restart scene WITHOUT saving money (for manual restart).
-    /// </summary>
     public void RestartWithoutMoneySave()
     {
         SceneManager.LoadScene(currentScene);

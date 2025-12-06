@@ -51,6 +51,12 @@ public class EndLevelTrigger : MonoBehaviour
     {
         if (!other.gameObject.CompareTag(tagFilter)) return;
 
+        // Stop play time tracking
+        if (MoneyManager.Instance != null)
+        {
+            MoneyManager.Instance.StopPlayTimer();
+        }
+
         // Notify level completion for money tracking
         levelGenerator.NotifyLevelCompleted();
 
