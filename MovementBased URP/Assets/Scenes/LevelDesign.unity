@@ -4763,7 +4763,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &280893390
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6813,6 +6813,10 @@ MonoBehaviour:
     levelType: 0
   - levelPrefab: {fileID: 8099706242471022165, guid: 553ee99354f46534cb67a268f97dcebe, type: 3}
     levelType: 0
+  - levelPrefab: {fileID: 2198083949622078738, guid: 523a0b0c84b9c574499dee2f07798165, type: 3}
+    levelType: 11
+  - levelPrefab: {fileID: 1249688557860344850, guid: 226aa4d855027b449861e70ccd92ad09, type: 3}
+    levelType: 12
   closedMediumLevels: []
   closedHardLevels: []
   startClosedRoom: {fileID: 2324539671385129734, guid: 9a5ed9e7aff2d1a47badf9c3efb4a71e, type: 3}
@@ -6847,7 +6851,9 @@ MonoBehaviour:
   redEyeChance: 0
   redWallsChance: 0
   nodeExchangerChance: 0
-  numberOfLevels: 10
+  cornerLeftChance: 55
+  cornerRightChance: 55
+  numberOfLevels: 22
   numberOfLevelsToAdd: 1
   generateOnStart: 1
   cycle: 0
@@ -12307,6 +12313,8 @@ MonoBehaviour:
   redEyeChance: 25
   redWallsChance: 25
   nodeExchangerChance: 25
+  cornerLeftChance: 25
+  cornerRightChance: 25
   numberOfLevels: 10
   numberOfLevelsToAdd: 1
   generateOnStart: 1
@@ -35034,7 +35042,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   totalSeconds: 90
   thresholdSeconds: 10
-  deadSceneName: TimerDead
+  deadSceneName: EndGameStats
   timerText: {fileID: 1667765125}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   thresholdColor: {r: 1, g: 0, b: 0, a: 1}
@@ -40336,7 +40344,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1783734466
 RectTransform:
   m_ObjectHideFlags: 0
@@ -40356,9 +40364,9 @@ RectTransform:
   - {fileID: 280893390}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: -199.3329}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1783734467
@@ -46369,7 +46377,7 @@ MonoBehaviour:
     moneyMultiplierDelta: 0
     moneyMultiplierText: {fileID: 0}
   - gameObject: {fileID: 1783734465}
-    spawnAtMenuOpen: 0
+    spawnAtMenuOpen: 1
     timesAmountToDeactivate: 9999
     currentDeactivationCount: 0
     moneyMultiplierDelta: 0
@@ -46417,13 +46425,13 @@ MonoBehaviour:
     moneyMultiplierDelta: -3
     moneyMultiplierText: {fileID: 37181653}
   - gameObject: {fileID: 1197548459}
-    spawnAtMenuOpen: 1
+    spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
     moneyMultiplierDelta: 12
     moneyMultiplierText: {fileID: 2075667190}
   - gameObject: {fileID: 2099889391}
-    spawnAtMenuOpen: 1
+    spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
     moneyMultiplierDelta: 8
@@ -46435,49 +46443,49 @@ MonoBehaviour:
     moneyMultiplierDelta: 15
     moneyMultiplierText: {fileID: 1350412147}
   - gameObject: {fileID: 705028538}
-    spawnAtMenuOpen: 1
+    spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
     moneyMultiplierDelta: 4
     moneyMultiplierText: {fileID: 76142019}
   - gameObject: {fileID: 992501726}
-    spawnAtMenuOpen: 1
+    spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
     moneyMultiplierDelta: -15
     moneyMultiplierText: {fileID: 776860191}
   - gameObject: {fileID: 1749684089}
-    spawnAtMenuOpen: 1
+    spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
     moneyMultiplierDelta: 8
     moneyMultiplierText: {fileID: 751760701}
   - gameObject: {fileID: 1760249557}
-    spawnAtMenuOpen: 1
+    spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
     moneyMultiplierDelta: -30
     moneyMultiplierText: {fileID: 314614903}
   - gameObject: {fileID: 1815176072}
-    spawnAtMenuOpen: 1
+    spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
     moneyMultiplierDelta: 10
     moneyMultiplierText: {fileID: 1194348709}
   - gameObject: {fileID: 1140129443}
-    spawnAtMenuOpen: 1
+    spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
     moneyMultiplierDelta: 15
     moneyMultiplierText: {fileID: 1544072949}
   - gameObject: {fileID: 619060232}
-    spawnAtMenuOpen: 1
+    spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
     moneyMultiplierDelta: 15
     moneyMultiplierText: {fileID: 567081044}
   - gameObject: {fileID: 398386446}
-    spawnAtMenuOpen: 1
+    spawnAtMenuOpen: 0
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
     moneyMultiplierDelta: 12

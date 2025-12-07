@@ -1302,7 +1302,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loadScene: 1
   restartScene: 0
-  sceneName: TimerDead
+  sceneName: EndGameStats
   saveMoneyOnRestart: 1
 --- !u!1 &1555052312473576986
 GameObject:
@@ -2445,6 +2445,7 @@ Transform:
   - {fileID: 390965522759586370}
   - {fileID: 1012067757333937001}
   - {fileID: 8084919512657525636}
+  - {fileID: 1852570669783542775}
   - {fileID: 1850471523821701840}
   - {fileID: 5903081163686243292}
   - {fileID: 5138991417363011507}
@@ -2861,7 +2862,7 @@ Transform:
   m_GameObject: {fileID: 3335345649533548311}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 21}
+  m_LocalPosition: {x: -0.0000000596192, y: 0, z: 21}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7272,7 +7273,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7
+      value: -6.000141
       objectReference: {fileID: 0}
     - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
       propertyPath: m_LocalPosition.y
@@ -7280,7 +7281,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -24.99999
+      value: -24.999996
       objectReference: {fileID: 0}
     - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -9100,7 +9101,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8
+      value: 5.999858
       objectReference: {fileID: 0}
     - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
       propertyPath: m_LocalPosition.y
@@ -9108,7 +9109,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -24.99999
+      value: -24.999979
       objectReference: {fileID: 0}
     - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -11813,6 +11814,80 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
   m_PrefabInstance: {fileID: 8224839634000477485}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &8232321937321876490
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5470204779352637999}
+    m_Modifications:
+    - target: {fileID: 6971962234147237191, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_Name
+      value: Cube3x3 (36)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0001411438
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 5.9999967
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -25.000032
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.000000923872
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.0000011175871
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -90
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+--- !u!4 &1852570669783542775 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
+  m_PrefabInstance: {fileID: 8232321937321876490}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8400919211338850719
 PrefabInstance:

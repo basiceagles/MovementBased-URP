@@ -17,7 +17,9 @@ public class LevelGenerator : MonoBehaviour
         Holes,
         RedEye,
         RedWalls,
-        NodeExchanger
+        NodeExchanger,
+        CornerLeft,
+        CornerRight
     }
 
     public enum DifficultyType
@@ -103,6 +105,10 @@ public class LevelGenerator : MonoBehaviour
     public int redWallsChance = 25;
     [Range(0, 100)]
     public int nodeExchangerChance = 25;
+    [Range(0, 100)]
+    public int cornerLeftChance = 15;
+    [Range(0, 100)]
+    public int cornerRightChance = 15;
 
     [Header("Generation Settings")]
     public int numberOfLevels = 4;
@@ -134,6 +140,9 @@ public class LevelGenerator : MonoBehaviour
     private int runnerRoomsSpawned = 0;
     private int runnerRoomsRequired = 0;
     private bool hasSpawnedStartClosedRoom = false; // Track if we've spawned the start closed room
+
+    // Track the last corner type to ensure alternating pattern
+    private LevelType? lastCornerType = null;
 
     // Material cache for batching optimization
     private Dictionary<string, Material> materialCache = new Dictionary<string, Material>();
@@ -259,7 +268,14 @@ public class LevelGenerator : MonoBehaviour
             // Update the current end position to be the End point of this level
             currentEndPosition = FindEndPoint(level).position;
             
-            Debug.Log($"Level {i+1}: Start at {FindStartPoint(level).position}, End at {currentEndPosition}");
+            // Update lastCornerType if this was a corner level
+            LevelType currentLevelType = GetLevelTypeFromPrefab(randomLevelPrefab);
+            if (currentLevelType == LevelType.CornerLeft || currentLevelType == LevelType.CornerRight)
+            {
+                lastCornerType = currentLevelType;
+            }
+            
+            Debug.Log($"Level {i+1} ({currentLevelType}): Start at {FindStartPoint(level).position}, End at {currentEndPosition}");
         }
 
         // If we're still in a runner section at the end, end it first
@@ -590,6 +606,18 @@ public class LevelGenerator : MonoBehaviour
 
     private int GetSpawnChanceForLevelType(LevelType levelType)
     {
+        // Handle corner types with alternating pattern
+        if (levelType == LevelType.CornerLeft)
+        {
+            // Only allow CornerLeft if the last corner wasn't CornerLeft or if no corner has been placed yet
+            return (lastCornerType == null || lastCornerType != LevelType.CornerLeft) ? cornerLeftChance : 0;
+        }
+        else if (levelType == LevelType.CornerRight)
+        {
+            // Only allow CornerRight if the last corner wasn't CornerRight or if no corner has been placed yet
+            return (lastCornerType == null || lastCornerType != LevelType.CornerRight) ? cornerRightChance : 0;
+        }
+
         switch (levelType)
         {
             case LevelType.Standard: return standardChance;
@@ -759,6 +787,26 @@ public class LevelGenerator : MonoBehaviour
         }
 
         return runnerEndPrefabs[Random.Range(0, runnerEndPrefabs.Length)];
+    }
+    
+    private LevelType GetLevelTypeFromPrefab(GameObject prefab)
+    {
+        // Check all level lists for this prefab and return its type
+        var allLevels = new List<List<LevelData>> { easyLevels, mediumLevels, hardLevels, closedLevels, closedMediumLevels, closedHardLevels };
+        
+        foreach (var levelList in allLevels)
+        {
+            foreach (var levelData in levelList)
+            {
+                if (levelData.levelPrefab == prefab)
+                {
+                    return levelData.levelType;
+                }
+            }
+        }
+        
+        // Default to Standard if not found
+        return LevelType.Standard;
     }
 
     private void SpawnEndClosedRoom(ref Vector3 currentEndPosition)
