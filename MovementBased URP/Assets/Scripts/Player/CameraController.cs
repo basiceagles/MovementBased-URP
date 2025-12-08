@@ -6,6 +6,9 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float sens = 1f;
     [SerializeField] private float maxYAngle = 80f;
 
+    [Header("Start Rotation")]
+    [SerializeField] private Vector3 cameraStartRotation = Vector3.zero; // Initial rotation of the camera
+
     [Header("Tilt Settings")]
     [SerializeField] private float tiltAmount = 5f; // Degrees to tilt
     [SerializeField] private float tiltSpeedThreshold = 1f; // Minimum speed to trigger tilt
@@ -31,7 +34,7 @@ public class CameraController : MonoBehaviour
         
         if (transform != null)
         {
-            transform.localRotation = Quaternion.identity;
+            transform.localRotation = Quaternion.Euler(cameraStartRotation);
         }
 
         if (canMoveCamera)
@@ -150,7 +153,7 @@ public class CameraController : MonoBehaviour
                Mathf.Abs(eulerAngles.x) <= 90f && Mathf.Abs(eulerAngles.z) <= 90f; // Additional safety checks
     }
 
-    private void ResetCameraRotation()
+    public void ResetCameraRotation()
     {
         rotationX = 0f;
         currentTilt = 0f;

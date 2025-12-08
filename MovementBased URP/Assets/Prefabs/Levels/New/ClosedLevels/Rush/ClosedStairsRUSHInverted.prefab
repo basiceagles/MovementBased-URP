@@ -2789,7 +2789,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4481327018174712759}
-  - component: {fileID: 6001778558130654365}
   m_Layer: 2
   m_Name: LeverSP
   m_TagString: Untagged
@@ -2812,22 +2811,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3558241113914883151}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6001778558130654365
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 971048387345590416}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
-  useMaxLeversToSpawnFromPerkManager: 0
-  spawnPoints: []
 --- !u!1 &988027354215087755
 GameObject:
   m_ObjectHideFlags: 0
@@ -3589,54 +3572,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.03, y: 0.029999992, z: 0.009999998}
   m_Center: {x: -0.041718747, y: 0.009999998, z: 0.000013070178}
---- !u!1 &1248175954334926097
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3773853930353728581}
-  - component: {fileID: 3056018938485643417}
-  m_Layer: 2
-  m_Name: LeverSP (8)
-  m_TagString: Untagged
-  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3773853930353728581
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1248175954334926097}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.966, y: 2.76, z: -0.385}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3558241113914883151}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3056018938485643417
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1248175954334926097}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
-  useMaxLeversToSpawnFromPerkManager: 0
-  spawnPoints: []
 --- !u!1 &1262270443783248168
 GameObject:
   m_ObjectHideFlags: 0
@@ -4614,7 +4549,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1339828244169112598}
-  - component: {fileID: 3997614489385465669}
   m_Layer: 2
   m_Name: LeverSP (7)
   m_TagString: Untagged
@@ -4637,22 +4571,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3558241113914883151}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
---- !u!114 &3997614489385465669
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2205095075029325623}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
-  useMaxLeversToSpawnFromPerkManager: 0
-  spawnPoints: []
 --- !u!1 &2211519689771434427
 GameObject:
   m_ObjectHideFlags: 0
@@ -6408,7 +6326,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6574463093464841609}
-  - component: {fileID: 4475246968908646229}
   m_Layer: 2
   m_Name: LeverSP (4)
   m_TagString: Untagged
@@ -6431,22 +6348,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3558241113914883151}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!114 &4475246968908646229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3163184103916963384}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
-  useMaxLeversToSpawnFromPerkManager: 0
-  spawnPoints: []
 --- !u!1 &3202754282102830654
 GameObject:
   m_ObjectHideFlags: 0
@@ -7023,10 +6924,6 @@ Transform:
   m_Children:
   - {fileID: 4481327018174712759}
   - {fileID: 4479466472541273018}
-  - {fileID: 3773853930353728581}
-  - {fileID: 7194103579681247909}
-  - {fileID: 1497807865467401217}
-  - {fileID: 4334074410865565051}
   - {fileID: 6820935059742254671}
   - {fileID: 55990866810609039}
   - {fileID: 6574463093464841609}
@@ -7091,10 +6988,6 @@ MonoBehaviour:
   spawnPoints:
   - {fileID: 971048387345590416}
   - {fileID: 8727538617064958214}
-  - {fileID: 1248175954334926097}
-  - {fileID: 4088419653717905253}
-  - {fileID: 6248656659698942249}
-  - {fileID: 4299060453961660348}
   - {fileID: 4625454833135422609}
   - {fileID: 5893603284198952734}
   - {fileID: 3163184103916963384}
@@ -8663,54 +8556,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.06, y: 0.06, z: 0.02}
   m_Center: {x: -0.03, y: 0, z: 0.01}
---- !u!1 &4088419653717905253
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7194103579681247909}
-  - component: {fileID: 2830500591175657760}
-  m_Layer: 2
-  m_Name: LeverSP (9)
-  m_TagString: Untagged
-  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7194103579681247909
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4088419653717905253}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.144, y: 2.499, z: -0.385}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3558241113914883151}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2830500591175657760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4088419653717905253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
-  useMaxLeversToSpawnFromPerkManager: 0
-  spawnPoints: []
 --- !u!1 &4193624670598713504
 GameObject:
   m_ObjectHideFlags: 0
@@ -8958,54 +8803,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1548390722245080172}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4299060453961660348
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4334074410865565051}
-  - component: {fileID: 5241470902050820415}
-  m_Layer: 2
-  m_Name: LeverSP (11)
-  m_TagString: Untagged
-  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4334074410865565051
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4299060453961660348}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.3380013, y: 2.58, z: -0.38500023}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3558241113914883151}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5241470902050820415
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4299060453961660348}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
-  useMaxLeversToSpawnFromPerkManager: 0
-  spawnPoints: []
 --- !u!1 &4310161182053466250
 GameObject:
   m_ObjectHideFlags: 0
@@ -9612,7 +9409,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6820935059742254671}
-  - component: {fileID: 23408303138209573}
   m_Layer: 2
   m_Name: LeverSP (2)
   m_TagString: Untagged
@@ -9635,22 +9431,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3558241113914883151}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &23408303138209573
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4625454833135422609}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
-  useMaxLeversToSpawnFromPerkManager: 0
-  spawnPoints: []
 --- !u!1 &4641100434697212120
 GameObject:
   m_ObjectHideFlags: 0
@@ -12014,7 +11794,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 55990866810609039}
-  - component: {fileID: 1002043616120520193}
   m_Layer: 2
   m_Name: LeverSP (3)
   m_TagString: Untagged
@@ -12037,22 +11816,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3558241113914883151}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1002043616120520193
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5893603284198952734}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
-  useMaxLeversToSpawnFromPerkManager: 0
-  spawnPoints: []
 --- !u!1 &5940182420867470855
 GameObject:
   m_ObjectHideFlags: 0
@@ -12410,54 +12173,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &6248656659698942249
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1497807865467401217}
-  - component: {fileID: 695241882073826202}
-  m_Layer: 2
-  m_Name: LeverSP (10)
-  m_TagString: Untagged
-  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1497807865467401217
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6248656659698942249}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.119999, y: 2.47, z: -0.38500023}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3558241113914883151}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &695241882073826202
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6248656659698942249}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
-  useMaxLeversToSpawnFromPerkManager: 0
-  spawnPoints: []
 --- !u!1 &6258470000542505013
 GameObject:
   m_ObjectHideFlags: 0
@@ -14431,7 +14146,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9160924903817209754}
-  - component: {fileID: 9163069183929575298}
   m_Layer: 2
   m_Name: LeverSP (6)
   m_TagString: Untagged
@@ -14454,22 +14168,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3558241113914883151}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
---- !u!114 &9163069183929575298
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7509935114297497431}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
-  useMaxLeversToSpawnFromPerkManager: 0
-  spawnPoints: []
 --- !u!1 &7755892800179345066
 GameObject:
   m_ObjectHideFlags: 0
@@ -15785,7 +15483,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3637911179482662596}
-  - component: {fileID: 3302531031389869577}
   m_Layer: 2
   m_Name: LeverSP (5)
   m_TagString: Untagged
@@ -15808,22 +15505,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3558241113914883151}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!114 &3302531031389869577
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8467944970197162841}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
-  useMaxLeversToSpawnFromPerkManager: 0
-  spawnPoints: []
 --- !u!1 &8480126115018415879
 GameObject:
   m_ObjectHideFlags: 0
@@ -16456,7 +16137,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4479466472541273018}
-  - component: {fileID: 981166806075717550}
   m_Layer: 2
   m_Name: LeverSP (1)
   m_TagString: Untagged
@@ -16479,22 +16159,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3558241113914883151}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &981166806075717550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8727538617064958214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2be582fbd5a2c45be534755e494d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
-  useMaxLeversToSpawnFromPerkManager: 0
-  spawnPoints: []
 --- !u!1 &8729278959874721733
 GameObject:
   m_ObjectHideFlags: 0

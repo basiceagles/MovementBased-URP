@@ -26,7 +26,8 @@ public class FootstepSound : MonoBehaviour
 
     private void Update()
     {
-        playerSpeed = playerController.currentSpeed;
+        // Use only horizontal velocity (X and Z axes) for footstep sounds
+        playerSpeed = playerController.horizontalVelocity.magnitude;
         isGrounded = playerController.isGrounded;
         isSliding = playerController.isSliding;
         

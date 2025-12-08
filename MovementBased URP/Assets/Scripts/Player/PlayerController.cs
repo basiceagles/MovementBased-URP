@@ -25,6 +25,26 @@ public class PlayerController : MonoBehaviour
     private KeyCode runKey = KeyCode.LeftShift;
     private KeyCode jumpKey = KeyCode.Space;
     
+    [Header("Sprint Hold System")]
+    [SerializeField] private bool sprintHoldEnabled = true;
+    [SerializeField] private float sprintHoldDuration = 2f;
+    [SerializeField] private float sprintSpeedBonus = 5f;
+    [SerializeField] private float sprintSlideBonus = 5f; // Speed bonus when sliding while sprinting
+    [SerializeField] private float sprintFovIncrease = 20f;
+    [SerializeField] private float sprintFovSmoothTime = 1f;
+    [SerializeField] private float speedBuffer = 2f; // Speed buffer to prevent deactivation on minor speed drops
+    [SerializeField] private UnityEngine.UI.Image sprintFillImage;
+    [SerializeField] private GameObject sprintFillContainer;
+    private float sprintHoldTimer = 0f;
+    private bool isSprintHolding = false;
+    private bool isSprintActive = false;
+    private float originalRunSpeed;
+    [SerializeField] private Camera mainCamera;
+    private float originalFov;
+    private float currentFov;
+    private float fovVelocity;
+    private bool wasMoving = false; // Track if player was moving in the previous frame
+    
     [Header("Slide")]
     [SerializeField] public float slideSpeed;
     [SerializeField] public float slideAcceleration;
@@ -76,7 +96,7 @@ public class PlayerController : MonoBehaviour
         get => velocity.y;
         set => velocity.y = value;
     }
-    public float currentSpeed => horizontalVelocity.magnitude;
+    public float currentSpeed => velocity.magnitude; // Now includes vertical movement
     public float maxSpeed => runSpeed;
 
     [SerializeField] private bool usePlayerController = true;
@@ -85,6 +105,15 @@ public class PlayerController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         originalScale = transform.localScale;
+        originalRunSpeed = runSpeed;
+        if (mainCamera != null)
+        {
+            originalFov = mainCamera.fieldOfView;
+            currentFov = originalFov;
+        }
+            
+        if (sprintFillContainer != null)
+            sprintFillContainer.SetActive(false);
     }
 
     public void SetMovementEnabled(bool value)
@@ -102,6 +131,11 @@ public class PlayerController : MonoBehaviour
     
     private void Update()
     {
+        if (mainCamera != null)
+        {
+            mainCamera.fieldOfView = Mathf.SmoothDamp(mainCamera.fieldOfView, currentFov, ref fovVelocity, sprintFovSmoothTime);
+        }
+
         if (!usePlayerController) return;
 
         bool previouslyGrounded = wasGrounded;
@@ -123,8 +157,31 @@ public class PlayerController : MonoBehaviour
             justWallJumped = false;
         }
         
+        // Check if player is trying to move but not actually moving (hitting a wall)
+        bool isTryingToMove = (Input.GetAxisRaw("Horizontal") != 0f || Input.GetAxisRaw("Vertical") != 0f);
+        bool isActuallyMoving = horizontalVelocity.magnitude > 0.1f;
+        
+        // If player is trying to move but not actually moving, and they were moving before, they hit a wall
+        if (isTryingToMove && !isActuallyMoving && wasMoving && isSprintActive)
+        {
+            ResetSprint();
+        }
+        wasMoving = isActuallyMoving;
+        
+        HandleSprintInput();
         HandleMovement();
         HandleJump();
+        
+        // Reset sprint if player stops moving or speed drops below threshold
+        // Don't reset if sliding and sprint is active
+        if (isSprintActive && !isSliding)
+        {
+            float minSpeedForSprint = (originalRunSpeed + sprintSpeedBonus) - speedBuffer;
+            if (horizontalVelocity.magnitude < 0.1f || (horizontalVelocity.magnitude < minSpeedForSprint && isGrounded))
+            {
+                ResetSprint();
+            }
+        }
         
         bool wasOnSlideLayer = isOnSlideLayer;
         HandleSlide();
@@ -237,7 +294,114 @@ public class PlayerController : MonoBehaviour
     
     private float GetMovementSpeed()
     {
-        return isCrouching ? crouchSpeed : (Input.GetKey(runKey) ? runSpeed : walkSpeed);
+        return (Input.GetKey(runKey) || isSprintActive) ? runSpeed : walkSpeed;
+    }
+    
+    private void HandleSprintInput()
+    {
+        if (!sprintHoldEnabled || isSprintActive) return;
+        
+        float minRunSpeed = walkSpeed + 0.1f; // Slightly above walk speed
+        // Allow sprint to continue in air if already sprinting, but only start sprinting when grounded
+        bool isRunning = Input.GetKey(runKey) && 
+                       (isGrounded || (isSprintActive && !isGrounded)) && 
+                       horizontalVelocity.magnitude > minRunSpeed;
+        
+        // Only start the coroutine if we're not already in the process of holding sprint
+        if (isRunning && !isSprintHolding && !isSprintActive)
+        {
+            // Stop any existing coroutine to prevent multiple instances
+            if (isSprintHolding)
+            {
+                StopAllCoroutines();
+            }
+            StartCoroutine(HoldSprintRoutine());
+        }
+        else if (!isRunning && isSprintHolding)
+        {
+            StopAllCoroutines();
+            isSprintHolding = false;
+            sprintHoldTimer = 0f;
+            
+            if (sprintFillContainer != null)
+                sprintFillContainer.SetActive(false);
+                
+            if (sprintFillImage != null)
+                sprintFillImage.fillAmount = 0f;
+        }
+    }
+    
+    private System.Collections.IEnumerator HoldSprintRoutine()
+    {
+        isSprintHolding = true;
+        
+        if (sprintFillContainer != null)
+            sprintFillContainer.SetActive(true);
+        
+        while (sprintHoldTimer < sprintHoldDuration)
+        {
+            // Only cancel sprint if player releases run key or speed drops too low
+            // Don't cancel just because player is in the air
+            if (!Input.GetKey(runKey) || horizontalVelocity.magnitude < 0.1f)
+            {
+                isSprintHolding = false;
+                sprintHoldTimer = 0f;
+                
+                if (sprintFillContainer != null)
+                    sprintFillContainer.SetActive(false);
+                    
+                if (sprintFillImage != null)
+                    sprintFillImage.fillAmount = 0f;
+
+                    
+                yield break;
+            }
+            
+            sprintHoldTimer += Time.deltaTime;
+            
+            if (sprintFillImage != null)
+                sprintFillImage.fillAmount = sprintHoldTimer / sprintHoldDuration;
+                
+            yield return null;
+        }
+        
+        // Sprint activated
+        ActivateSprint();
+    }
+    
+    private void ActivateSprint()
+    {
+        isSprintActive = true;
+        runSpeed += sprintSpeedBonus;
+        
+        if (mainCamera != null)
+            currentFov = originalFov + sprintFovIncrease;
+            
+        if (sprintFillContainer != null)
+            sprintFillContainer.SetActive(false);
+
+        SoundManager.PlaySound(SoundType.UICONFIRM);
+    }
+    
+    private void ResetSprint()
+    {
+        // Only reset if not sliding, to maintain sprint during slides
+        if (!isSliding)
+        {
+            isSprintActive = false;
+            isSprintHolding = false;
+            sprintHoldTimer = 0f;
+            runSpeed = originalRunSpeed;
+            
+            if (mainCamera != null)
+                currentFov = originalFov;
+                
+            if (sprintFillContainer != null)
+                sprintFillContainer.SetActive(false);
+                
+            if (sprintFillImage != null)
+                sprintFillImage.fillAmount = 0f;
+        }
     }
     
     private void HandleJump()

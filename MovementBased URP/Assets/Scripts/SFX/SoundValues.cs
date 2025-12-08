@@ -1,6 +1,8 @@
 //Author: Small Hedge Games
 //Updated: 13/06/2024
 
+using SmallHedge.SoundManager;
+
 namespace SmallHedge.SoundManager
 {
     public enum SoundType
@@ -19,6 +21,7 @@ namespace SmallHedge.SoundManager
         TVGLITCH,
         EARTHQUAKE,
         PERKSELECTCLICK,
-        UIDENIED
+        UIDENIED,
+        UICONFIRM
     }
 }
