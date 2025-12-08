@@ -296,6 +296,11 @@ public class PlayerController : MonoBehaviour
     {
         return (Input.GetKey(runKey) || isSprintActive) ? runSpeed : walkSpeed;
     }
+
+    public void EnableSprintHold(bool enabled)
+    {
+        sprintHoldEnabled = enabled;
+    }
     
     private void HandleSprintInput()
     {
