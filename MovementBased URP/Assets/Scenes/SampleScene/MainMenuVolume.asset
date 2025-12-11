@@ -21,7 +21,7 @@ MonoBehaviour:
     m_Value: 1.82
   intensity:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 172.6
   scatter:
     m_OverrideState: 1
     m_Value: 0.7
@@ -64,6 +64,8 @@ MonoBehaviour:
   - {fileID: 8456729173266629562}
   - {fileID: 88379825141262076}
   - {fileID: 8418898928902476703}
+  - {fileID: 4901093290125925765}
+  - {fileID: 1905500862412579328}
 --- !u!114 &88379825141262076
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -76,7 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29fa0085f50d5e54f8144f766051a691, type: 3}
   m_Name: FilmGrain
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   type:
     m_OverrideState: 1
     m_Value: 10
@@ -89,6 +91,41 @@ MonoBehaviour:
   texture:
     m_OverrideState: 1
     m_Value: {fileID: 2800000, guid: 74ccfc1f4ecaff84da479579cf38344e, type: 3}
+--- !u!114 &1905500862412579328
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81180773991d8724ab7f2d216912b564, type: 3}
+  m_Name: ChromaticAberration
+  m_EditorClassIdentifier: 
+  active: 1
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0.294
+--- !u!114 &4901093290125925765
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb60a22f311433c4c962b888d1393f88, type: 3}
+  m_Name: PaniniProjection
+  m_EditorClassIdentifier: 
+  active: 1
+  distance:
+    m_OverrideState: 1
+    m_Value: 0.05
+  cropToFit:
+    m_OverrideState: 0
+    m_Value: 0
 --- !u!114 &8418898928902476703
 MonoBehaviour:
   m_ObjectHideFlags: 3
