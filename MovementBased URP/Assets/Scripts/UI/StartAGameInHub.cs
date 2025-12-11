@@ -13,6 +13,7 @@ public class StartAGameInHub : MonoBehaviour
     [SerializeField] private float fadeDuration;
     [Header("Scene Names")]
     [SerializeField] private string demoSceneName;
+    [SerializeField] private string tutorialSceneName;
 
     public void ShowGameUI()
     {
@@ -34,22 +35,22 @@ public class StartAGameInHub : MonoBehaviour
         cameraController.enabled = true;
     }
 
-    public void StartDemo()
-    {
-        SceneManager.LoadScene(demoSceneName); // Load the demo scene
-    }
-
     public void StartDemoAfterDelay()
     {
-        StartCoroutine(DelayedCallCoroutine());
+        StartCoroutine(DelayedCallCoroutine(demoSceneName));
     }
 
-    IEnumerator DelayedCallCoroutine()
+    public void StartTutorialAfterDelay()
+    {
+        StartCoroutine(DelayedCallCoroutine(tutorialSceneName));
+    }
+
+    IEnumerator DelayedCallCoroutine(string sceneName)
     {
         // Wait for the specified duration
         yield return new WaitForSeconds(fadeDuration);
         
         // Call your method after delay
-        StartDemo();
+        SceneManager.LoadScene(sceneName);
     }
 }
