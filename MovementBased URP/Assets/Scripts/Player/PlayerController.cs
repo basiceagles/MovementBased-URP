@@ -3,9 +3,11 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    
     [Header("EnemysDebug")]
     [SerializeField] public bool isDamaged = false;
     [Header("Movement")]
+    [SerializeField] private float _currentSpeedDisplay;
     [SerializeField] public float walkSpeed;
     [SerializeField] public float runSpeed;
     [SerializeField] public float gravity;
@@ -29,10 +31,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool sprintHoldEnabled = true;
     [SerializeField] private float sprintHoldDuration = 2f;
     [SerializeField] private float sprintSpeedBonus = 5f;
-    [SerializeField] private float sprintSlideBonus = 5f; // Speed bonus when sliding while sprinting
+    [SerializeField] private float sprintSlideBonus = 5f; 
     [SerializeField] private float sprintFovIncrease = 20f;
     [SerializeField] private float sprintFovSmoothTime = 1f;
-    [SerializeField] private float speedBuffer = 2f; // Speed buffer to prevent deactivation on minor speed drops
+    [SerializeField] private float speedBuffer = 2f; 
     [SerializeField] private UnityEngine.UI.Image sprintFillImage;
     [SerializeField] private GameObject sprintFillContainer;
     private float sprintHoldTimer = 0f;
@@ -43,7 +45,7 @@ public class PlayerController : MonoBehaviour
     private float originalFov;
     private float currentFov;
     private float fovVelocity;
-    private bool wasMoving = false; // Track if player was moving in the previous frame
+    private bool wasMoving = false; 
     
     [Header("Slide")]
     [SerializeField] public float slideSpeed;
@@ -51,8 +53,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float maxSlideSpeed;
     [SerializeField] private float crouchScale;
     [SerializeField] private float crouchSpeed;
+    [SerializeField] private float slideDecayDelay = 3f;
+    [SerializeField] private float slideDecayRate = 5f;
     public float currentSlideSpeed;
     public bool isSliding;
+    private float slideTimer;
     private bool isCrouching;
     private bool wantsToStandUp;
     private bool wantsToSlide;
@@ -96,7 +101,7 @@ public class PlayerController : MonoBehaviour
         get => velocity.y;
         set => velocity.y = value;
     }
-    public float currentSpeed => velocity.magnitude; // Now includes vertical movement
+    public float currentSpeed => velocity.magnitude; 
     public float maxSpeed => runSpeed;
 
     [SerializeField] private bool usePlayerController = true;
@@ -157,11 +162,9 @@ public class PlayerController : MonoBehaviour
             justWallJumped = false;
         }
         
-        // Check if player is trying to move but not actually moving (hitting a wall)
         bool isTryingToMove = (Input.GetAxisRaw("Horizontal") != 0f || Input.GetAxisRaw("Vertical") != 0f);
         bool isActuallyMoving = horizontalVelocity.magnitude > 0.1f;
         
-        // If player is trying to move but not actually moving, and they were moving before, they hit a wall
         if (isTryingToMove && !isActuallyMoving && wasMoving && isSprintActive)
         {
             ResetSprint();
@@ -172,8 +175,6 @@ public class PlayerController : MonoBehaviour
         HandleMovement();
         HandleJump();
         
-        // Reset sprint if player stops moving or speed drops below threshold
-        // Don't reset if sliding and sprint is active
         if (isSprintActive && !isSliding)
         {
             float minSpeedForSprint = (originalRunSpeed + sprintSpeedBonus) - speedBuffer;
@@ -195,6 +196,8 @@ public class PlayerController : MonoBehaviour
         
         previousYPosition = transform.position.y;
         ApplyMovement();
+        
+        _currentSpeedDisplay = currentSpeed;
     }
     
     private void HandleAirTransitions(bool previouslyGrounded, bool previouslyOnRamp)
@@ -306,16 +309,14 @@ public class PlayerController : MonoBehaviour
     {
         if (!sprintHoldEnabled || isSprintActive) return;
         
-        float minRunSpeed = walkSpeed + 0.1f; // Slightly above walk speed
-        // Allow sprint to continue in air if already sprinting, but only start sprinting when grounded
+        float minRunSpeed = walkSpeed + 0.1f; 
+
         bool isRunning = Input.GetKey(runKey) && 
                        (isGrounded || (isSprintActive && !isGrounded)) && 
                        horizontalVelocity.magnitude > minRunSpeed;
         
-        // Only start the coroutine if we're not already in the process of holding sprint
         if (isRunning && !isSprintHolding && !isSprintActive)
         {
-            // Stop any existing coroutine to prevent multiple instances
             if (isSprintHolding)
             {
                 StopAllCoroutines();
@@ -345,8 +346,6 @@ public class PlayerController : MonoBehaviour
         
         while (sprintHoldTimer < sprintHoldDuration)
         {
-            // Only cancel sprint if player releases run key or speed drops too low
-            // Don't cancel just because player is in the air
             if (!Input.GetKey(runKey) || horizontalVelocity.magnitude < 0.1f)
             {
                 isSprintHolding = false;
@@ -370,7 +369,6 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
         
-        // Sprint activated
         ActivateSprint();
     }
     
@@ -390,7 +388,6 @@ public class PlayerController : MonoBehaviour
     
     private void ResetSprint()
     {
-        // Only reset if not sliding, to maintain sprint during slides
         if (!isSliding)
         {
             isSprintActive = false;
@@ -491,7 +488,7 @@ public class PlayerController : MonoBehaviour
     
     private bool CanStartSlide()
     {
-        return Input.GetKey(runKey) && currentSpeed > walkSpeed && Input.GetAxisRaw("Vertical") > 0.1f;
+        return currentSpeed > 10f && Input.GetAxisRaw("Vertical") > 0.1f;
     }
     
     private bool CanStandUp()
@@ -526,6 +523,7 @@ public class PlayerController : MonoBehaviour
     private void StartSlide()
     {
         isSliding = true;
+        slideTimer = 0f;
         if (currentSlideSpeed <= slideSpeed)
         {
             currentSlideSpeed = slideSpeed;
@@ -579,8 +577,17 @@ public class PlayerController : MonoBehaviour
         camDir.y = 0;
         camDir.Normalize();
         
-        currentSlideSpeed = currentSlideSpeed > slideSpeed ?
-            Mathf.Max(currentSlideSpeed - slideAcceleration * 0.5f * Time.deltaTime, slideSpeed) : slideSpeed;
+        slideTimer += Time.deltaTime;
+        
+        if (slideTimer > slideDecayDelay)
+        {
+            currentSlideSpeed = Mathf.Max(currentSlideSpeed - slideDecayRate * Time.deltaTime, 0f);
+        }
+        else
+        {
+            currentSlideSpeed = currentSlideSpeed > slideSpeed ?
+                Mathf.Max(currentSlideSpeed - slideAcceleration * 0.5f * Time.deltaTime, slideSpeed) : slideSpeed;
+        }
         
         ApplySlideVelocity(camDir);
     }
