@@ -6,6 +6,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Audio;
 using System;
+using UnityEngine.Localization.Settings;
 
 public enum AntiAliasingType
 {
@@ -28,7 +29,12 @@ public class Settings : MonoBehaviour
     public TMPro.TMP_Dropdown refreshRateDropdown;
     public Toggle fullscreenToggle;
     public Toggle vsyncToggle;
-    public Toggle shadowsToggle;    
+    public Toggle shadowsToggle;
+    public Toggle toggleShakeCamera;
+    public Toggle toggleCameraSpeedZoom;
+    public Toggle toggleCameraTilt;
+    public Toggle toggleSubtitles;
+    public TMPro.TMP_Dropdown languageDropdown;
     public TMPro.TMP_Dropdown antiAliasingDropdown;
     public Slider brightnessSlider;
     public Slider sensitivitySlider;
@@ -37,6 +43,9 @@ public class Settings : MonoBehaviour
     public bool isMainMenu;
     public Volume postProcessVolume;
     public CameraController cameraController;
+    public CameraShake camShake;
+    public SpeedFOVEffect speedFovEffect;
+    public DialogueUIReferences dialogueUIReferences;
     public KeyRebindManager keyRebindManager;
     public Camera mainCamera;
     
@@ -111,8 +120,9 @@ public class Settings : MonoBehaviour
             PlayerPrefs.Save();
         }
 
-        InitializeAudio();
+        RealTimeLoad();
         SetupAntiAliasingDropdown();
+        SetupLanguageDropdown();
         LoadSettings();
 
         FindAllAudioSourcesInScene();
@@ -131,7 +141,7 @@ public class Settings : MonoBehaviour
         allAudioSourcesInScene = FindObjectsOfType<AudioSource>();
     }
 
-    private void InitializeAudio()
+    private void RealTimeLoad()
     {
         masterSlider.onValueChanged.AddListener(MasterMixerVolume);
         sfxSlider.onValueChanged.AddListener(SfxMixerVolume);
@@ -140,6 +150,11 @@ public class Settings : MonoBehaviour
         antiAliasingDropdown.onValueChanged.AddListener(SetAntiAliasing);
         
         shadowsToggle.onValueChanged.AddListener(SetShadows);
+        toggleShakeCamera.onValueChanged.AddListener(SetCameraShake);
+        toggleCameraSpeedZoom.onValueChanged.AddListener(SetCameraSpeedZoom);
+        toggleCameraTilt.onValueChanged.AddListener(SetCameraTilt);
+        toggleSubtitles.onValueChanged.AddListener(SetSubtitles);
+        languageDropdown.onValueChanged.AddListener(SetLanguage);
     }
 
     public void MasterMixerVolume(float sliderValue)
@@ -293,6 +308,26 @@ public class Settings : MonoBehaviour
         bool fpsEnabled = PlayerPrefs.GetInt("FPSCounter", 0) == 1;
         fpsCounterToggle.SetIsOnWithoutNotify(fpsEnabled);
         SetFpsCounter(fpsEnabled);
+
+        bool shakeEnabled = PlayerPrefs.GetInt("ShakeCamera", 1) == 1;
+        toggleShakeCamera.SetIsOnWithoutNotify(shakeEnabled);
+        SetCameraShake(shakeEnabled);
+
+        bool speedZoomEnabled = PlayerPrefs.GetInt("CameraSpeedZoom", 1) == 1;
+        toggleCameraSpeedZoom.SetIsOnWithoutNotify(speedZoomEnabled);
+        SetCameraSpeedZoom(speedZoomEnabled);
+
+        bool cameraTiltEnabled = PlayerPrefs.GetInt("CameraTilt", 1) == 1;
+        toggleCameraTilt.SetIsOnWithoutNotify(cameraTiltEnabled);
+        SetCameraTilt(cameraTiltEnabled);
+
+        bool subtitlesEnabled = PlayerPrefs.GetInt("Subtitles", 1) == 1;
+        toggleSubtitles.SetIsOnWithoutNotify(subtitlesEnabled);
+        SetSubtitles(subtitlesEnabled);
+
+        int languageIndex = PlayerPrefs.GetInt("Language", 1);
+        languageDropdown.SetValueWithoutNotify(languageIndex);
+        SetLanguage(languageIndex);
     }
     
     private void LoadDropdownValue(string key, TMPro.TMP_Dropdown dropdown, int maxCount)
@@ -315,6 +350,11 @@ public class Settings : MonoBehaviour
         PlayerPrefs.SetInt("FPSCounter", fpsCounterToggle.isOn ? 1 : 0);
         PlayerPrefs.SetInt("AntiAliasing", antiAliasingDropdown.value);
         PlayerPrefs.SetInt("Shadows", shadowsToggle.isOn ? 1 : 0);
+        PlayerPrefs.SetInt("ShakeCamera", toggleShakeCamera.isOn ? 1 : 0);
+        PlayerPrefs.SetInt("CameraSpeedZoom", toggleCameraSpeedZoom.isOn ? 1 : 0);
+        PlayerPrefs.SetInt("CameraTilt", toggleCameraTilt.isOn ? 1 : 0);
+        PlayerPrefs.SetInt("Subtitles", toggleSubtitles.isOn ? 1 : 0);
+        PlayerPrefs.SetInt("Language", languageDropdown.value);
 
         PlayerPrefs.Save();
 
@@ -336,7 +376,6 @@ public class Settings : MonoBehaviour
             }
         }
 
-        //Some settings requires update after saving
         bool isFpsCounterOn = fpsCounterToggle.isOn;
         SetFpsCounter(isFpsCounterOn);
     }
@@ -579,6 +618,17 @@ public class Settings : MonoBehaviour
         };
         antiAliasingDropdown.AddOptions(antiAliasingOptions);
     }
+
+    private void SetupLanguageDropdown()
+    {
+        languageDropdown.ClearOptions();
+        List<string> languageOptions = new List<string>
+        {
+            "English",
+            "Русский"
+        };
+        languageDropdown.AddOptions(languageOptions);
+    }
     
     public void SetAntiAliasing(int antiAliasingIndex)
     {
@@ -689,6 +739,59 @@ public class Settings : MonoBehaviour
         else if (fpsCounterTarget != null)
         {
             fpsCounterTarget.SetActive(false);
+        }
+    }
+    
+    public void SetCameraShake(bool enabled)
+    {
+        if (camShake != null)
+        {
+            camShake.enabled = enabled;
+        }
+    }
+
+    public void SetCameraSpeedZoom(bool enabled)
+    {
+        if (speedFovEffect != null)
+        {
+            speedFovEffect.shrinkMultiplier = enabled ? 3.5f : 0f;
+        }
+        
+        PlayerPrefs.SetInt("CameraSpeedZoom", enabled ? 1 : 0);
+    }
+
+    public void SetCameraTilt(bool enabled)
+    {
+        if (cameraController != null)
+        {
+            cameraController.tiltAmount = enabled ? 10f : 0f;
+        }
+        
+        PlayerPrefs.SetInt("CameraTilt", enabled ? 1 : 0);
+    }
+
+    public void SetSubtitles(bool enabled)
+    {
+        if (dialogueUIReferences != null)
+        {
+            dialogueUIReferences.subtitlesEnabled = enabled;
+            
+            if (!enabled)
+            {
+                dialogueUIReferences.HideDialogueUI();
+            }
+        }
+        
+        PlayerPrefs.SetInt("Subtitles", enabled ? 1 : 0);
+    }
+
+    public void SetLanguage(int languageIndex)
+    {
+        PlayerPrefs.SetInt("Language", languageIndex);
+        
+        if (LocalizationSettings.AvailableLocales.Locales.Count > languageIndex)
+        {
+            LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[languageIndex];
         }
     }
 }

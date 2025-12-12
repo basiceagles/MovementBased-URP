@@ -5,6 +5,7 @@ public class DialogueUIReferences : MonoBehaviour
 {
     public GameObject dialogueUI;
     public TextMeshProUGUI dialogueText;
+    public bool subtitlesEnabled = true;
 
     public void HideDialogueUI()
     {
@@ -21,6 +22,9 @@ public class DialogueUIReferences : MonoBehaviour
 
     public void ShowDialogueUI()
     {
+        if (!subtitlesEnabled)
+            return;
+
         if (dialogueUI != null)
         {
             dialogueUI.SetActive(true);
