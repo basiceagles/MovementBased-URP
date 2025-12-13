@@ -10,7 +10,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private Vector3 cameraStartRotation = Vector3.zero; // Initial rotation of the camera
 
     [Header("Tilt Settings")]
-    [SerializeField] private float tiltAmount = 5f; // Degrees to tilt
+    public float tiltAmount = 5f; // Degrees to tilt
     [SerializeField] private float tiltSpeedThreshold = 1f; // Minimum speed to trigger tilt
     [SerializeField] private float tiltSmoothTime = 0.1f; // Smoothing time for the tilt effect
 

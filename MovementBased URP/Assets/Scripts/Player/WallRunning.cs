@@ -91,7 +91,7 @@ public class WallRunning : MonoBehaviour
             return;
         }
         
-        if (isWallRunning && (!Input.GetKey(KeyCode.LeftShift) || pc.currentSpeed <= 0.1f))
+        if (isWallRunning && !pc.CanWallRun)
         {
             StopWallRun();
             return;
@@ -138,11 +138,10 @@ public class WallRunning : MonoBehaviour
     
     private bool CanStartWallRun()
     {
-        bool isSprinting = Input.GetKey(KeyCode.LeftShift);
-        bool isMoving = pc.currentSpeed > 0.1f;
+        bool hasEnoughSpeed = pc.CanWallRun;
         bool notGrounded = !pc.grounded;
         
-        return isSprinting && isMoving && notGrounded;
+        return hasEnoughSpeed && notGrounded;
     }
 
     private void StartWallRun()
@@ -179,7 +178,7 @@ public class WallRunning : MonoBehaviour
         if (inputDir.magnitude > 0.1f)
         {
             float forwardInput = Vector3.Dot(inputDir, wallForward);
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (pc.CanWallRun)
             {
                 movement += wallForward * forwardInput * pc.runSpeed;
                 isActivelyWallRunning = true; 
