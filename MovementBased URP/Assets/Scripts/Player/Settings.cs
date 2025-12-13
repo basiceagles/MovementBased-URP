@@ -7,6 +7,7 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.Audio;
 using System;
 using UnityEngine.Localization.Settings;
+using UnityEngine.SceneManagement;
 
 public enum AntiAliasingType
 {
@@ -490,6 +491,12 @@ public class Settings : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Delete))
         {
             PlayerPrefs.DeleteAll();
+        }
+
+        // ВРЕМЕННО: reset уровня на кнопку R
+        if (!isMainMenu && !mainMenuIsActive && Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 

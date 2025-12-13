@@ -91,7 +91,7 @@ public class WallRunning : MonoBehaviour
             return;
         }
         
-        if (isWallRunning && pc.currentSpeed <= 10f)
+        if (isWallRunning && !pc.CanWallRun)
         {
             StopWallRun();
             return;
@@ -138,7 +138,7 @@ public class WallRunning : MonoBehaviour
     
     private bool CanStartWallRun()
     {
-        bool hasEnoughSpeed = pc.currentSpeed > 10f;
+        bool hasEnoughSpeed = pc.CanWallRun;
         bool notGrounded = !pc.grounded;
         
         return hasEnoughSpeed && notGrounded;
@@ -178,7 +178,7 @@ public class WallRunning : MonoBehaviour
         if (inputDir.magnitude > 0.1f)
         {
             float forwardInput = Vector3.Dot(inputDir, wallForward);
-            if (pc.currentSpeed > 10f)
+            if (pc.CanWallRun)
             {
                 movement += wallForward * forwardInput * pc.runSpeed;
                 isActivelyWallRunning = true; 

@@ -91,6 +91,9 @@ public class PlayerController : MonoBehaviour
     public bool wallRunning, activeGrappling;
     private bool justWallJumped;
     public bool grounded => isGrounded;
+    public bool IsSprintPressed => Input.GetKey(runKey);
+    public bool HasSpeedBoost => isSprintActive;
+    public bool CanWallRun => IsSprintPressed || HasSpeedBoost;
     public Vector3 horizontalVelocity
     {
         get => new Vector3(velocity.x, 0f, velocity.z);
@@ -672,7 +675,7 @@ public class PlayerController : MonoBehaviour
     
     private void AlignToSurface()
     {
-        if (!enableSurfaceAlignment || wallRunning || activeGrappling) return;
+        if (!enableSurfaceAlignment || wallRunning || activeGrappling || justWallJumped) return;
         
         currentSurfaceNormal = Vector3.Slerp(currentSurfaceNormal, targetSurfaceNormal, alignmentSmoothness * Time.deltaTime);
         
