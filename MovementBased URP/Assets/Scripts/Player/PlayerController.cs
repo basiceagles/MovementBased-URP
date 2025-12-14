@@ -144,7 +144,6 @@ public class PlayerController : MonoBehaviour
             mainCamera.fieldOfView = Mathf.SmoothDamp(mainCamera.fieldOfView, currentFov, ref fovVelocity, sprintFovSmoothTime);
         }
 
-        if (!usePlayerController) return;
 
         bool previouslyGrounded = wasGrounded;
         bool previouslyOnRamp = wasOnRamp;
@@ -173,6 +172,8 @@ public class PlayerController : MonoBehaviour
             ResetSprint();
         }
         wasMoving = isActuallyMoving;
+
+        if (!usePlayerController) return;
         
         HandleSprintInput();
         HandleMovement();
