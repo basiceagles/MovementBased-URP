@@ -1,121 +1,170 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Renderer))]
 public class MaterialChanger : MonoBehaviour
-{    
+{
+    [Header("Texture Settings")]
     public Texture2D baseTexture1;
     public Texture2D baseTexture2;
     public Texture2D emissionTexture1;
     public Texture2D emissionTexture2;
-    
-    private Material cachedMaterial;
+    [Range(0.1f, 5f)] public float switchInterval = 1f;
+
+    [Header("Occlusion Settings")]
+    public bool useOcclusion = true;
+    public string playerTag = "Player";
+    [Range(5f, 100f)] public float maxVisibleDistance = 30f;
+    [Range(0.1f, 2f)] public float visibilityCheckInterval = 0.5f;
+
+    private Material materialInstance;
     private Renderer objectRenderer;
+    private Transform playerTransform;
+    private bool isVisible = true;
+    private float nextSwitchTime;
+    private float nextVisibilityCheck;
+    private bool useFirstSet = true;
 
-    private static readonly List<MaterialChanger> instances = new List<MaterialChanger>();
-    private static Coroutine globalCoroutine;
-    private static MaterialChanger hostInstance;
-    private static bool useFirstSet = true;
-    private const float SwitchInterval = 1f;
-
-    void Start()
+    private void Awake()
     {
         objectRenderer = GetComponent<Renderer>();
-        // Cache material instance (creates a copy)
-        cachedMaterial = objectRenderer.material;
-
-        instances.Add(this);
-
-        if (hostInstance == null)
+        if (objectRenderer == null)
         {
-            hostInstance = this;
+            Debug.LogWarning($"[MaterialChanger] No Renderer component found on {name}");
+            enabled = false;
+            return;
         }
 
-        StartGlobalRoutineIfNeeded();
+        // Create a unique material instance
+        materialInstance = new Material(objectRenderer.sharedMaterial);
+        objectRenderer.material = materialInstance;
+
+        // Initialize next switch time
+        nextSwitchTime = Time.time + switchInterval;
     }
-    
+
     private void OnEnable()
     {
-        StartGlobalRoutineIfNeeded();
+        if (materialInstance == null) return;
+
+        // Initial material update
+        UpdateMaterialTextures();
+
+        // Reset switch timer when re-enabled
+        nextSwitchTime = Time.time + switchInterval;
     }
 
-    private void StartGlobalRoutineIfNeeded()
+    private void Start()
     {
-        if (hostInstance == this && globalCoroutine == null)
+        // Find player if occlusion is enabled
+        if (useOcclusion && string.IsNullOrEmpty(playerTag) == false)
         {
-            globalCoroutine = StartCoroutine(GlobalSwitchRoutine());
+            var playerObj = GameObject.FindGameObjectWithTag(playerTag);
+            if (playerObj != null)
+            {
+                playerTransform = playerObj.transform;
+            }
         }
     }
 
-    private static IEnumerator GlobalSwitchRoutine()
+    private void Update()
     {
-        while (true)
+        // Handle occlusion if enabled
+        if (useOcclusion)
         {
-            // Compact the list and apply to valid instances
-            for (int i = instances.Count - 1; i >= 0; i--)
-            {
-                var changer = instances[i];
-                if (changer != null)
-                {
-                    changer.ApplyCurrentTextures();
-                }
-                else
-                {
-                    instances.RemoveAt(i);
-                }
-            }
+            UpdateVisibility();
+        }
 
-            if (instances.Count == 0)
-            {
-                break;
-            }
-
+        // Check if it's time to switch textures
+        if (Time.time >= nextSwitchTime)
+        {
             useFirstSet = !useFirstSet;
-
-            yield return new WaitForSeconds(SwitchInterval);
+            UpdateMaterialTextures();
+            nextSwitchTime = Time.time + switchInterval;
         }
-
-        globalCoroutine = null;
-        hostInstance = null;
     }
 
-    private void ApplyCurrentTextures()
+    private void UpdateVisibility()
     {
-        if (cachedMaterial == null)
+        // Throttle visibility checks
+        if (Time.time < nextVisibilityCheck) return;
+        nextVisibilityCheck = Time.time + visibilityCheckInterval;
+
+        if (playerTransform == null)
+        {
+            // Try to find player again if we lost reference
+            var playerObj = GameObject.FindGameObjectWithTag(playerTag);
+            if (playerObj != null)
+            {
+                playerTransform = playerObj.transform;
+            }
+            return;
+        }
+
+        // Check distance to player
+        bool wasVisible = isVisible;
+        isVisible = Vector3.Distance(transform.position, playerTransform.position) <= maxVisibleDistance;
+
+        // If just became visible, update the material
+        if (isVisible && !wasVisible)
+        {
+            UpdateMaterialTextures();
+        }
+    }
+
+    private void UpdateMaterialTextures()
+    {
+        if (materialInstance == null || (useOcclusion && !isVisible)) 
             return;
 
-        var main = useFirstSet ? baseTexture1 : baseTexture2;
-        cachedMaterial.mainTexture = main;
-
-        var emission = useFirstSet ? emissionTexture1 : emissionTexture2;
-        if (emission != null)
+        try
         {
-            cachedMaterial.SetTexture("_EmissionText", emission);
-        }
-    }
-    
-    void OnDestroy()
-    {
-        instances.Remove(this);
-        
-        if (hostInstance == this)
-        {
-            hostInstance = null;
-
-            if (instances.Count > 0)
+            // Apply base texture
+            var mainTexture = useFirstSet ? baseTexture1 : baseTexture2;
+            if (mainTexture != null)
             {
-                hostInstance = instances[0];
-                if (hostInstance != null)
-                {
-                    hostInstance.StartGlobalRoutineIfNeeded();
-                }
+                materialInstance.mainTexture = mainTexture;
+            }
+
+            // Apply emission texture if available
+            var emissionTexture = useFirstSet ? emissionTexture1 : emissionTexture2;
+            if (emissionTexture != null)
+            {
+                materialInstance.SetTexture("_EmissionText", emissionTexture);
+                materialInstance.EnableKeyword("_EMISSION");
             }
         }
-
-        // Clean up the material instance
-        if (cachedMaterial != null && Application.isPlaying)
+        catch (System.Exception e)
         {
-            Destroy(cachedMaterial);
+            Debug.LogError($"[MaterialChanger] Error updating textures on {name}: {e.Message}");
         }
+    }
+
+    private void OnDestroy()
+    {
+        // Clean up material instance
+        if (materialInstance != null)
+        {
+            if (Application.isPlaying)
+            {
+                Destroy(materialInstance);
+            }
+            else
+            {
+                DestroyImmediate(materialInstance);
+            }
+        }
+    }
+
+    // Helper method to manually trigger a texture update
+    public void ForceUpdateMaterial()
+    {
+        UpdateMaterialTextures();
+    }
+
+    // Helper method to manually toggle the texture set
+    public void ToggleTextureSet(bool useFirst)
+    {
+        useFirstSet = useFirst;
+        UpdateMaterialTextures();
     }
 }
