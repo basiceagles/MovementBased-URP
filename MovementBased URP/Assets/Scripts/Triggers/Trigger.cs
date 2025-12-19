@@ -17,6 +17,7 @@ public class Trigger : MonoBehaviour
     [Header("Trigger Settings")]
     [SerializeField] bool destroyOnTriggerEvent;
     [SerializeField] bool clearEventsOnTriggerEvent;
+    [SerializeField] bool clearEventsOnTriggerEventOnExit;
     [SerializeField] string tagFilter;
     
     [Header("On Trigger Enter Events")]
@@ -48,6 +49,11 @@ public class Trigger : MonoBehaviour
         
         // Execute all trigger exit events with their respective delays
         ExecuteEventsWithDelay(onTriggerExitEvents);
+
+        if (clearEventsOnTriggerEventOnExit)
+        {
+            ClearAllEvents();
+        }
     }
 
     void ExecuteEventsWithDelay(DelayedEvent[] events)

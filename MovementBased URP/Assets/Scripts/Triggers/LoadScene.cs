@@ -28,7 +28,7 @@ public class LoadScene : MonoBehaviour
         }
         else
         {
-            Debug.LogError("[LoadScene] MoneyManager.Instance is NULL!");
+            Debug.Log("[LoadScene] MoneyManager.Instance is NULL!");
         }
         
         if (loadScene)

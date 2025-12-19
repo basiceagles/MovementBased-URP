@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PerkShopUi : MonoBehaviour
 {
@@ -13,6 +14,15 @@ public class PerkShopUi : MonoBehaviour
     [SerializeField] private AnimationClip closeTextAnimation;
     [SerializeField] private AnimationClip openPerkSelectorAnimation;
     [SerializeField] private AnimationClip closePerkSelectorAnimation;
+    private bool ShopIsOpen = false;
+
+    void Update()
+    {
+        if (InputSystem.actions.FindAction("OpenSettings").WasPressedThisFrame() && ShopIsOpen)
+        {
+            ClosePerkShop();
+        }
+    }
 
     public void ShowKeybindHint()
     {
@@ -26,6 +36,8 @@ public class PerkShopUi : MonoBehaviour
 
     public void OpenPerkShop()
     {
+        ShopIsOpen = true;
+        Settings.SetSettingsOpenEnabled(false);
         moneyTextAnimator.Play(openTextAnimation.name);
         perkSelectorAnimator.Play(openPerkSelectorAnimation.name);
 
@@ -36,6 +48,8 @@ public class PerkShopUi : MonoBehaviour
 
     public void ClosePerkShop()
     {
+        ShopIsOpen = false;
+        Settings.SetSettingsOpenEnabled(true);
         moneyTextAnimator.Play(closeTextAnimation.name);
         perkSelectorAnimator.Play(closePerkSelectorAnimation.name);
 

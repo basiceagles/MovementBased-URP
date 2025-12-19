@@ -109,7 +109,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87a9e55a67da3044aab871832f0c13a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  materialTemplate: {fileID: 2100000, guid: f7e42cbd95a8a114ea8fbe00e9d38846, type: 2}
   baseTexture1: {fileID: 2800000, guid: 13b7be5f19a05aa42b5229c3cf475cfb, type: 3}
   baseTexture2: {fileID: 2800000, guid: e87b3cbba09f9e64ea5ef765aa3dde8e, type: 3}
   emissionTexture1: {fileID: 2800000, guid: b8c96c0bf34b2344d85ced0e54a61c91, type: 3}
   emissionTexture2: {fileID: 2800000, guid: bf28ba20c089415459a70359131256d0, type: 3}
+  switchInterval: 1
+  useOcclusion: 0
+  playerTag: Player
+  maxVisibleDistance: 30
+  visibilityCheckInterval: 0.5

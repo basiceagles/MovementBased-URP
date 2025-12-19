@@ -255,7 +255,7 @@ public class MoneyManager : MonoBehaviour
         if (multiplierText == null) return;
 
         int percent = Mathf.RoundToInt(moneyMultiplier * 100f);
-        multiplierText.text = percent.ToString() + "%";
+        multiplierText.text = percent.ToString() + "%SC";
     }
 
     public void SetMoneyMultiplier(float value)

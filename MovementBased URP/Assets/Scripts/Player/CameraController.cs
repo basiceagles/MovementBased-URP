@@ -31,7 +31,7 @@ public class CameraController : MonoBehaviour
         rotationX = 0f;
         currentTilt = 0f;
         tiltVelocity = 0f;
-        
+
         if (transform != null)
         {
             transform.localRotation = Quaternion.Euler(cameraStartRotation);
@@ -47,24 +47,25 @@ public class CameraController : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
-        
+
         // Safe initialization of rotationX
         Vector3 localEuler = transform.localEulerAngles;
         rotationX = NormalizeAngle(localEuler.x);
-        
+
         // Clamp the initial rotation to prevent invalid values
         rotationX = Mathf.Clamp(rotationX, -maxYAngle, maxYAngle);
     }
 
     private void Update()
     {
-        if (!canMoveCamera)
-        {
-            return;
-        }
+        float mouseX = 0f;
+        float mouseY = 0f;
 
-        float mouseX = Input.GetAxis("Mouse X");
-        float mouseY = Input.GetAxis("Mouse Y");
+        if (canMoveCamera)
+        {
+            mouseX = Input.GetAxis("Mouse X");
+            mouseY = Input.GetAxis("Mouse Y");
+        }
 
         // Rotate around the Y-axis (left/right)
         if (transform.parent != null)
@@ -98,7 +99,7 @@ public class CameraController : MonoBehaviour
         // Apply both vertical rotation and tilt in a single operation
         // This prevents the multiplication that can cause NaN values
         Vector3 finalRotation = new Vector3(rotationX, 0f, currentTilt);
-        
+
         // Validate before applying rotation
         if (IsValidRotation(finalRotation))
         {
@@ -135,7 +136,7 @@ public class CameraController : MonoBehaviour
     private float GetCameraRotationSpeed()
     {
         // Only consider horizontal (X) movement for tilt calculation
-        return Mathf.Abs(Input.GetAxis("Mouse X"));
+        return canMoveCamera ? Mathf.Abs(Input.GetAxis("Mouse X")) : 0f;
     }
 
     private float NormalizeAngle(float angle)

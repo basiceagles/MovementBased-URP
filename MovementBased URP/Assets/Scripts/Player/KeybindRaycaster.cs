@@ -14,8 +14,6 @@ public class KeybindRaycaster : MonoBehaviour
     private Lever previousLever;
     private bool wasLookingAtLever = false;
     private bool isCollected;
-    private GameObject mainCamera;
-    private ItemPickup itemPickup;
 
     void Start()
     {

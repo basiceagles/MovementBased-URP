@@ -22,7 +22,7 @@ public class StartAGameInHub : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        cameraController.enabled = false;
+        cameraController.SetCameraMovementEnabled(false);
     }
 
     public void HideGameUI()
@@ -32,7 +32,7 @@ public class StartAGameInHub : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        cameraController.enabled = true;
+        cameraController.SetCameraMovementEnabled(true);
     }
 
     public void StartDemoAfterDelay()

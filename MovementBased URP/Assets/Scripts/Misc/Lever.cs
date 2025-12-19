@@ -31,6 +31,7 @@ public class Lever : MonoBehaviour
     private GameObject leverManager;
     private LeverSearcher leverSearcherComponent;
 
+
     void Start()
     {
         // Get reference to existing box collider
@@ -88,7 +89,15 @@ public class Lever : MonoBehaviour
         HideUIKeybind();
 
         //Данная хуйня вызывается или проверяет потом все ли рычаги активировы, если да, то открывает дверь
-        leverSearcherComponent.CheckLeverStatus();
+        if (leverSearcherComponent != null)
+        {
+            leverSearcherComponent.CheckLeverStatus();
+        }
+        else
+        {
+            SearchForLeverManager();
+            leverSearcherComponent.CheckLeverStatus();
+        }
     }
 
     //Методы для показа UI

@@ -19,6 +19,28 @@ public enum AntiAliasingType
 
 public class Settings : MonoBehaviour
 {
+    private static Settings s_Instance;
+    private static bool s_IsSettingsOpenEnabled = true;
+
+    public static Settings Instance => s_Instance;
+
+    public static bool IsSettingsOpenEnabled => s_IsSettingsOpenEnabled;
+
+    public static void SetSettingsOpenEnabled(bool enabled)
+    {
+        s_IsSettingsOpenEnabled = enabled;
+    }
+
+    public static void EnableSettingsOpen()
+    {
+        s_IsSettingsOpenEnabled = true;
+    }
+
+    public static void DisableSettingsOpen()
+    {
+        s_IsSettingsOpenEnabled = false;
+    }
+
     [Header("Input")]
     public InputActionAsset inputActions;
     private InputAction m_OpenSettings;
@@ -39,7 +61,7 @@ public class Settings : MonoBehaviour
     public TMPro.TMP_Dropdown antiAliasingDropdown;
     public Slider brightnessSlider;
     public Slider sensitivitySlider;
-    
+
     [Header("Settings")]
     public bool isMainMenu;
     public Volume postProcessVolume;
@@ -49,14 +71,14 @@ public class Settings : MonoBehaviour
     public DialogueUIReferences dialogueUIReferences;
     public KeyRebindManager keyRebindManager;
     public Camera mainCamera;
-    
+
     private Resolution[] resolutions;
     private List<string> uniqueResolutions = new List<string>();
     private List<int> availableRefreshRates = new List<int>();
     private int targetFPS = -1;
     private int lastDisplayCount = 0;
     private int lastMonitorRefreshRate = 0;
-    
+
     [Header("Audio Mixer Settings")]
     [SerializeField] private AudioMixerGroup masterMixerGroup;
     [SerializeField] private AudioMixerGroup sfxMixerGroup;
@@ -71,6 +93,18 @@ public class Settings : MonoBehaviour
     private AudioSource[] allAudioSourcesInScene;
     [Header("Other References")]
     [SerializeField] private PerkSelectorScript perkSelectorScript;
+
+    private void Awake()
+    {
+        if (s_Instance == null || s_Instance == this)
+        {
+            s_Instance = this;
+        }
+        else
+        {
+            s_Instance = this;
+        }
+    }
 
     private void Start()
     {
@@ -147,9 +181,9 @@ public class Settings : MonoBehaviour
         masterSlider.onValueChanged.AddListener(MasterMixerVolume);
         sfxSlider.onValueChanged.AddListener(SfxMixerVolume);
         musicSlider.onValueChanged.AddListener(MusicMixerVolume);
-        
+
         antiAliasingDropdown.onValueChanged.AddListener(SetAntiAliasing);
-        
+
         shadowsToggle.onValueChanged.AddListener(SetShadows);
         toggleShakeCamera.onValueChanged.AddListener(SetCameraShake);
         toggleCameraSpeedZoom.onValueChanged.AddListener(SetCameraSpeedZoom);
@@ -183,8 +217,8 @@ public class Settings : MonoBehaviour
     {
         if (linearVolume <= 0.001f)
             return -80f;
-        
-        float adjustedVolume = Mathf.Pow(linearVolume, 0.7f); 
+
+        float adjustedVolume = Mathf.Pow(linearVolume, 0.7f);
         return Mathf.Log10(adjustedVolume) * 20f;
     }
 
@@ -193,25 +227,25 @@ public class Settings : MonoBehaviour
         resolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
         uniqueResolutions.Clear();
-        
+
         int currentResolutionIndex = 0;
-        
+
         for (int i = 0; i < resolutions.Length; i++)
         {
             string resolutionString = resolutions[i].width + "x" + resolutions[i].height;
-            
+
             if (!uniqueResolutions.Contains(resolutionString))
             {
                 uniqueResolutions.Add(resolutionString);
             }
 
-            if (resolutions[i].width == Screen.currentResolution.width && 
+            if (resolutions[i].width == Screen.currentResolution.width &&
                 resolutions[i].height == Screen.currentResolution.height)
             {
                 currentResolutionIndex = uniqueResolutions.IndexOf(resolutionString);
             }
         }
-        
+
         resolutionDropdown.AddOptions(uniqueResolutions);
         resolutionDropdown.value = currentResolutionIndex;
         resolutionDropdown.RefreshShownValue();
@@ -220,7 +254,7 @@ public class Settings : MonoBehaviour
     private void SetupRefreshRateDropdown()
     {
         UpdateAvailableRefreshRates();
-        
+
         int currentRefreshRateIndex = 1;
         for (int i = 0; i < availableRefreshRates.Count; i++)
         {
@@ -230,7 +264,7 @@ public class Settings : MonoBehaviour
                 break;
             }
         }
-        
+
         refreshRateDropdown.value = currentRefreshRateIndex;
         refreshRateDropdown.RefreshShownValue();
     }
@@ -239,17 +273,17 @@ public class Settings : MonoBehaviour
     {
         availableRefreshRates.Clear();
         refreshRateDropdown.ClearOptions();
-        
+
         string currentResolutionString = uniqueResolutions[resolutionDropdown.value];
         string[] parts = currentResolutionString.Split('x');
         int width = int.Parse(parts[0]);
         int height = int.Parse(parts[1]);
-        
+
         List<string> refreshRateOptions = new List<string>();
-        
+
         availableRefreshRates.Add(0);
         refreshRateOptions.Add("No limits");
-        
+
         for (int i = 0; i < resolutions.Length; i++)
         {
             if (resolutions[i].width == width && resolutions[i].height == height)
@@ -261,7 +295,7 @@ public class Settings : MonoBehaviour
                 }
             }
         }
-        
+
         refreshRateDropdown.AddOptions(refreshRateOptions);
     }
 
@@ -269,11 +303,11 @@ public class Settings : MonoBehaviour
     {
         LoadDropdownValue("ResolutionIndex", resolutionDropdown, uniqueResolutions.Count);
         LoadDropdownValue("RefreshRateIndex", refreshRateDropdown, availableRefreshRates.Count);
-        
+
         int antiAliasingType = PlayerPrefs.GetInt("AntiAliasing", 1);
         antiAliasingDropdown.SetValueWithoutNotify(antiAliasingType);
         SetAntiAliasing(antiAliasingType);
-        
+
         bool isFullscreen = PlayerPrefs.GetInt("Fullscreen", 1) == 1;
         fullscreenToggle.SetIsOnWithoutNotify(isFullscreen);
         SetFullscreen(isFullscreen);
@@ -285,11 +319,11 @@ public class Settings : MonoBehaviour
         bool vsyncEnabled = PlayerPrefs.GetInt("VSync", 0) == 1;
         vsyncToggle.SetIsOnWithoutNotify(vsyncEnabled);
         SetVSync(vsyncEnabled);
-        
+
         float brightness = PlayerPrefs.GetFloat("Brightness", 1f);
         brightnessSlider.SetValueWithoutNotify(brightness);
         SetBrightness(brightness);
-        
+
         float sensitivity = PlayerPrefs.GetFloat("Sensitivity", 1f);
         sensitivitySlider.SetValueWithoutNotify(sensitivity);
         SetSensitivity(sensitivity);
@@ -330,7 +364,7 @@ public class Settings : MonoBehaviour
         languageDropdown.SetValueWithoutNotify(languageIndex);
         SetLanguage(languageIndex);
     }
-    
+
     private void LoadDropdownValue(string key, TMPro.TMP_Dropdown dropdown, int maxCount)
     {
         int savedValue = PlayerPrefs.GetInt(key, dropdown.value);
@@ -385,10 +419,10 @@ public class Settings : MonoBehaviour
     {
         mainMenuUI.SetActive(true);
         mainMenuIsActive = true;
-        
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        
+
 
         if (!isMainMenu)
         {
@@ -431,7 +465,7 @@ public class Settings : MonoBehaviour
             audio.Pause();
         }
     }
-    
+
     private void UnPauseAllAudioSource()
     {
         if (allAudioSourcesInScene == null) return;
@@ -441,7 +475,7 @@ public class Settings : MonoBehaviour
             audio.UnPause();
         }
     }
-    
+
     public void CloseMainMenuSettings()
     {
         if (!isMainMenu)
@@ -462,7 +496,7 @@ public class Settings : MonoBehaviour
             mainMenuIsActive = false;
         }
     }
-    
+
     public void ResetKeybinds()
     {
         if (keyRebindManager != null)
@@ -473,12 +507,13 @@ public class Settings : MonoBehaviour
 
     private void Update()
     {
-        if (m_OpenSettings != null && m_OpenSettings.WasPressedThisFrame() && !isMainMenu && !perkSelectorScript.isPerkMenuOpen)
+        if (s_IsSettingsOpenEnabled && m_OpenSettings != null && m_OpenSettings.WasPressedThisFrame() && !isMainMenu && !perkSelectorScript.isPerkMenuOpen)
         {
             if (!mainMenuIsActive)
             {
                 FindAllAudioSourcesInScene();
                 OpenMainMenuSettings();
+
             }
             else if (mainMenuIsActive)
             {

@@ -18,9 +18,9 @@ public class LeverSearcher : MonoBehaviour
     private SlideMetalDoorManager slideMetalDoorManager;
     private SlideMetalDoorManager slideMetalDoorManagerCloseState;
 
-    private List<GameObject> leverObjects = new List<GameObject>();
-    private List<Lever> leverScripts = new List<Lever>();
-    private List<bool> leverCollectedStates = new List<bool>();
+    [SerializeField] private List<GameObject> leverObjects = new List<GameObject>();
+    [SerializeField] private List<Lever> leverScripts = new List<Lever>();
+    [SerializeField] private List<bool> leverCollectedStates = new List<bool>();
     private bool playerInTrigger = false;
     private Collider triggerCollider;
 
@@ -38,7 +38,7 @@ public class LeverSearcher : MonoBehaviour
         }
         
         // Инвок чтобы не глючило ебат
-        Invoke("SearchForLevers", 0.1f); // Small delay to ensure all objects are loaded
+        SearchForLevers();
         
     }
 
@@ -117,7 +117,7 @@ public class LeverSearcher : MonoBehaviour
     //Если булевая collected во всех кнопках true (значит что все кнопки активированы), то метод активирует дверь
     public void CheckLeverStatus()
     {
-        if (leverScripts.Count == 0) return;
+        if (leverScripts.Count == 0) SearchForLevers();
 
         bool allCollected = true;
 
