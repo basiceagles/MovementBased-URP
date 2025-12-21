@@ -14844,7 +14844,7 @@ GameObject:
   - component: {fileID: 580027584}
   - component: {fileID: 580027583}
   m_Layer: 5
-  m_Name: PerkNone
+  m_Name: Exit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14988,6 +14988,18 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 585411228}
+        m_TargetAssemblyTypeName: Settings, Assembly-CSharp
+        m_MethodName: SetSettingsOpenEnabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!1 &580214009
 GameObject:
@@ -17051,6 +17063,21 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: PerkShopUi, Assembly-CSharp
         m_MethodName: OpenPerkShop
         m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onDialogueStartEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 585411228}
+        m_TargetAssemblyTypeName: Settings, Assembly-CSharp
+        m_MethodName: SetSettingsOpenEnabled
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -34472,6 +34499,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 585411228}
+          m_TargetAssemblyTypeName: Settings, Assembly-CSharp
+          m_MethodName: SetSettingsOpenEnabled
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
     delay: 0
     name: 
   onTriggerExitEvents:
@@ -34489,6 +34528,18 @@ MonoBehaviour:
             m_FloatArgument: 0
             m_StringArgument: 
             m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 585411228}
+          m_TargetAssemblyTypeName: Settings, Assembly-CSharp
+          m_MethodName: SetSettingsOpenEnabled
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
           m_CallState: 2
     delay: 0
     name: 
@@ -50859,6 +50910,7 @@ MonoBehaviour:
   EnableCameraAtEnd: 1
   useEndEvents: 0
   onDialogueEndEvents: []
+  onDialogueStartEvents: []
   npcId: 
   isDialoguePlaying: 0
 --- !u!82 &2062727368

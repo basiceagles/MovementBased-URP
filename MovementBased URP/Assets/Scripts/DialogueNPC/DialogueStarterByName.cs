@@ -13,6 +13,7 @@ public class DialogueStarterByName : MonoBehaviour
     [SerializeField] private bool EnableCameraAtEnd = true;
     [SerializeField] private bool useEndEvents = false;
     [SerializeField] private UnityEvent[] onDialogueEndEvents;
+    [SerializeField] private UnityEvent[] onDialogueStartEvents;
     [SerializeField] private string npcId; // Changed from npcName to npcId for clarity
 
 
@@ -46,6 +47,18 @@ public class DialogueStarterByName : MonoBehaviour
 
     public void StartDialogue()
     {
+        if (useEndEvents && onDialogueStartEvents != null)
+        {
+            for (int i = 0; i < onDialogueStartEvents.Length; i++)
+            {
+                var unityEvent = onDialogueStartEvents[i];
+                if (unityEvent != null)
+                {
+                    unityEvent.Invoke();
+                }
+            }
+        }
+
         if (dialogueSystem == null || string.IsNullOrEmpty(npcName))
             return;
 

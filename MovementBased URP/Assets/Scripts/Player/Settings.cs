@@ -20,25 +20,21 @@ public enum AntiAliasingType
 public class Settings : MonoBehaviour
 {
     private static Settings s_Instance;
-    private static bool s_IsSettingsOpenEnabled = true;
+    private bool isSettingsOpenEnabled = true;
 
     public static Settings Instance => s_Instance;
 
-    public static bool IsSettingsOpenEnabled => s_IsSettingsOpenEnabled;
+    public static bool IsSettingsOpenEnabled => Instance != null && Instance.isSettingsOpenEnabled;
 
     public static void SetSettingsOpenEnabled(bool enabled)
     {
-        s_IsSettingsOpenEnabled = enabled;
-    }
+        if (Instance == null)
+        {
+            Debug.LogWarning("Settings instance not ready yet");
+            return;
+        }
 
-    public static void EnableSettingsOpen()
-    {
-        s_IsSettingsOpenEnabled = true;
-    }
-
-    public static void DisableSettingsOpen()
-    {
-        s_IsSettingsOpenEnabled = false;
+        Instance.isSettingsOpenEnabled = enabled;
     }
 
     [Header("Input")]
@@ -96,14 +92,14 @@ public class Settings : MonoBehaviour
 
     private void Awake()
     {
-        if (s_Instance == null || s_Instance == this)
+        if (s_Instance != null && s_Instance != this)
         {
-            s_Instance = this;
+            Destroy(gameObject);
+            return;
         }
-        else
-        {
-            s_Instance = this;
-        }
+
+        s_Instance = this;
+        DontDestroyOnLoad(gameObject); // optional but recommended
     }
 
     private void Start()
@@ -507,15 +503,16 @@ public class Settings : MonoBehaviour
 
     private void Update()
     {
-        if (s_IsSettingsOpenEnabled && m_OpenSettings != null && m_OpenSettings.WasPressedThisFrame() && !isMainMenu && !perkSelectorScript.isPerkMenuOpen)
+        if (!IsSettingsOpenEnabled) return;
+
+        if (m_OpenSettings != null && m_OpenSettings.WasPressedThisFrame() && !isMainMenu && !perkSelectorScript.isPerkMenuOpen)
         {
             if (!mainMenuIsActive)
             {
                 FindAllAudioSourcesInScene();
                 OpenMainMenuSettings();
-
             }
-            else if (mainMenuIsActive)
+            else
             {
                 CloseMainMenuSettings();
             }
