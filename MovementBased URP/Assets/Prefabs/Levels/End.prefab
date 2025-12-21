@@ -87,6 +87,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyOnTriggerEvent: 0
   clearEventsOnTriggerEvent: 0
+  clearEventsOnTriggerEventOnExit: 0
   tagFilter: Player
   onTriggerEnterEvents:
   - unityEvent:
@@ -121,7 +122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loadScene: 1
   restartScene: 0
-  sceneName: TimerDead
+  sceneName: VoidDead
   saveMoneyOnRestart: 1
 --- !u!1 &1544925481051363441
 GameObject:
@@ -636,6 +637,9 @@ MonoBehaviour:
   dialoguePanel: {fileID: 0}
   audioSource: {fileID: 3402226077185533355}
   stopAudioOnDialogueEnd: 1
+  enableTextShake: 0
+  shakeIntensity: 1
+  shakeSpeed: 0.1
 --- !u!1 &5203176538029454430
 GameObject:
   m_ObjectHideFlags: 0

@@ -6976,6 +6976,9 @@ MonoBehaviour:
   gizmoColor: {r: 0, g: 1, b: 1, a: 1}
   doorTarget: {fileID: 778679355968958522}
   doorCloseTarget: {fileID: 0}
+  leverObjects: []
+  leverScripts: []
+  leverCollectedStates: 
 --- !u!114 &3598517736928032680
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6989,7 +6992,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leverPrefab: {fileID: 5581277978372703267, guid: 2d9f17710e5a2794781fe4041d0e74ec, type: 3}
-  maxLeversToSpawn: 2
+  maxLeversToSpawn: 1
   useMaxLeversToSpawnFromPerkManager: 0
   spawnPoints:
   - {fileID: 971048387345590416}
@@ -12302,6 +12305,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyOnTriggerEvent: 0
   clearEventsOnTriggerEvent: 1
+  clearEventsOnTriggerEventOnExit: 0
   tagFilter: Player
   onTriggerEnterEvents:
   - unityEvent:
@@ -15825,6 +15829,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyOnTriggerEvent: 0
   clearEventsOnTriggerEvent: 1
+  clearEventsOnTriggerEventOnExit: 0
   tagFilter: Player
   onTriggerEnterEvents:
   - unityEvent:

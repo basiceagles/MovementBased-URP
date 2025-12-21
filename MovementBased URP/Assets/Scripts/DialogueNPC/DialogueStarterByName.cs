@@ -13,6 +13,8 @@ public class DialogueStarterByName : MonoBehaviour
     [SerializeField] private bool EnableCameraAtEnd = true;
     [SerializeField] private bool useEndEvents = false;
     [SerializeField] private UnityEvent[] onDialogueEndEvents;
+    [SerializeField] private string npcId; // Changed from npcName to npcId for clarity
+
 
     [SerializeField] private bool isDialoguePlaying = false; // Inspector view of whether any dialogue is active
 
@@ -85,33 +87,27 @@ public class DialogueStarterByName : MonoBehaviour
 
     private int FindDialogueIndexByName()
     {
-        // Access the dialogues array via reflection-like pattern is not ideal,
-        // so add a helper to DialoguesSystem if you later want cleaner access.
-        // For now, we just search using a small helper method you can extend.
-        return FindIndexInSystem(dialogueSystem, npcName);
+        return FindIndexInSystem(dialogueSystem, npcId);
     }
 
-    private int FindIndexInSystem(DialoguesSystem system, string targetName)
+    private int FindIndexInSystem(DialoguesSystem system, string targetNpcId)
     {
         // Simple linear search through DialogueDataNPC array
         var systemType = typeof(DialoguesSystem);
         var field = systemType.GetField("dialogues", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         if (field == null)
             return -1;
-
         var value = field.GetValue(system) as DialogueDataNPC[];
         if (value == null)
             return -1;
-
         for (int i = 0; i < value.Length; i++)
         {
             var data = value[i];
-            if (data != null && data.npcName == targetName)
+            if (data != null && data.npcId == targetNpcId)
             {
                 return i;
             }
         }
-
         return -1;
     }
 

@@ -3363,7 +3363,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 152acf0ae2ba9604dac56478bb342591, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.5
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -17059,6 +17059,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  npcId: Shopper
   isDialoguePlaying: 0
 --- !u!82 &660573568
 AudioSource:
@@ -18561,7 +18562,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 152acf0ae2ba9604dac56478bb342591, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.5
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -31711,7 +31712,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1218086214
 RectTransform:
   m_ObjectHideFlags: 0
@@ -31732,9 +31733,9 @@ RectTransform:
   - {fileID: 961219708}
   m_Father: {fileID: 1737857005}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: -1350}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1218086215
@@ -37367,7 +37368,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1440962711
 RectTransform:
   m_ObjectHideFlags: 0
@@ -37388,9 +37389,9 @@ RectTransform:
   - {fileID: 1237210994}
   m_Father: {fileID: 1737857005}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: -1450}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1440962712
@@ -40698,7 +40699,7 @@ MonoBehaviour:
   - {fileID: 1218086219}
   - {fileID: 1440962716}
   - {fileID: 1902377739}
-  metaPerkCosts: 1027000088130000a0860100e8030000a0860100a0860100a0860100a0860100a0860100a0860100a0860100a0860100000000000000000000000000
+  metaPerkCosts: 1027000088130000a0860100e8030000a0860100a0860100a0860100a0860100a0860100a0860100a0860100a086010010270000204e000030750000
   metaPerkCostTexts:
   - {fileID: 1037428009}
   - {fileID: 1173922480}
@@ -48099,7 +48100,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1902377734
 RectTransform:
   m_ObjectHideFlags: 0
@@ -48120,9 +48121,9 @@ RectTransform:
   - {fileID: 1824257250}
   m_Father: {fileID: 1737857005}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: -1550}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1902377735
@@ -50858,6 +50859,7 @@ MonoBehaviour:
   EnableCameraAtEnd: 1
   useEndEvents: 0
   onDialogueEndEvents: []
+  npcId: 
   isDialoguePlaying: 0
 --- !u!82 &2062727368
 AudioSource:

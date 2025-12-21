@@ -12,12 +12,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f341cbf2bbaab4f499f251be1190ccec, type: 3}
   m_Name: DiedByTimer
   m_EditorClassIdentifier: 
-  npcName: Test
-  lines:
-  - You have died by a loss of time?
-  - What did you expect?
-  - 'Here''s no escape, I can do something for you while Aurgus cannot see you. '
-  - So what you will choice? (click to continue)
+  npcId: 
+  _npcName:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  _lines:
+  - m_TableReference:
+      m_TableCollectionName: GUID:fe9b4044e4be1b641ac317d4f863bb2d
+    m_TableEntryReference:
+      m_KeyId: 30772027392
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  - m_TableReference:
+      m_TableCollectionName: GUID:fe9b4044e4be1b641ac317d4f863bb2d
+    m_TableEntryReference:
+      m_KeyId: 550312075264
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  - m_TableReference:
+      m_TableCollectionName: GUID:fe9b4044e4be1b641ac317d4f863bb2d
+    m_TableEntryReference:
+      m_KeyId: 555143913472
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  - m_TableReference:
+      m_TableCollectionName: GUID:fe9b4044e4be1b641ac317d4f863bb2d
+    m_TableEntryReference:
+      m_KeyId: 577637965824
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   voiceClips:
   - {fileID: 8300000, guid: c6ded9910e787e546b354c96e39f295b, type: 3}
   - {fileID: 8300000, guid: 318f9e93580d6ee4da78506ef8e9d1c3, type: 3}
@@ -28,3 +65,6 @@ MonoBehaviour:
   - 2
   - 4
   - 2
+  references:
+    version: 2
+    RefIds: []

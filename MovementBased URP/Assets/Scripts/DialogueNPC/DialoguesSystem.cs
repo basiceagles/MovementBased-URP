@@ -202,7 +202,8 @@ public class DialoguesSystem : MonoBehaviour
                 typewriterCoroutine = null;
             }
 
-            string lineText = data.lines[currentLineIndex];
+            var localizedLine = data.lines[currentLineIndex];
+            string lineText = localizedLine.GetLocalizedString();
 
             float duration = 0f;
             if (data.audioClipPlayDurations != null && currentLineIndex >= 0 && currentLineIndex < data.audioClipPlayDurations.Length)
@@ -258,7 +259,7 @@ public class DialoguesSystem : MonoBehaviour
         if (dialogueText != null)
         {
             currentLineIndex = Mathf.Clamp(currentLineIndex, 0, data.lines.Length - 1);
-            dialogueText.text = data.lines[currentLineIndex];
+            dialogueText.text = data.lines[currentLineIndex].GetLocalizedString();
         }
 
         isTyping = false;
@@ -276,7 +277,7 @@ public class DialoguesSystem : MonoBehaviour
 
         if (npcNameText != null)
         {
-            npcNameText.text = data.npcName;
+            npcNameText.text = data.npcName.GetLocalizedString();
         }
     }
 
