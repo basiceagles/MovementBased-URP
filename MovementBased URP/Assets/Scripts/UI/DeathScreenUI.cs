@@ -28,7 +28,7 @@ public class DeathScreenUI : MonoBehaviour
         }
         if (moneyEarnedText != null)
         {
-            moneyEarnedText.text = "+" + RunStats.MoneyEarned.ToString() + "SC";
+            moneyEarnedText.text = "+" + RunStats.MoneyEarned.ToString() + " SC";
         }
         if (moneyTotalText != null)
         {

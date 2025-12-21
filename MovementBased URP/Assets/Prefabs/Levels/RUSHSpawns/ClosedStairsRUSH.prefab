@@ -216,6 +216,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyOnTriggerEvent: 0
   clearEventsOnTriggerEvent: 1
+  clearEventsOnTriggerEventOnExit: 0
   tagFilter: Player
   onTriggerEnterEvents:
   - unityEvent:
@@ -1098,6 +1099,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyOnTriggerEvent: 0
   clearEventsOnTriggerEvent: 1
+  clearEventsOnTriggerEventOnExit: 0
   tagFilter: Player
   onTriggerEnterEvents:
   - unityEvent:
@@ -10314,6 +10316,10 @@ PrefabInstance:
     - target: {fileID: 3067487378622695907, guid: f39500020a945544587d3536db8df8f1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5508615771223180045, guid: f39500020a945544587d3536db8df8f1, type: 3}
+      propertyPath: maxLeversToSpawn
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5508615771223180045, guid: f39500020a945544587d3536db8df8f1, type: 3}
       propertyPath: spawnPoints.Array.size

@@ -3,6 +3,8 @@ using TMPro;
 using UnityEngine.UI;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.Events;  // Required for UnityEvent
 
 public class DialoguesSystem : MonoBehaviour
 {
@@ -16,10 +18,16 @@ public class DialoguesSystem : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private int startDialogueIndex = 0;
+    [SerializeField] private bool dontHideOnClick = false;
 
     private int currentDialogueIndex = -1;
     private int currentLineIndex = 0;
     private bool isDialogueActive = false;
+
+    [Header("Text Effects")]
+    [SerializeField] private bool enableTextShake = false;
+    [SerializeField] [Range(0f, 10f)] private float shakeIntensity = 1f;
+    [SerializeField] [Range(0.01f, 0.5f)] private float shakeSpeed = 0.1f;
 
     [Header("Audio")]
     [SerializeField] private AudioSource dialogueAudioSource;
@@ -27,6 +35,10 @@ public class DialoguesSystem : MonoBehaviour
 
     private Coroutine typewriterCoroutine;
     private bool isTyping = false;
+
+    // New feature: List of UnityEvents to trigger after the last dialogue is skipped
+    [Header("Post-Dialogue Events")]
+    [SerializeField] private List<UnityEvent> postDialogueEvents = new List<UnityEvent>(); // List of UnityEvents to trigger after the last line
 
     public event Action DialogueStarted;
     public event Action DialogueEnded;
@@ -49,7 +61,20 @@ public class DialoguesSystem : MonoBehaviour
             }
             else
             {
-                ShowNextLine();
+                DialogueDataNPC data = dialogues[currentDialogueIndex];
+                bool isLastLine = (currentLineIndex >= data.lines.Length - 1);
+
+                // If it's the last line and 'dontHideOnClick' is true, do nothing
+                if (!isLastLine || !dontHideOnClick)
+                {
+                    ShowNextLine();
+                }
+                
+                // If it's the last line, trigger post-dialogue events
+                if (isLastLine)
+                {
+                    TriggerPostDialogueEvents();
+                }
             }
         }
     }
@@ -165,6 +190,12 @@ public class DialoguesSystem : MonoBehaviour
 
         if (dialogueText != null)
         {
+            // Stop any existing shake effect
+            if (enableTextShake)
+            {
+                StopAllCoroutines();
+            }
+
             if (typewriterCoroutine != null)
             {
                 StopCoroutine(typewriterCoroutine);
@@ -188,10 +219,16 @@ public class DialoguesSystem : MonoBehaviour
             {
                 typewriterCoroutine = StartCoroutine(TypeLine(lineText, duration));
             }
+
+            // Start shake effect if enabled
+            if (enableTextShake && isActiveAndEnabled)
+            {
+                StartCoroutine(ShakeText());
+            }
         }
     }
 
-    private void CompleteCurrentLineInstantly()
+        private void CompleteCurrentLineInstantly()
     {
         if (!isDialogueActive || currentDialogueIndex < 0)
             return;
@@ -200,10 +237,22 @@ public class DialoguesSystem : MonoBehaviour
         if (data == null || data.lines == null || data.lines.Length == 0)
             return;
 
+        // Stop typewriter
         if (typewriterCoroutine != null)
         {
             StopCoroutine(typewriterCoroutine);
             typewriterCoroutine = null;
+        }
+
+        if (stopAudioCoroutine != null)
+        {
+            StopCoroutine(stopAudioCoroutine);
+            stopAudioCoroutine = null;
+        }
+
+        if (dialogueAudioSource != null && dialogueAudioSource.isPlaying)
+        {
+            dialogueAudioSource.Stop();
         }
 
         if (dialogueText != null)
@@ -215,43 +264,6 @@ public class DialoguesSystem : MonoBehaviour
         isTyping = false;
     }
 
-    private IEnumerator TypeLine(string text, float duration)
-    {
-        isTyping = true;
-
-        if (dialogueText != null)
-        {
-            dialogueText.text = string.Empty;
-        }
-
-        if (string.IsNullOrEmpty(text) || duration <= 0f)
-        {
-            if (dialogueText != null)
-            {
-                dialogueText.text = text;
-            }
-
-            isTyping = false;
-            typewriterCoroutine = null;
-            yield break;
-        }
-
-        int length = text.Length;
-        float delay = duration / Mathf.Max(1, length);
-
-        for (int i = 0; i < length; i++)
-        {
-            if (dialogueText != null)
-            {
-                dialogueText.text = text.Substring(0, i + 1);
-            }
-
-            yield return new WaitForSeconds(delay);
-        }
-
-        isTyping = false;
-        typewriterCoroutine = null;
-    }
 
     private void UpdateNpcName()
     {
@@ -314,6 +326,48 @@ public class DialoguesSystem : MonoBehaviour
         }
     }
 
+    private IEnumerator TypeLine(string line, float duration)
+    {
+        isTyping = true;
+        dialogueText.text = "";
+        float timePerChar = duration / line.Length;
+
+        foreach (char c in line)
+        {
+            dialogueText.text += c;
+            yield return new WaitForSeconds(timePerChar);
+        }
+
+        isTyping = false;
+        typewriterCoroutine = null;
+    }
+
+    private IEnumerator ShakeText()
+    {
+        if (dialogueText == null) yield break;
+
+        RectTransform textRect = dialogueText.rectTransform;
+        if (textRect == null) yield break;
+
+        Vector3 originalPos = textRect.localPosition;
+        float timer = 0f;
+
+        while (isDialogueActive && dialogueText != null && textRect != null)
+        {
+            timer += Time.deltaTime * shakeSpeed * 50f;
+            float offsetX = (Mathf.PerlinNoise(timer, 0) * 2 - 1) * shakeIntensity;
+            float offsetY = (Mathf.PerlinNoise(0, timer) * 2 - 1) * shakeIntensity;
+
+            textRect.localPosition = originalPos + new Vector3(offsetX, offsetY, 0);
+            yield return null;
+        }
+
+        if (textRect != null)
+        {
+            textRect.localPosition = originalPos;
+        }
+    }
+
     private IEnumerator StopAudioAfterDuration(float duration)
     {
         int lineIndexAtStart = currentLineIndex;
@@ -322,6 +376,15 @@ public class DialoguesSystem : MonoBehaviour
         if (isDialogueActive && currentDialogueIndex >= 0 && lineIndexAtStart == currentLineIndex && dialogueAudioSource != null)
         {
             dialogueAudioSource.Stop();
+        }
+    }
+
+    // Method to trigger the post-dialogue events
+    private void TriggerPostDialogueEvents()
+    {
+        foreach (var unityEvent in postDialogueEvents)
+        {
+            unityEvent?.Invoke();
         }
     }
 }

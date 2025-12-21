@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f341cbf2bbaab4f499f251be1190ccec, type: 3}
+  m_Name: DiedByTimer
+  m_EditorClassIdentifier: 
+  npcName: Test
+  lines:
+  - You have died by a loss of time?
+  - What did you expect?
+  - 'Here''s no escape, I can do something for you while Aurgus cannot see you. '
+  - So what you will choice? (click to continue)
+  voiceClips:
+  - {fileID: 8300000, guid: c6ded9910e787e546b354c96e39f295b, type: 3}
+  - {fileID: 8300000, guid: 318f9e93580d6ee4da78506ef8e9d1c3, type: 3}
+  - {fileID: 8300000, guid: c6ded9910e787e546b354c96e39f295b, type: 3}
+  - {fileID: 8300000, guid: 075ab2a9e50be164f8a11d47c0daeec0, type: 3}
+  audioClipPlayDurations:
+  - 3
+  - 2
+  - 4
+  - 2

@@ -2142,6 +2142,81 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7749201934044149757, guid: 6818005e639282e42963b10e0f1b82f1, type: 3}
   m_PrefabInstance: {fileID: 54398372}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &55969887
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 55969888}
+  - component: {fileID: 55969890}
+  - component: {fileID: 55969889}
+  m_Layer: 5
+  m_Name: Image
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &55969888
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 55969887}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1506501500}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &55969889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 55969887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &55969890
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 55969887}
+  m_CullTransparentMesh: 1
 --- !u!1 &56461669
 GameObject:
   m_ObjectHideFlags: 0
@@ -6418,81 +6493,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 229016973}
   m_CullTransparentMesh: 1
---- !u!1 &232312813
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 232312814}
-  - component: {fileID: 232312816}
-  - component: {fileID: 232312815}
-  m_Layer: 5
-  m_Name: BlackScreenFader
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &232312814
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 232312813}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1506501500}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &232312815
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 232312813}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &232312816
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 232312813}
-  m_CullTransparentMesh: 1
 --- !u!4 &234863300 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2575577182469766726, guid: 4806f245f270b7045b18f58555c507e3, type: 3}
@@ -7807,7 +7807,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 487277958}
   m_HandleRect: {fileID: 487277957}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -8943,8 +8943,6 @@ MonoBehaviour:
   redEyeChance: 0
   redWallsChance: 0
   nodeExchangerChance: 0
-  cornerLeftChance: 15
-  cornerRightChance: 15
   numberOfLevels: 10
   numberOfLevelsToAdd: 1
   generateOnStart: 1
@@ -16628,7 +16626,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 685efdf08a7b10c4486040358e5b6b6c, type: 2}
   - {fileID: 11400000, guid: 77efe45eccbd1c2408c017f6d1249078, type: 2}
   startDialogueIndex: 0
+  dontHideOnClick: 0
+  enableTextShake: 0
+  shakeIntensity: 1
+  shakeSpeed: 0.1
   dialogueAudioSource: {fileID: 0}
+  postDialogueEvents: []
 --- !u!1001 &632530981
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39086,7 +39089,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 232312814}
+  - {fileID: 55969888}
   m_Father: {fileID: 181284488}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -39128,10 +39131,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e12c6601f2c30fc43b1c0f413a528169, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 1506501501}
-  animationClipFadeIn: {fileID: 7400000, guid: e5dbc686285d89a4eaa69bd72922054f, type: 2}
-  animationClipFadeOut: {fileID: 7400000, guid: d0c461c186d519644950678df00d0df6, type: 2}
-  FadeOutOnStart: 0
+  fadeImage: {fileID: 55969889}
+  fadeImageGameobject: {fileID: 55969887}
+  fadeInDuration: 1
+  fadeOutDuration: 1
+  fadeOutOnStart: 1
 --- !u!1 &1511086646
 GameObject:
   m_ObjectHideFlags: 0

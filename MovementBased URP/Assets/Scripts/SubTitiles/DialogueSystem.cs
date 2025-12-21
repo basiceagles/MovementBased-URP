@@ -31,6 +31,13 @@ public class RandomDialoguePlayer : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private bool stopAudioOnDialogueEnd = true;
 
+    [Header("Text Effects")]
+    [SerializeField] private bool enableTextShake = false;
+    [SerializeField] [Range(0f, 10f)] private float shakeIntensity = 1f;
+    [SerializeField] [Range(0.01f, 0.5f)] private float shakeSpeed = 0.1f;
+    [Space(5)]
+    [Tooltip("If enabled, clicking the left mouse button won't hide the dialogue text")]
+
     private bool isPlayingDialogue = false;
     private Coroutine currentDialogueCoroutine;
 
@@ -44,6 +51,30 @@ public class RandomDialoguePlayer : MonoBehaviour
         if (!instances.Contains(this))
         {
             instances.Add(this);
+        }
+    }
+
+    private IEnumerator ShakeText(TMP_Text textComponent)
+    {
+        if (textComponent == null) yield break;
+        
+        RectTransform textRect = textComponent.rectTransform;
+        Vector3 originalPos = textRect.localPosition;
+        float timer = 0f;
+        
+        while (isPlayingDialogue && textComponent != null && textRect != null)
+        {
+            timer += Time.deltaTime * shakeSpeed * 50f;
+            float offsetX = (Mathf.PerlinNoise(timer, 0) * 2 - 1) * shakeIntensity;
+            float offsetY = (Mathf.PerlinNoise(0, timer) * 2 - 1) * shakeIntensity;
+            
+            textRect.localPosition = originalPos + new Vector3(offsetX, offsetY, 0);
+            yield return null;
+        }
+        
+        if (textRect != null)
+        {
+            textRect.localPosition = originalPos;
         }
     }
 
@@ -273,6 +304,7 @@ public class RandomDialoguePlayer : MonoBehaviour
     private IEnumerator PlayDialogueCoroutine(DialogueData dialogueData, AudioClip entryClip)
     {
         isPlayingDialogue = true;
+        Coroutine shakeCoroutine = null;
 
         if (dialoguePanel != null)
             dialoguePanel.SetActive(true);
@@ -306,11 +338,30 @@ public class RandomDialoguePlayer : MonoBehaviour
             if (dialogueSystemReferences != null && dialogueSystemReferences.dialogueText != null)
             {
                 dialogueSystemReferences.dialogueText.text = localizedText;
+                
+                // Stop any existing shake coroutine
+                if (shakeCoroutine != null)
+                {
+                    StopCoroutine(shakeCoroutine);
+                    dialogueSystemReferences.dialogueText.rectTransform.localPosition = Vector3.zero;
+                }
+                
+                // Start shake effect if enabled
+                if (enableTextShake && gameObject.activeInHierarchy)
+                {
+                    shakeCoroutine = StartCoroutine(ShakeText(dialogueSystemReferences.dialogueText));
+                }
             }
 
             // Wait strictly based on delay from DialogueData
             float waitTime = Mathf.Max(0f, line.delayBeforeNextLine);
-            yield return new WaitForSeconds(waitTime);
+            float elapsed = 0f;
+            
+            while (elapsed < waitTime)
+            {
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
         }
 
         // Dialogue sequence finished; clear subtitle text and hide subtitle UI via DialogueSystemReferences.
@@ -395,6 +446,13 @@ public class RandomDialoguePlayer : MonoBehaviour
 
             if (dialoguePanel != null)
                 dialoguePanel.SetActive(false);
+
+            // Clear text if we're hiding on click
+            if (dialogueSystemReferences != null && dialogueSystemReferences.dialogueText != null)
+            {
+                dialogueSystemReferences.dialogueText.text = string.Empty;
+                dialogueSystemReferences.HideDialogueUI();
+            }
         }
     }
 

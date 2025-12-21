@@ -1268,6 +1268,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyOnTriggerEvent: 0
   clearEventsOnTriggerEvent: 0
+  clearEventsOnTriggerEventOnExit: 0
   tagFilter: Player
   onTriggerEnterEvents:
   - unityEvent:
@@ -1302,7 +1303,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loadScene: 1
   restartScene: 0
-  sceneName: EndGameStats
+  sceneName: TimerDead
   saveMoneyOnRestart: 1
 --- !u!1 &1555052312473576986
 GameObject:
@@ -4622,14 +4623,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyOnTriggerEvent: 1
   clearEventsOnTriggerEvent: 0
+  clearEventsOnTriggerEventOnExit: 0
   tagFilter: 
   onTriggerEnterEvents:
   - unityEvent:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: CameraController, Assembly-CSharp
-          m_MethodName: SetCameraMovementEnabled
+          m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+          m_MethodName: SetMovementEnabled
           m_Mode: 6
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -4716,6 +4718,9 @@ MonoBehaviour:
   gizmoColor: {r: 0, g: 1, b: 1, a: 1}
   doorTarget: {fileID: 2029636434037693743}
   doorCloseTarget: {fileID: 0}
+  leverObjects: []
+  leverScripts: []
+  leverCollectedStates: 
 --- !u!114 &2551831343978112528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5272,6 +5277,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyOnTriggerEvent: 1
   clearEventsOnTriggerEvent: 0
+  clearEventsOnTriggerEventOnExit: 0
   tagFilter: Player
   onTriggerEnterEvents:
   - unityEvent:
@@ -5281,6 +5287,18 @@ MonoBehaviour:
           m_TargetAssemblyTypeName: CameraController, Assembly-CSharp
           m_MethodName: ResetCameraRotation
           m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: CameraController, Assembly-CSharp
+          m_MethodName: SetCameraMovementEnabled
+          m_Mode: 6
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

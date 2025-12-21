@@ -38,6 +38,7 @@ public class PerkShopUi : MonoBehaviour
     {
         ShopIsOpen = true;
         Settings.SetSettingsOpenEnabled(false);
+
         moneyTextAnimator.Play(openTextAnimation.name);
         perkSelectorAnimator.Play(openPerkSelectorAnimation.name);
 
@@ -50,6 +51,7 @@ public class PerkShopUi : MonoBehaviour
     {
         ShopIsOpen = false;
         Settings.SetSettingsOpenEnabled(true);
+        
         moneyTextAnimator.Play(closeTextAnimation.name);
         perkSelectorAnimator.Play(closePerkSelectorAnimation.name);
 
