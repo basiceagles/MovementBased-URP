@@ -48,7 +48,7 @@ public class ItemPickup : MonoBehaviour
     
     [SerializeField] private CrosshairSwitcher crosshairSwitcher;
 
-    [SerializeField] private bool useInteraction = true;
+    public bool useInteraction = true;
 
     void Start()
     {

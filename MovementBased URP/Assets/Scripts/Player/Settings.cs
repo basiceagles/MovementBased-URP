@@ -86,6 +86,7 @@ public class Settings : MonoBehaviour
     [SerializeField] private Toggle fpsCounterToggle;
     private GameObject fpsCounterTarget;
     private bool mainMenuIsActive = false;
+    private bool settingsIsActive = false;
     private AudioSource[] allAudioSourcesInScene;
     [Header("Other References")]
     [SerializeField] private PerkSelectorScript perkSelectorScript;
@@ -392,6 +393,7 @@ public class Settings : MonoBehaviour
         settingsUI.SetActive(false);
 
         mainMenuIsActive = false;
+        settingsIsActive = false;
 
         if (!isMainMenu)
         {
@@ -413,12 +415,14 @@ public class Settings : MonoBehaviour
 
     public void OpenMainMenuSettings()
     {
+        if (!isSettingsOpenEnabled)
+            return;
+            
         mainMenuUI.SetActive(true);
         mainMenuIsActive = true;
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
 
         if (!isMainMenu)
         {
@@ -446,6 +450,8 @@ public class Settings : MonoBehaviour
 
             settingsUI.SetActive(true);
             mainMenuUI.SetActive(false);
+
+            settingsIsActive = true;
 
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
@@ -507,12 +513,12 @@ public class Settings : MonoBehaviour
 
         if (m_OpenSettings != null && m_OpenSettings.WasPressedThisFrame() && !isMainMenu && !perkSelectorScript.isPerkMenuOpen)
         {
-            if (!mainMenuIsActive)
+            if (!mainMenuIsActive && !settingsIsActive)
             {
                 FindAllAudioSourcesInScene();
                 OpenMainMenuSettings();
             }
-            else
+            else if (!settingsIsActive)
             {
                 CloseMainMenuSettings();
             }

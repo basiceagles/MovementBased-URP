@@ -20,6 +20,7 @@ public class EndLevelTrigger : MonoBehaviour
     private RedEyeDetector redEyeDetector;
     private GameObject cycleIntTextTarget;
     private TMP_Text cycleIntText;
+    private ItemPickup itemPickup;
     private int currentCycle = 0;
 
     void Start()
@@ -45,6 +46,8 @@ public class EndLevelTrigger : MonoBehaviour
 
         cycleIntTextTarget = GameObject.Find("CycleIntTextUI");
         cycleIntText = cycleIntTextTarget.GetComponent<TMP_Text>();
+
+        itemPickup = cameraTarget.GetComponent<ItemPickup>();
     }
 
     void OnTriggerEnter(Collider other)
@@ -56,6 +59,8 @@ public class EndLevelTrigger : MonoBehaviour
         {
             MoneyManager.Instance.StopPlayTimer();
         }
+
+        //itemPickup.useInteraction = false;
 
         // Notify level completion for money tracking
         levelGenerator.NotifyLevelCompleted();

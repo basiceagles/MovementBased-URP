@@ -31,6 +31,7 @@ public class PerkSelectorScript : MonoBehaviour
     
     [Header("Special References")]
     public GameObject ButtonPerkNone; // Reference to the "None" perk button
+    [SerializeField] private bool spawnNonePerkButton = false;
     
     [Header("Button Hierarchy System")]
     public ButtonHierarchy[] buttonHierarchies; // Define button parent-child relationships
@@ -94,6 +95,7 @@ public class PerkSelectorScript : MonoBehaviour
     [Header("Other References")]
     [SerializeField] private Grappling grappling;
     [SerializeField] private MoneyManager moneyManager;
+    
 
     void Start()
     {
@@ -157,6 +159,8 @@ public class PerkSelectorScript : MonoBehaviour
 
     public void OpenPerkMenu()
     {
+        itemPickup.useInteraction = false;
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         cameraController.enabled = false;
@@ -203,10 +207,18 @@ public class PerkSelectorScript : MonoBehaviour
         {
             SetSpawnAtMenuOpenForObject(ButtonPerkNone, false);
         }
+        
+        // NEW: Enable ButtonPerkNone
+        if (spawnNonePerkButton)
+        {
+            SetSpawnAtMenuOpenForObject(ButtonPerkNone, true);
+        }
     }
     
     public void ClosePerkMenu()
     {
+        itemPickup.useInteraction = true;
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         cameraController.enabled = true;
