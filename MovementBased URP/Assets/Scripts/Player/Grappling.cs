@@ -56,10 +56,11 @@ public class Grappling : MonoBehaviour
 
     private void Update()
     {
-        if (!grapplingEnabled)
-        {
-            return;
-        }
+        // if (!grapplingEnabled)
+        // {
+        //     return;
+        // }
+
 
         if (Input.GetKeyDown(grappleKey))
         {
@@ -345,5 +346,25 @@ public class Grappling : MonoBehaviour
     public bool IsGrapplingEnabled()
     {
         return grapplingEnabled;
+    }
+
+    // Методы для HookTracker
+    public bool IsGrapplingActive()
+    {
+        return grappling;
+    }
+
+    public void SetGrapplePoint(Vector3 point)
+    {
+        grapplePoint = point;
+    }
+
+    public void ForceActivatePulling()
+    {
+        if (grappling && pc != null)
+        {
+            pulling = true;
+            pc.activeGrappling = true;
+        }
     }
 }
