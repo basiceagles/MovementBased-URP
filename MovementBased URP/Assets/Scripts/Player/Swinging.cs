@@ -29,6 +29,8 @@ public class Swinging : MonoBehaviour
     private float hookFlyProgress;
     private Grappling grappling;
     private ItemPickup itemPickup;
+    
+    [HideInInspector] public bool bypassLayerCheck = false; 
 
     void Start()
     {
@@ -87,10 +89,11 @@ public class Swinging : MonoBehaviour
 
     void Update()
     {
-        if (!swingingEnabled)
-        {
-            return;
-        }
+        // if (!swingingEnabled)
+        // {
+        //     return;
+        // }
+
 
         if (Input.GetKeyDown(swingKey))
         {
@@ -159,18 +162,26 @@ public class Swinging : MonoBehaviour
 
     void StartSwing()
     {
-        // Block swing if holding a node
         if (itemPickup != null && itemPickup.isHolding)
         {
             return;
         }
         
-        if (cam == null || swinging || !Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, maxSwingDistance, whatIsGrappleable))
+        if (cam == null || swinging)
         {
             return;
         }
+        
+        if (!bypassLayerCheck)
+        {
+            if (!Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, maxSwingDistance, whatIsGrappleable))
+            {
+                return;
+            }
+            swingPoint = hit.point;
+        }
+        
         if (grappling != null) grappling.enabled = false;
-        swingPoint = hit.point; 
         swinging = true; 
         pc.activeGrappling = true;
         currentRopeLength = Vector3.Distance(player.position, swingPoint);
@@ -321,5 +332,18 @@ public class Swinging : MonoBehaviour
     public bool IsSwingingEnabled()
     {
         return swingingEnabled;
+    }
+
+    public void SetSwingPoint(Vector3 point)
+    {
+        swingPoint = point;
+    }
+
+    public void ForceActivateSwinging()
+    {
+        if (swinging && pc != null)
+        {
+            pc.activeGrappling = true;
+        }
     }
 }
