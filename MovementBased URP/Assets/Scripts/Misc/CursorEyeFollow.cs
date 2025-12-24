@@ -10,6 +10,7 @@ public class CursorEyeFollow : MonoBehaviour
     
     private Vector2 centerPosition;
     private Canvas parentCanvas;
+    private RectTransform centerRectTransform;
 
     void Start()
     {
@@ -22,15 +23,25 @@ public class CursorEyeFollow : MonoBehaviour
             return;
         }
         
-        // Set initial center position
-        centerPosition = Vector2.zero;  // Center of the parent RectTransform
+        // Get the RectTransform of this GameObject
+        centerRectTransform = GetComponent<RectTransform>();
+        if (centerRectTransform == null)
+        {
+            Debug.LogError("This GameObject doesn't have a RectTransform component!");
+            enabled = false;
+            return;
+        }
     }
 
     void Update()
     {
-        if (objectToMove == null || parentCanvas == null)
+        if (objectToMove == null || parentCanvas == null || centerRectTransform == null)
             return;
 
+        // Get the current center position of this GameObject in canvas space
+        // This will be the anchor point for the eye movement
+        Vector2 currentCenter = GetCenterPositionInCanvasSpace();
+        
         // Get cursor position in canvas space
         Vector2 localCursor;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -40,8 +51,8 @@ public class CursorEyeFollow : MonoBehaviour
             out localCursor
         );
 
-        // Calculate direction from center to cursor
-        Vector2 direction = localCursor - centerPosition;
+        // Calculate direction from this GameObject's center to cursor
+        Vector2 direction = localCursor - currentCenter;
         
         // If cursor is outside boundary, clamp it
         if (direction.magnitude > boundaryRadius)
@@ -49,24 +60,47 @@ public class CursorEyeFollow : MonoBehaviour
             direction = direction.normalized * boundaryRadius;
         }
 
+        // Calculate target position relative to this GameObject's center
+        Vector2 targetPosition = currentCenter + direction;
+        
         // Smoothly move towards the target position
         objectToMove.anchoredPosition = Vector2.Lerp(
             objectToMove.anchoredPosition,
-            direction,
+            targetPosition,
             moveSpeed * Time.deltaTime
         );
+    }
+
+    // Get the center position of this GameObject in canvas space
+    private Vector2 GetCenterPositionInCanvasSpace()
+    {
+        // Convert this GameObject's position to canvas space
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(
+            parentCanvas.worldCamera, 
+            centerRectTransform.position
+        );
+        
+        Vector2 localPoint;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            objectToMove.parent as RectTransform,
+            screenPoint,
+            parentCanvas.worldCamera,
+            out localPoint
+        );
+        
+        return localPoint;
     }
 
     // Draw the boundary in the editor
     private void OnDrawGizmosSelected()
     {
-        if (objectToMove == null) return;
+        if (objectToMove == null || !Application.isPlaying) return;
         
-        Vector3 center = objectToMove.parent != null ? 
-            objectToMove.parent.TransformPoint(centerPosition) : 
-            centerPosition;
-            
+        // Get current center position during gameplay
+        Vector2 currentCenter = GetCenterPositionInCanvasSpace();
+        Vector3 worldCenter = objectToMove.parent.TransformPoint(currentCenter);
+        
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(center, boundaryRadius / 100f); // Scale for better visibility
+        Gizmos.DrawWireSphere(worldCenter, boundaryRadius);
     }
 }

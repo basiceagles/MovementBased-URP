@@ -289,7 +289,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: d61b5a6383ae36c4c99839c462188c62, type: 2}
+  sharedProfile: {fileID: 11400000, guid: 7c38946898256854696338f00d709dc4, type: 2}
 --- !u!4 &562416681
 Transform:
   m_ObjectHideFlags: 0
@@ -333,7 +333,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1072055783}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 3d5468133564ee242b22242286f6e7d8, type: 3}
+  m_VideoClip: {fileID: 32900000, guid: d3518740e2a9a104e89c394786f7c887, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 322953101}
@@ -391,6 +391,7 @@ MonoBehaviour:
   loadScene: 1
   restartScene: 0
   sceneName: WarningSplashScreen
+  saveMoneyOnRestart: 1
 --- !u!114 &1072055787
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419,7 +420,8 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    delay: 1.2
+    delay: 6
+  callOnStart: 1
 --- !u!82 &1072055788
 AudioSource:
   m_ObjectHideFlags: 0
