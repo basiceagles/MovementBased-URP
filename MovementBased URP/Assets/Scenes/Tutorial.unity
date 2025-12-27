@@ -16342,7 +16342,6 @@ MonoBehaviour:
   enableTextShake: 0
   shakeIntensity: 1
   shakeSpeed: 0.1
-  dontHideOnClick: 0
 --- !u!164 &632852372
 AudioReverbFilter:
   m_ObjectHideFlags: 0
@@ -22984,6 +22983,7 @@ Transform:
   - {fileID: 1875624471}
   - {fileID: 1574259373}
   - {fileID: 772011511}
+  - {fileID: 1423506990}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &961219707
@@ -32575,6 +32575,58 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1414795219}
   m_CullTransparentMesh: 1
+--- !u!1 &1423506989
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1423506990}
+  - component: {fileID: 1423506991}
+  m_Layer: 0
+  m_Name: GlitchEffectShader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1423506990
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1423506989}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 960567248}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1423506991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1423506989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 536d1ef043589994aa7c7954c22d549f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 05451bf8e75437a44886d7ebbad0139e, type: 2}
+  noiseAmount: 0
+  glitchStrenght: 0
+  scanLinesStrenght: 0
+  color: {r: 1, g: 1, b: 1, a: 0}
+  useGlitchEffect: 0
+  rendererData: {fileID: 11400000, guid: f288ae1f4751b564a96ac7587541f7a2, type: 2}
+  feature: {fileID: 3809466738070736292, guid: f288ae1f4751b564a96ac7587541f7a2, type: 2}
 --- !u!1 &1424107979
 GameObject:
   m_ObjectHideFlags: 0
@@ -40368,7 +40420,6 @@ MonoBehaviour:
   enableTextShake: 0
   shakeIntensity: 1
   shakeSpeed: 0.1
-  dontHideOnClick: 0
 --- !u!65 &1732200083
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -41678,7 +41729,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a41cefe125cd3b04d93e75551c87901a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  redEyeOverlay: {fileID: 434682995}
+  animator: {fileID: 0}
+  damagedAnimClip: {fileID: 0}
 --- !u!1 &1786762443
 GameObject:
   m_ObjectHideFlags: 0
@@ -46554,6 +46606,7 @@ MonoBehaviour:
     moneyMultiplierText: {fileID: 0}
   amountToActivate: 3
   ButtonPerkNone: {fileID: 0}
+  spawnNonePerkButton: 0
   buttonHierarchies:
   - parentButton: {fileID: 0}
     childButtons:

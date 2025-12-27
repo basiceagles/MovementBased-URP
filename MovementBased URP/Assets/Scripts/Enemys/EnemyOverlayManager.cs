@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class EnemyOverlayManager : MonoBehaviour
 {
-    [SerializeField] private GameObject redEyeOverlay;
+    [SerializeField] private Animator animator;
+    [SerializeField] private AnimationClip damagedAnimClip;
     void Start()
     {
         
@@ -10,6 +11,6 @@ public class EnemyOverlayManager : MonoBehaviour
 
     public void CallRedEyeOverlay()
     {
-        redEyeOverlay.SetActive(true);
+        animator.Play(damagedAnimClip.name);
     }
 }
