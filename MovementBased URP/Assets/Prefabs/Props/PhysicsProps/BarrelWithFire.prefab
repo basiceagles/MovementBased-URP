@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8958271483726464089}
   - component: {fileID: 6105747628309629317}
   - component: {fileID: 4150130215010796884}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -156,7 +156,7 @@ GameObject:
   - component: {fileID: 1987452741621638610}
   - component: {fileID: 7424855017938782687}
   - component: {fileID: 6944826547790055000}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Fire Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -336,8 +336,12 @@ PrefabInstance:
       value: BarrelWithFire
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b77ee07d2e3322e428d970a6c9727a43, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b77ee07d2e3322e428d970a6c9727a43, type: 3}
       propertyPath: m_TagString
-      value: Interactable
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b77ee07d2e3322e428d970a6c9727a43, type: 3}
       propertyPath: m_StaticEditorFlags
