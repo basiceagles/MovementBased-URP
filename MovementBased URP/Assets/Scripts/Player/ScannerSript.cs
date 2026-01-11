@@ -1,28 +1,50 @@
+using System.Collections;
 using UnityEngine;
 
-public class ScannerSript : MonoBehaviour
+public class ScannerScript : MonoBehaviour
 {
     [Header("Scanner Settings")]
     [SerializeField] private GameObject scannerPrefab;
     [SerializeField] private float growSpeed = 1f;
     [SerializeField] private float destroyDelay = 3f;
 
-    private GameObject spawnedScanner;
+    [Header("Spawn Settings")]
+    [SerializeField] private int scanCount = 3;
+    [SerializeField] private float spawnDelay = 0.1f;
+
+    private bool isScanning;
 
     void Update()
     {
-        // Spawn scanner on F press
-        if (Input.GetKeyDown(KeyCode.F) && spawnedScanner == null)
+        if (Input.GetKeyDown(KeyCode.F) && !isScanning)
         {
-            spawnedScanner = Instantiate(scannerPrefab, transform.position, Quaternion.identity);
-            Destroy(spawnedScanner, destroyDelay);
+            StartCoroutine(SpawnScans());
+        }
+    }
+
+    private IEnumerator SpawnScans()
+    {
+        isScanning = true;
+
+        for (int i = 0; i < scanCount; i++)
+        {
+            GameObject scan = Instantiate(scannerPrefab, transform.position, Quaternion.identity);
+            StartCoroutine(GrowScan(scan));
+            Destroy(scan, destroyDelay);
+
+            yield return new WaitForSeconds(spawnDelay);
         }
 
-        // Grow scanner while it exists
-        if (spawnedScanner != null)
+        isScanning = false;
+    }
+
+    private IEnumerator GrowScan(GameObject scan)
+    {
+        while (scan != null)
         {
-            float growAmount = growSpeed * Time.deltaTime;
-            spawnedScanner.transform.localScale += Vector3.one * growAmount;
+            scan.transform.localScale += Vector3.one * growSpeed * Time.deltaTime;
+            yield return null;
         }
     }
 }
+
