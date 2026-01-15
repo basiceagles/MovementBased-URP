@@ -56,10 +56,10 @@ public class Grappling : MonoBehaviour
 
     private void Update()
     {
-        // if (!grapplingEnabled)
-        // {
-        //     return;
-        // }
+        if (!grapplingEnabled)
+        {
+            return;
+        } 
 
 
         if (Input.GetKeyDown(grappleKey))
@@ -126,6 +126,21 @@ public class Grappling : MonoBehaviour
             swinging.enabled = false;
         }
         grappling = true;
+        
+        HookTracker priorityTracker = HookTracker.GetPriorityTracker();
+        if (priorityTracker != null)
+        {
+            grapplePoint = priorityTracker.GetTargetPosition();
+            pc.activeGrappling = true; 
+            pulling = true;
+            
+            lr.enabled = true; lr.positionCount = ropeSegments;
+            currentGrapplePosition = grappleGunTip.position;
+            hookFlying = true;
+            hookFlyProgress = 0f;
+            return;
+        }
+        
         bool hit = Physics.Raycast(cam.position, cam.forward, out RaycastHit hitInfo, maxGrappleDistance);
         grapplePoint = hit ? hitInfo.point : cam.position + cam.forward * maxGrappleDistance;
 

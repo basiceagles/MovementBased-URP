@@ -529,6 +529,8 @@ public class Settings : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Delete))
         {
             PlayerPrefs.DeleteAll();
+            PlayerPrefs.Save();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
         // ВРЕМЕННО: reset уровня на кнопку R

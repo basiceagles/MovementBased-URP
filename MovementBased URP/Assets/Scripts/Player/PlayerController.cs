@@ -104,7 +104,7 @@ public class PlayerController : MonoBehaviour
         get => velocity.y;
         set => velocity.y = value;
     }
-    public float currentSpeed => velocity.magnitude; 
+    public float currentSpeed => horizontalVelocity.magnitude; 
     public float maxSpeed => runSpeed;
 
     [SerializeField] private bool usePlayerController = true;
@@ -528,10 +528,7 @@ public class PlayerController : MonoBehaviour
     {
         isSliding = true;
         slideTimer = 0f;
-        if (currentSlideSpeed <= slideSpeed)
-        {
-            currentSlideSpeed = slideSpeed;
-        }
+        currentSlideSpeed = Mathf.Max(horizontalVelocity.magnitude, slideSpeed);
         SetCrouchScale();
     }
     
