@@ -89,10 +89,10 @@ public class Swinging : MonoBehaviour
 
     void Update()
     {
-        // if (!swingingEnabled)
-        // {
-        //     return;
-        // }
+        if (!swingingEnabled)
+        {
+            return;
+        }
 
 
         if (Input.GetKeyDown(swingKey))
@@ -172,8 +172,22 @@ public class Swinging : MonoBehaviour
             return;
         }
         
-        if (!bypassLayerCheck)
+        bool targetFound = false;
+        
+        HookTracker priorityTracker = HookTracker.GetPriorityTracker();
+        if (priorityTracker != null)
         {
+            swingPoint = priorityTracker.GetTargetPosition();
+            targetFound = true;
+        }
+        
+        if (!targetFound)
+        {
+            if (bypassLayerCheck)
+            {
+                return;
+            }
+
             if (!Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, maxSwingDistance, whatIsGrappleable))
             {
                 return;

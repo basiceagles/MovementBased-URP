@@ -147,13 +147,13 @@ public class MetaPerkSystem : MonoBehaviour
 
     private void LoadAbilityPerks()
     {
-        if (grappling != null && PlayerPrefs.HasKey(GrappleEnabledKey))
+        if (grappling != null)
         {
             bool enabled = PlayerPrefs.GetInt(GrappleEnabledKey, 0) == 1;
             grappling.SetGrapplingEnabled(enabled);
         }
 
-        if (swinging != null && PlayerPrefs.HasKey(SwingEnabledKey))
+        if (swinging != null)
         {
             bool enabled = PlayerPrefs.GetInt(SwingEnabledKey, 0) == 1;
             swinging.SetSwingingEnabled(enabled);

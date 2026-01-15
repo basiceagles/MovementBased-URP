@@ -4,6 +4,12 @@ public class WallRunning : MonoBehaviour
 {
     [Header("Wall Run Settings")]
     [SerializeField] private float wallStickForce;
+    [Tooltip("Минимальная скорость для начала wall run")]
+    [SerializeField] private float minSpeedToStart = 8f;
+    [Tooltip("Нужно ли двигаться в направлении стены чтобы прилипнуть?")]
+    [SerializeField] private bool requireMovementTowardWall = true;
+    [Tooltip("Минимальный угол движения к стене (0-90, чем больше - тем точнее нужно смотреть на стену)")]
+    [SerializeField] private float minAngleToWall = 45f;
     
     [Header("Wall Detection")]
     [SerializeField] private LayerMask wallLayer;
@@ -141,7 +147,19 @@ public class WallRunning : MonoBehaviour
         bool hasEnoughSpeed = pc.CanWallRun;
         bool notGrounded = !pc.grounded;
         
-        return hasEnoughSpeed && notGrounded;
+        bool hasMinSpeed = pc.horizontalVelocity.magnitude >= minSpeedToStart;
+        
+        bool movingTowardWall = true;
+        if (requireMovementTowardWall)
+        {
+            Vector3 velocityDir = pc.horizontalVelocity.normalized;
+            Vector3 toWall = -wallNormal;
+            
+            float angle = Vector3.Angle(velocityDir, toWall);
+            movingTowardWall = angle <= minAngleToWall;
+        }
+        
+        return hasEnoughSpeed && notGrounded && hasMinSpeed && movingTowardWall;
     }
 
     private void StartWallRun()

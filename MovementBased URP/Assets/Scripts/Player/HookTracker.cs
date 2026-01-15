@@ -60,17 +60,20 @@ public class HookTracker : MonoBehaviour
             return;
         
         float distance = Vector3.Distance(transform.position, player.position);
-        bool shouldBeActive = distance <= activationRadius;
-        
-        if (shouldBeActive != isActive)
+        isActive = distance <= activationRadius;
+
+        if (IsAnyHookActive())
         {
-            isActive = shouldBeActive;
-            hookTarget.SetActive(isActive);
+            if (hookTarget.activeSelf) hookTarget.SetActive(false);
+            isPriority = false;
+            return;
         }
-        
-        if (!IsAnyHookActive())
+
+        UpdatePriority();
+
+        if (hookTarget.activeSelf != isPriority)
         {
-            UpdatePriority();
+            hookTarget.SetActive(isPriority);
         }
     }
     
@@ -91,7 +94,7 @@ public class HookTracker : MonoBehaviour
     
     private void UpdatePriority()
     {
-        if (cam == null || hookTarget == null || !hookTarget.activeInHierarchy)
+        if (cam == null || !isActive)
         {
             isPriority = false;
             return;
@@ -100,7 +103,7 @@ public class HookTracker : MonoBehaviour
         List<HookTracker> activeTrackers = new List<HookTracker>();
         foreach (var tracker in allTrackers)
         {
-            if (tracker != null && tracker.hookTarget != null && tracker.hookTarget.activeInHierarchy)
+            if (tracker != null && tracker.isActive)
             {
                 activeTrackers.Add(tracker);
             }
@@ -112,18 +115,12 @@ public class HookTracker : MonoBehaviour
             return;
         }
         
-        if (activeTrackers.Count == 1)
-        {
-            isPriority = (activeTrackers[0] == this);
-            return;
-        }
-        
         HookTracker bestTracker = null;
-        float bestDot = -1f;
+        float bestDot = -1f; 
         
         foreach (var tracker in activeTrackers)
         {
-            Vector3 dirToTarget = (tracker.hookTarget.transform.position - cam.position).normalized;
+            Vector3 dirToTarget = (tracker.transform.position - cam.position).normalized;
             float dot = Vector3.Dot(cam.forward, dirToTarget);
             
             if (dot > bestDot)
@@ -204,6 +201,21 @@ public class HookTracker : MonoBehaviour
         }
     }
     
+    public static HookTracker GetPriorityTracker()
+    {
+        foreach (var tracker in allTrackers)
+        {
+            if (tracker != null && tracker.isPriority && tracker.isActive)
+                return tracker;
+        }
+        return null;
+    }
+
+    public Vector3 GetTargetPosition()
+    {
+        return hookTarget != null ? hookTarget.transform.position : transform.position;
+    }
+
     private void OnDrawGizmos()
     {
         if (!showGizmos)
