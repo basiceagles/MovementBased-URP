@@ -180,7 +180,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.9999999, z: 0, w: 0.0005934063}
   m_LocalPosition: {x: -14.68764, y: 0.77, z: -0.64}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.47605005, y: 0.47604978, z: 0.47605005}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4005968262995598657}
@@ -252,6 +252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDamaged: 0
+  _currentSpeedDisplay: 0
   walkSpeed: 4
   runSpeed: 10
   gravity: -30
@@ -263,11 +264,23 @@ MonoBehaviour:
   slideJumpHeight: 1
   slideJumpGravity: -20
   isJumping: 0
+  sprintHoldEnabled: 1
+  sprintHoldDuration: 2
+  sprintSpeedBonus: 5
+  sprintSlideBonus: 5
+  sprintFovIncrease: 20
+  sprintFovSmoothTime: 1
+  speedBuffer: 2
+  sprintFillImage: {fileID: 0}
+  sprintFillContainer: {fileID: 0}
+  mainCamera: {fileID: 2000828764072764332}
   slideSpeed: 10
   slideAcceleration: 10
-  maxSlideSpeed: 40
+  maxSlideSpeed: 20
   crouchScale: 0.5
   crouchSpeed: 2
+  slideDecayDelay: 1.5
+  slideDecayRate: 7
   currentSlideSpeed: 0
   isSliding: 0
   groundCheckDistance: 0.5
@@ -332,6 +345,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wallStickForce: 8
+  minSpeedToStart: 8
+  requireMovementTowardWall: 1
+  minAngleToWall: 45
   wallLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -594,10 +610,11 @@ MonoBehaviour:
   maxSwingDistance: 25
   swingForce: 3
   swingSpeedBonus: 3
-  swingingEnabled: 0
+  swingingEnabled: 1
   currentSwingSpeed: 18
   swingAngle: 0
   currentRopeLengthDebug: 0
+  bypassLayerCheck: 0
 --- !u!120 &2513643253022918250
 LineRenderer:
   serializedVersion: 2
@@ -881,6 +898,7 @@ Transform:
   - {fileID: 8407356733780038912}
   - {fileID: 7690408842432544986}
   - {fileID: 4495070930067499774}
+  - {fileID: 6622540561179833226}
   m_Father: {fileID: 3469260907815785715}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &2000828764072764332
@@ -1041,13 +1059,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   normalFOV: 80
   minFOV: 60
-  speedThreshold: 12
+  speedThreshold: 18
   shrinkMultiplier: 3.5
   fovSmoothTime: 0.5
   currentSpeed: 0
   vfxGameobject: {fileID: 8435534282121454272}
   wingAudioSource: {fileID: 9022997794924464721}
-  audioSpeedThreshold: 10
+  audioSpeedThreshold: 12
   maxVolume: 0.8
   audioSmoothTime: 0.3
 --- !u!82 &9022997794924464721
@@ -1461,6 +1479,37 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &4008358472998447031
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6622540561179833226}
+  m_Layer: 0
+  m_Name: holdObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6622540561179833226
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4008358472998447031}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0, y: 0.67, z: 1.26}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4005968262995598657}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5901046440723327766
 GameObject:
   m_ObjectHideFlags: 0
@@ -1552,7 +1601,7 @@ MonoBehaviour:
   grappleSpeed: 20
   grapplingCd: 0.5
   canPickupNode: 0
-  grapplingEnabled: 0
+  grapplingEnabled: 1
   ropeSegments: 25
   ropeWaveSpeed: 20
   ropeWaveHeight: 0.5
