@@ -6,7 +6,9 @@ using System.Linq;
 public class Platform : MonoBehaviour
 {
     [SerializeField] private GameObject[] platforms; 
-    [SerializeField] private float fallDelay;    
+    [SerializeField] private float delayForSpeed4 = 2.0f;
+    [SerializeField] private float delayForSpeed10 = 1.5f;
+    [SerializeField] private float delayForSpeed15 = 1.0f;
     [SerializeField] private float fallSpeed;   
     [SerializeField] private string playerTag = "Player";
     [SerializeField] private float shakeDuration; 
@@ -27,26 +29,29 @@ public class Platform : MonoBehaviour
         }
         isUsed = true;
 
+        activePlatforms.Clear();
         foreach (var p in platforms) 
         {
-            p.SetActive(false);
-        }
-        activePlatforms.Clear();
-
-        int countToActivate = Random.Range(2, 5);
-        activePlatforms = platforms.OrderBy(x => Random.value).Take(countToActivate).ToList();
-
-        foreach (var p in activePlatforms) 
-        {
             p.SetActive(true);
+            activePlatforms.Add(p);
         }
 
-        StartCoroutine(FallSequence());
+        float finalDelay = delayForSpeed4;
+        PlayerController pc = other.GetComponent<PlayerController>();
+        if (pc != null)
+        {
+            float speed = pc.currentSpeed;
+            if (speed >= 15f) finalDelay = delayForSpeed15;
+            else if (speed >= 10f) finalDelay = delayForSpeed10;
+            else finalDelay = delayForSpeed4;
+        }
+
+        StartCoroutine(FallSequence(finalDelay));
     }
 
-    private IEnumerator FallSequence()
+    private IEnumerator FallSequence(float delay)
     {
-        yield return new WaitForSeconds(fallDelay);
+        yield return new WaitForSeconds(delay);
 
         int totalActive = activePlatforms.Count;
         int countToFall = Random.Range(1, totalActive);
