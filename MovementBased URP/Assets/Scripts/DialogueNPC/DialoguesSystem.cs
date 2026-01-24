@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Events;  // Required for UnityEvent
+using UnityEngine.Events;
 
 public class DialoguesSystem : MonoBehaviour
 {
@@ -13,7 +13,7 @@ public class DialoguesSystem : MonoBehaviour
     [SerializeField] private TextMeshProUGUI dialogueText;
     [SerializeField] private TextMeshProUGUI npcNameText;
 
-    [Header("Dialogue Data")] 
+    [Header("Dialogue Data")]
     [SerializeField] private DialogueDataNPC[] dialogues;
 
     [Header("Settings")]
@@ -26,8 +26,8 @@ public class DialoguesSystem : MonoBehaviour
 
     [Header("Text Effects")]
     [SerializeField] private bool enableTextShake = false;
-    [SerializeField] [Range(0f, 10f)] private float shakeIntensity = 1f;
-    [SerializeField] [Range(0.01f, 0.5f)] private float shakeSpeed = 0.1f;
+    [SerializeField][Range(0f, 10f)] private float shakeIntensity = 1f;
+    [SerializeField][Range(0.01f, 0.5f)] private float shakeSpeed = 0.1f;
 
     [Header("Audio")]
     [SerializeField] private AudioSource dialogueAudioSource;
@@ -36,9 +36,11 @@ public class DialoguesSystem : MonoBehaviour
     private Coroutine typewriterCoroutine;
     private bool isTyping = false;
 
-    // New feature: List of UnityEvents to trigger after the last dialogue is skipped
     [Header("Post-Dialogue Events")]
-    [SerializeField] private List<UnityEvent> postDialogueEvents = new List<UnityEvent>(); // List of UnityEvents to trigger after the last line
+    [SerializeField] private List<UnityEvent> postDialogueEvents = new List<UnityEvent>();
+
+    // Ссылка на контроллер изображений
+    private DialogueImageDisplayController imageController;
 
     public event Action DialogueStarted;
     public event Action DialogueEnded;
@@ -46,11 +48,17 @@ public class DialoguesSystem : MonoBehaviour
     void Start()
     {
         HideDialogue();
+        // Ищем контроллер изображений в сцене
+        imageController = FindObjectOfType<DialogueImageDisplayController>();
     }
 
     void Update()
     {
         if (!isDialogueActive)
+            return;
+
+        // Блокируем ввод если показывается изображение
+        if (imageController != null && imageController.IsImageModeActive())
             return;
 
         if (Input.GetMouseButtonDown(0))
@@ -64,13 +72,11 @@ public class DialoguesSystem : MonoBehaviour
                 DialogueDataNPC data = dialogues[currentDialogueIndex];
                 bool isLastLine = (currentLineIndex >= data.lines.Length - 1);
 
-                // If it's the last line and 'dontHideOnClick' is true, do nothing
                 if (!isLastLine || !dontHideOnClick)
                 {
                     ShowNextLine();
                 }
-                
-                // If it's the last line, trigger post-dialogue events
+
                 if (isLastLine)
                 {
                     TriggerPostDialogueEvents();
@@ -126,7 +132,6 @@ public class DialoguesSystem : MonoBehaviour
         currentDialogueIndex = -1;
         currentLineIndex = 0;
 
-        // Stop any pending audio and timers when dialogue is closed
         if (stopAudioCoroutine != null)
         {
             StopCoroutine(stopAudioCoroutine);
@@ -190,7 +195,6 @@ public class DialoguesSystem : MonoBehaviour
 
         if (dialogueText != null)
         {
-            // Stop any existing shake effect
             if (enableTextShake)
             {
                 StopAllCoroutines();
@@ -215,13 +219,18 @@ public class DialoguesSystem : MonoBehaviour
             {
                 dialogueText.text = lineText;
                 isTyping = false;
+
+                // Уведомляем контроллер изображений
+                if (imageController != null)
+                {
+                    imageController.CheckForImage();
+                }
             }
             else
             {
                 typewriterCoroutine = StartCoroutine(TypeLine(lineText, duration));
             }
 
-            // Start shake effect if enabled
             if (enableTextShake && isActiveAndEnabled)
             {
                 StartCoroutine(ShakeText());
@@ -229,7 +238,7 @@ public class DialoguesSystem : MonoBehaviour
         }
     }
 
-        private void CompleteCurrentLineInstantly()
+    private void CompleteCurrentLineInstantly()
     {
         if (!isDialogueActive || currentDialogueIndex < 0)
             return;
@@ -238,7 +247,6 @@ public class DialoguesSystem : MonoBehaviour
         if (data == null || data.lines == null || data.lines.Length == 0)
             return;
 
-        // Stop typewriter
         if (typewriterCoroutine != null)
         {
             StopCoroutine(typewriterCoroutine);
@@ -263,8 +271,13 @@ public class DialoguesSystem : MonoBehaviour
         }
 
         isTyping = false;
-    }
 
+        // Уведомляем контроллер изображений
+        if (imageController != null)
+        {
+            imageController.CheckForImage();
+        }
+    }
 
     private void UpdateNpcName()
     {
@@ -341,6 +354,12 @@ public class DialoguesSystem : MonoBehaviour
 
         isTyping = false;
         typewriterCoroutine = null;
+
+        // Уведомляем контроллер изображений
+        if (imageController != null)
+        {
+            imageController.CheckForImage();
+        }
     }
 
     private IEnumerator ShakeText()
@@ -380,7 +399,6 @@ public class DialoguesSystem : MonoBehaviour
         }
     }
 
-    // Method to trigger the post-dialogue events
     private void TriggerPostDialogueEvents()
     {
         foreach (var unityEvent in postDialogueEvents)
