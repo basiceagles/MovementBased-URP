@@ -53,6 +53,7 @@ public class DialogueImageDisplayController : MonoBehaviour
     private float currentZoom = 1f;
     private bool isImageModeActive = false;
     private bool waitingForImageClick = false;
+    private bool imageClickProcessedThisFrame = false; // Флаг для обработки клика в текущем кадре
 
     // Перетаскивание
     private bool isDragging = false;
@@ -65,6 +66,8 @@ public class DialogueImageDisplayController : MonoBehaviour
     private FieldInfo currentDialogueIndexField;
     private FieldInfo currentLineIndexField;
     private FieldInfo dialoguesField;
+    private FieldInfo isTypingField;
+    private PropertyInfo dialoguesProperty;
 
     void Start()
     {
@@ -74,6 +77,8 @@ public class DialogueImageDisplayController : MonoBehaviour
 
     void Update()
     {
+        imageClickProcessedThisFrame = false; // Сбрасываем флаг в начале кадра
+
         if (isImageModeActive)
         {
             HandleImageMode();
@@ -91,6 +96,18 @@ public class DialogueImageDisplayController : MonoBehaviour
         }
         else if (waitingForImageClick && Input.GetMouseButtonDown(0))
         {
+            ShowImageForCurrentLine();
+            imageClickProcessedThisFrame = true; // Отмечаем, что клик обработан для изображения
+        }
+    }
+
+    void LateUpdate()
+    {
+        // В LateUpdate проверяем, нужно ли заблокировать диалог
+        // Это вызывается после Update диалоговой системы
+        if (waitingForImageClick && !imageClickProcessedThisFrame && Input.GetMouseButtonDown(0))
+        {
+            // Если в Update диалоговая система уже обработала клик, мы все равно можем показать изображение
             ShowImageForCurrentLine();
         }
     }
@@ -129,6 +146,12 @@ public class DialogueImageDisplayController : MonoBehaviour
             BindingFlags.NonPublic | BindingFlags.Instance);
         dialoguesField = systemType.GetField("dialogues",
             BindingFlags.NonPublic | BindingFlags.Instance);
+        isTypingField = systemType.GetField("isTyping",
+            BindingFlags.NonPublic | BindingFlags.Instance);
+
+        // Пробуем получить свойство, если поле недоступно
+        dialoguesProperty = systemType.GetProperty("dialogues",
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
     }
 
     // Вызывается из DialoguesSystem когда строка полностью отображена
@@ -144,6 +167,7 @@ public class DialogueImageDisplayController : MonoBehaviour
         else
         {
             waitingForImageClick = false;
+            HideClickToContinueText();
         }
     }
 
@@ -152,7 +176,31 @@ public class DialogueImageDisplayController : MonoBehaviour
         int currentDialogueIndex = (int)currentDialogueIndexField.GetValue(dialogueSystem);
         int currentLineIndex = (int)currentLineIndexField.GetValue(dialogueSystem);
 
-        var dialogues = (DialogueDataNPC[])dialoguesField.GetValue(dialogueSystem);
+        DialogueDataNPC[] dialogues;
+
+        // Пробуем получить dialogues разными способами
+        if (dialoguesField != null)
+        {
+            dialogues = (DialogueDataNPC[])dialoguesField.GetValue(dialogueSystem);
+        }
+        else if (dialoguesProperty != null)
+        {
+            dialogues = (DialogueDataNPC[])dialoguesProperty.GetValue(dialogueSystem);
+        }
+        else
+        {
+            // Если не получилось, пробуем через публичное свойство
+            var publicDialoguesField = dialogueSystem.GetType().GetField("dialogues",
+                BindingFlags.Public | BindingFlags.Instance);
+            if (publicDialoguesField != null)
+            {
+                dialogues = (DialogueDataNPC[])publicDialoguesField.GetValue(dialogueSystem);
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         if (currentDialogueIndex < 0 || dialogues == null ||
             currentDialogueIndex >= dialogues.Length)
@@ -187,7 +235,29 @@ public class DialogueImageDisplayController : MonoBehaviour
         int currentDialogueIndex = (int)currentDialogueIndexField.GetValue(dialogueSystem);
         int currentLineIndex = (int)currentLineIndexField.GetValue(dialogueSystem);
 
-        var dialogues = (DialogueDataNPC[])dialoguesField.GetValue(dialogueSystem);
+        DialogueDataNPC[] dialogues;
+
+        if (dialoguesField != null)
+        {
+            dialogues = (DialogueDataNPC[])dialoguesField.GetValue(dialogueSystem);
+        }
+        else if (dialoguesProperty != null)
+        {
+            dialogues = (DialogueDataNPC[])dialoguesProperty.GetValue(dialogueSystem);
+        }
+        else
+        {
+            var publicDialoguesField = dialogueSystem.GetType().GetField("dialogues",
+                BindingFlags.Public | BindingFlags.Instance);
+            if (publicDialoguesField != null)
+            {
+                dialogues = (DialogueDataNPC[])publicDialoguesField.GetValue(dialogueSystem);
+            }
+            else
+            {
+                return;
+            }
+        }
 
         if (currentDialogueIndex < 0 || dialogues == null ||
             currentDialogueIndex >= dialogues.Length)
@@ -204,6 +274,13 @@ public class DialogueImageDisplayController : MonoBehaviour
             SetupImageDisplay(imageToShow);
             imagePanel.SetActive(true);
             isImageModeActive = true;
+            waitingForImageClick = false;
+            HideClickToContinueText();
+        }
+        else
+        {
+            // Если изображения нет, продолжаем диалог
+            ContinueDialogue();
             waitingForImageClick = false;
             HideClickToContinueText();
         }
@@ -470,6 +547,12 @@ public class DialogueImageDisplayController : MonoBehaviour
     public bool IsImageModeActive()
     {
         return isImageModeActive;
+    }
+
+    // Новый метод для проверки, ожидаем ли мы клик для изображения
+    public bool IsWaitingForImageClick()
+    {
+        return waitingForImageClick;
     }
 
     // Публичные методы для управления

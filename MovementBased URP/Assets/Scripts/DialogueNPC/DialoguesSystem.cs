@@ -57,8 +57,8 @@ public class DialoguesSystem : MonoBehaviour
         if (!isDialogueActive)
             return;
 
-        // Блокируем ввод если показывается изображение
-        if (imageController != null && imageController.IsImageModeActive())
+        // === ИСПРАВЛЕНИЕ: Блокируем ввод если показывается изображение ИЛИ ожидается клик для изображения ===
+        if (imageController != null && (imageController.IsImageModeActive() || imageController.IsWaitingForImageClick()))
             return;
 
         if (Input.GetMouseButtonDown(0))
