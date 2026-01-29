@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Events;  // Required for UnityEvent
+using UnityEngine.Events;
 
 public class DialoguesSystem : MonoBehaviour
 {
@@ -21,8 +21,9 @@ public class DialoguesSystem : MonoBehaviour
     [SerializeField] private bool dontHideOnClick = false;
 
     private int currentDialogueIndex = -1;
-    private int currentLineIndex = 0;
+    private int currentNpcLineIndex = 0;
     private bool isDialogueActive = false;
+    private bool isShowingPlayerResponse = false;
 
     [Header("Text Effects")]
     [SerializeField] private bool enableTextShake = false;
@@ -36,9 +37,8 @@ public class DialoguesSystem : MonoBehaviour
     private Coroutine typewriterCoroutine;
     private bool isTyping = false;
 
-    // New feature: List of UnityEvents to trigger after the last dialogue is skipped
     [Header("Post-Dialogue Events")]
-    [SerializeField] private List<UnityEvent> postDialogueEvents = new List<UnityEvent>(); // List of UnityEvents to trigger after the last line
+    [SerializeField] private List<UnityEvent> postDialogueEvents = new List<UnityEvent>();
 
     public event Action DialogueStarted;
     public event Action DialogueEnded;
@@ -61,19 +61,56 @@ public class DialoguesSystem : MonoBehaviour
             }
             else
             {
-                DialogueDataNPC data = dialogues[currentDialogueIndex];
-                bool isLastLine = (currentLineIndex >= data.lines.Length - 1);
+                AdvanceDialogue();
+            }
+        }
+    }
 
-                // If it's the last line and 'dontHideOnClick' is true, do nothing
-                if (!isLastLine || !dontHideOnClick)
+    private void AdvanceDialogue()
+    {
+        DialogueDataNPC data = dialogues[currentDialogueIndex];
+        
+        if (isShowingPlayerResponse)
+        {
+            isShowingPlayerResponse = false;
+            currentNpcLineIndex++;
+            
+            if (currentNpcLineIndex >= data.lines.Length)
+            {
+                TriggerPostDialogueEvents();
+                if (!dontHideOnClick)
                 {
-                    ShowNextLine();
+                    HideDialogue();
                 }
+            }
+            else
+            {
+                ShowCurrentNpcLine();
+            }
+        }
+        else
+        {
+            PlayerResponse response = data.GetPlayerResponseAfter(currentNpcLineIndex);
+            
+            if (response != null)
+            {
+                ShowPlayerResponse(response);
+            }
+            else
+            {
+                currentNpcLineIndex++;
                 
-                // If it's the last line, trigger post-dialogue events
-                if (isLastLine)
+                if (currentNpcLineIndex >= data.lines.Length)
                 {
                     TriggerPostDialogueEvents();
+                    if (!dontHideOnClick)
+                    {
+                        HideDialogue();
+                    }
+                }
+                else
+                {
+                    ShowCurrentNpcLine();
                 }
             }
         }
@@ -88,16 +125,95 @@ public class DialoguesSystem : MonoBehaviour
             return;
 
         currentDialogueIndex = index;
-        currentLineIndex = 0;
+        currentNpcLineIndex = 0;
+        isShowingPlayerResponse = false;
         isDialogueActive = true;
 
         ShowDialogue();
-        UpdateDialogueText();
-        UpdateNpcName();
+        ShowCurrentNpcLine();
 
         DialogueStarted?.Invoke();
+    }
 
+    private void ShowCurrentNpcLine()
+    {
+        DialogueDataNPC data = dialogues[currentDialogueIndex];
+        
+        if (npcNameText != null)
+        {
+            npcNameText.text = data.npcName.GetLocalizedString();
+        }
+        
+        UpdateDialogueText();
         PlayCurrentLineAudio();
+    }
+
+    private void ShowPlayerResponse(PlayerResponse response)
+    {
+        isShowingPlayerResponse = true;
+        
+        if (npcNameText != null)
+        {
+            npcNameText.text = response.playerName.GetLocalizedString();
+        }
+        
+        if (dialogueText != null)
+        {
+            if (enableTextShake)
+            {
+                StopAllCoroutines();
+            }
+
+            if (typewriterCoroutine != null)
+            {
+                StopCoroutine(typewriterCoroutine);
+                typewriterCoroutine = null;
+            }
+
+            string playerText = response.playerText.GetLocalizedString();
+            
+            if (response.duration > 0f)
+            {
+                typewriterCoroutine = StartCoroutine(TypeLine(playerText, response.duration));
+            }
+            else
+            {
+                dialogueText.text = playerText;
+                isTyping = false;
+            }
+
+            if (enableTextShake && isActiveAndEnabled)
+            {
+                StartCoroutine(ShakeText());
+            }
+        }
+        
+        PlayPlayerResponseAudio(response);
+    }
+
+    private void PlayPlayerResponseAudio(PlayerResponse response)
+    {
+        if (dialogueAudioSource == null || response == null)
+            return;
+
+        if (stopAudioCoroutine != null)
+        {
+            StopCoroutine(stopAudioCoroutine);
+            stopAudioCoroutine = null;
+        }
+
+        dialogueAudioSource.Stop();
+
+        if (response.voiceClip != null)
+        {
+            dialogueAudioSource.clip = response.voiceClip;
+            dialogueAudioSource.Play();
+        }
+
+        if (response.duration > 0f)
+        {
+            stopAudioCoroutine = StartCoroutine(StopAudioAfterDuration(response.duration));
+        }
     }
 
     public void StartDefaultDialogue()
@@ -124,9 +240,9 @@ public class DialoguesSystem : MonoBehaviour
 
         isDialogueActive = false;
         currentDialogueIndex = -1;
-        currentLineIndex = 0;
+        currentNpcLineIndex = 0;
+        isShowingPlayerResponse = false;
 
-        // Stop any pending audio and timers when dialogue is closed
         if (stopAudioCoroutine != null)
         {
             StopCoroutine(stopAudioCoroutine);
@@ -152,31 +268,6 @@ public class DialoguesSystem : MonoBehaviour
         }
     }
 
-    private void ShowNextLine()
-    {
-        if (!isDialogueActive || currentDialogueIndex < 0)
-            return;
-
-        DialogueDataNPC data = dialogues[currentDialogueIndex];
-        if (data == null || data.lines == null || data.lines.Length == 0)
-        {
-            HideDialogue();
-            return;
-        }
-
-        currentLineIndex++;
-
-        if (currentLineIndex >= data.lines.Length)
-        {
-            HideDialogue();
-        }
-        else
-        {
-            UpdateDialogueText();
-            PlayCurrentLineAudio();
-        }
-    }
-
     private void UpdateDialogueText()
     {
         if (!isDialogueActive || currentDialogueIndex < 0)
@@ -186,11 +277,10 @@ public class DialoguesSystem : MonoBehaviour
         if (data == null || data.lines == null || data.lines.Length == 0)
             return;
 
-        currentLineIndex = Mathf.Clamp(currentLineIndex, 0, data.lines.Length - 1);
+        currentNpcLineIndex = Mathf.Clamp(currentNpcLineIndex, 0, data.lines.Length - 1);
 
         if (dialogueText != null)
         {
-            // Stop any existing shake effect
             if (enableTextShake)
             {
                 StopAllCoroutines();
@@ -202,13 +292,13 @@ public class DialoguesSystem : MonoBehaviour
                 typewriterCoroutine = null;
             }
 
-            var localizedLine = data.lines[currentLineIndex];
+            var localizedLine = data.lines[currentNpcLineIndex];
             string lineText = localizedLine.GetLocalizedString();
 
             float duration = 0f;
-            if (data.audioClipPlayDurations != null && currentLineIndex >= 0 && currentLineIndex < data.audioClipPlayDurations.Length)
+            if (data.audioClipPlayDurations != null && currentNpcLineIndex >= 0 && currentNpcLineIndex < data.audioClipPlayDurations.Length)
             {
-                duration = data.audioClipPlayDurations[currentLineIndex];
+                duration = data.audioClipPlayDurations[currentNpcLineIndex];
             }
 
             if (duration <= 0f)
@@ -221,7 +311,6 @@ public class DialoguesSystem : MonoBehaviour
                 typewriterCoroutine = StartCoroutine(TypeLine(lineText, duration));
             }
 
-            // Start shake effect if enabled
             if (enableTextShake && isActiveAndEnabled)
             {
                 StartCoroutine(ShakeText());
@@ -229,16 +318,13 @@ public class DialoguesSystem : MonoBehaviour
         }
     }
 
-        private void CompleteCurrentLineInstantly()
+    private void CompleteCurrentLineInstantly()
     {
         if (!isDialogueActive || currentDialogueIndex < 0)
             return;
 
         DialogueDataNPC data = dialogues[currentDialogueIndex];
-        if (data == null || data.lines == null || data.lines.Length == 0)
-            return;
-
-        // Stop typewriter
+        
         if (typewriterCoroutine != null)
         {
             StopCoroutine(typewriterCoroutine);
@@ -258,27 +344,25 @@ public class DialoguesSystem : MonoBehaviour
 
         if (dialogueText != null)
         {
-            currentLineIndex = Mathf.Clamp(currentLineIndex, 0, data.lines.Length - 1);
-            dialogueText.text = data.lines[currentLineIndex].GetLocalizedString();
+            if (isShowingPlayerResponse)
+            {
+                PlayerResponse response = data.GetPlayerResponseAfter(currentNpcLineIndex);
+                if (response != null)
+                {
+                    dialogueText.text = response.playerText.GetLocalizedString();
+                }
+            }
+            else
+            {
+                if (data.lines != null && data.lines.Length > 0)
+                {
+                    currentNpcLineIndex = Mathf.Clamp(currentNpcLineIndex, 0, data.lines.Length - 1);
+                    dialogueText.text = data.lines[currentNpcLineIndex].GetLocalizedString();
+                }
+            }
         }
 
         isTyping = false;
-    }
-
-
-    private void UpdateNpcName()
-    {
-        if (!isDialogueActive || currentDialogueIndex < 0)
-            return;
-
-        DialogueDataNPC data = dialogues[currentDialogueIndex];
-        if (data == null)
-            return;
-
-        if (npcNameText != null)
-        {
-            npcNameText.text = data.npcName.GetLocalizedString();
-        }
     }
 
     public void SetDialogueAudioSource(AudioSource source)
@@ -302,9 +386,9 @@ public class DialoguesSystem : MonoBehaviour
         }
 
         AudioClip clip = null;
-        if (data.voiceClips != null && currentLineIndex >= 0 && currentLineIndex < data.voiceClips.Length)
+        if (data.voiceClips != null && currentNpcLineIndex >= 0 && currentNpcLineIndex < data.voiceClips.Length)
         {
-            clip = data.voiceClips[currentLineIndex];
+            clip = data.voiceClips[currentNpcLineIndex];
         }
 
         dialogueAudioSource.Stop();
@@ -316,9 +400,9 @@ public class DialoguesSystem : MonoBehaviour
         }
 
         float duration = 0f;
-        if (data.audioClipPlayDurations != null && currentLineIndex >= 0 && currentLineIndex < data.audioClipPlayDurations.Length)
+        if (data.audioClipPlayDurations != null && currentNpcLineIndex >= 0 && currentNpcLineIndex < data.audioClipPlayDurations.Length)
         {
-            duration = data.audioClipPlayDurations[currentLineIndex];
+            duration = data.audioClipPlayDurations[currentNpcLineIndex];
         }
 
         if (duration > 0f)
@@ -371,16 +455,15 @@ public class DialoguesSystem : MonoBehaviour
 
     private IEnumerator StopAudioAfterDuration(float duration)
     {
-        int lineIndexAtStart = currentLineIndex;
+        int lineIndexAtStart = currentNpcLineIndex;
         yield return new WaitForSeconds(duration);
 
-        if (isDialogueActive && currentDialogueIndex >= 0 && lineIndexAtStart == currentLineIndex && dialogueAudioSource != null)
+        if (isDialogueActive && currentDialogueIndex >= 0 && lineIndexAtStart == currentNpcLineIndex && dialogueAudioSource != null)
         {
             dialogueAudioSource.Stop();
         }
     }
 
-    // Method to trigger the post-dialogue events
     private void TriggerPostDialogueEvents()
     {
         foreach (var unityEvent in postDialogueEvents)
