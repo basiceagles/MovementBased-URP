@@ -22,7 +22,7 @@ public class DialogueImageDisplayController : MonoBehaviour
     [Header("Drag Settings")]
     [SerializeField] private float dragSensitivity = 1f;
     [SerializeField] private bool enableDrag = true;
-    [SerializeField] private float dragBoundary = 0.2f; // В процентах от размера экрана (0-1)
+    [SerializeField] private float dragBoundary = 0.2f;
     [SerializeField] private bool smoothDrag = true;
     [SerializeField] private float dragSmoothness = 10f;
 
@@ -53,21 +53,19 @@ public class DialogueImageDisplayController : MonoBehaviour
     private float currentZoom = 1f;
     private bool isImageModeActive = false;
     private bool waitingForImageClick = false;
-    private bool imageClickProcessedThisFrame = false; // Флаг для обработки клика в текущем кадре
 
     // Перетаскивание
     private bool isDragging = false;
     private Vector2 dragStartMousePosition;
     private Vector2 dragStartImagePosition;
     private Vector2 targetImagePosition;
-    private Vector2 currentVelocity; // Для плавного движения
+    private Vector2 currentVelocity;
 
     // Кэшированные поля рефлексии
     private FieldInfo currentDialogueIndexField;
-    private FieldInfo currentLineIndexField;
+    private FieldInfo currentNpcLineIndexField;
     private FieldInfo dialoguesField;
-    private FieldInfo isTypingField;
-    private PropertyInfo dialoguesProperty;
+    private FieldInfo isShowingPlayerResponseField;
 
     void Start()
     {
@@ -77,13 +75,10 @@ public class DialogueImageDisplayController : MonoBehaviour
 
     void Update()
     {
-        imageClickProcessedThisFrame = false; // Сбрасываем флаг в начале кадра
-
         if (isImageModeActive)
         {
             HandleImageMode();
 
-            // Плавное движение к целевой позиции
             if (smoothDrag && !isDragging)
             {
                 imageRectTransform.anchoredPosition = Vector2.SmoothDamp(
@@ -96,18 +91,6 @@ public class DialogueImageDisplayController : MonoBehaviour
         }
         else if (waitingForImageClick && Input.GetMouseButtonDown(0))
         {
-            ShowImageForCurrentLine();
-            imageClickProcessedThisFrame = true; // Отмечаем, что клик обработан для изображения
-        }
-    }
-
-    void LateUpdate()
-    {
-        // В LateUpdate проверяем, нужно ли заблокировать диалог
-        // Это вызывается после Update диалоговой системы
-        if (waitingForImageClick && !imageClickProcessedThisFrame && Input.GetMouseButtonDown(0))
-        {
-            // Если в Update диалоговая система уже обработала клик, мы все равно можем показать изображение
             ShowImageForCurrentLine();
         }
     }
@@ -142,22 +125,22 @@ public class DialogueImageDisplayController : MonoBehaviour
         var systemType = typeof(DialoguesSystem);
         currentDialogueIndexField = systemType.GetField("currentDialogueIndex",
             BindingFlags.NonPublic | BindingFlags.Instance);
-        currentLineIndexField = systemType.GetField("currentLineIndex",
+        currentNpcLineIndexField = systemType.GetField("currentNpcLineIndex",
             BindingFlags.NonPublic | BindingFlags.Instance);
         dialoguesField = systemType.GetField("dialogues",
             BindingFlags.NonPublic | BindingFlags.Instance);
-        isTypingField = systemType.GetField("isTyping",
+        isShowingPlayerResponseField = systemType.GetField("isShowingPlayerResponse",
             BindingFlags.NonPublic | BindingFlags.Instance);
-
-        // Пробуем получить свойство, если поле недоступно
-        dialoguesProperty = systemType.GetProperty("dialogues",
-            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
     }
 
-    // Вызывается из DialoguesSystem когда строка полностью отображена
+    // Вызывается из DialoguesSystem когда строка NPC полностью отображена
     public void CheckForImage()
     {
         if (dialogueSystem == null || isImageModeActive) return;
+
+        // Проверяем, что сейчас показывается строка NPC, а не ответ игрока
+        bool isShowingPlayerResponse = (bool)isShowingPlayerResponseField.GetValue(dialogueSystem);
+        if (isShowingPlayerResponse) return;
 
         if (HasImageForCurrentLine())
         {
@@ -174,33 +157,9 @@ public class DialogueImageDisplayController : MonoBehaviour
     private bool HasImageForCurrentLine()
     {
         int currentDialogueIndex = (int)currentDialogueIndexField.GetValue(dialogueSystem);
-        int currentLineIndex = (int)currentLineIndexField.GetValue(dialogueSystem);
+        int currentLineIndex = (int)currentNpcLineIndexField.GetValue(dialogueSystem);
 
-        DialogueDataNPC[] dialogues;
-
-        // Пробуем получить dialogues разными способами
-        if (dialoguesField != null)
-        {
-            dialogues = (DialogueDataNPC[])dialoguesField.GetValue(dialogueSystem);
-        }
-        else if (dialoguesProperty != null)
-        {
-            dialogues = (DialogueDataNPC[])dialoguesProperty.GetValue(dialogueSystem);
-        }
-        else
-        {
-            // Если не получилось, пробуем через публичное свойство
-            var publicDialoguesField = dialogueSystem.GetType().GetField("dialogues",
-                BindingFlags.Public | BindingFlags.Instance);
-            if (publicDialoguesField != null)
-            {
-                dialogues = (DialogueDataNPC[])publicDialoguesField.GetValue(dialogueSystem);
-            }
-            else
-            {
-                return false;
-            }
-        }
+        var dialogues = (DialogueDataNPC[])dialoguesField.GetValue(dialogueSystem);
 
         if (currentDialogueIndex < 0 || dialogues == null ||
             currentDialogueIndex >= dialogues.Length)
@@ -233,31 +192,9 @@ public class DialogueImageDisplayController : MonoBehaviour
         if (!waitingForImageClick || isImageModeActive) return;
 
         int currentDialogueIndex = (int)currentDialogueIndexField.GetValue(dialogueSystem);
-        int currentLineIndex = (int)currentLineIndexField.GetValue(dialogueSystem);
+        int currentLineIndex = (int)currentNpcLineIndexField.GetValue(dialogueSystem);
 
-        DialogueDataNPC[] dialogues;
-
-        if (dialoguesField != null)
-        {
-            dialogues = (DialogueDataNPC[])dialoguesField.GetValue(dialogueSystem);
-        }
-        else if (dialoguesProperty != null)
-        {
-            dialogues = (DialogueDataNPC[])dialoguesProperty.GetValue(dialogueSystem);
-        }
-        else
-        {
-            var publicDialoguesField = dialogueSystem.GetType().GetField("dialogues",
-                BindingFlags.Public | BindingFlags.Instance);
-            if (publicDialoguesField != null)
-            {
-                dialogues = (DialogueDataNPC[])publicDialoguesField.GetValue(dialogueSystem);
-            }
-            else
-            {
-                return;
-            }
-        }
+        var dialogues = (DialogueDataNPC[])dialoguesField.GetValue(dialogueSystem);
 
         if (currentDialogueIndex < 0 || dialogues == null ||
             currentDialogueIndex >= dialogues.Length)
@@ -279,7 +216,7 @@ public class DialogueImageDisplayController : MonoBehaviour
         }
         else
         {
-            // Если изображения нет, продолжаем диалог
+            // Если картинки нет, продолжаем диалог
             ContinueDialogue();
             waitingForImageClick = false;
             HideClickToContinueText();
@@ -319,7 +256,6 @@ public class DialogueImageDisplayController : MonoBehaviour
         displayImage.texture = image;
         displayImage.raycastTarget = false;
 
-        // Рассчитываем оптимальный размер
         float maxWidth = Screen.width * 0.8f;
         float maxHeight = Screen.height * 0.8f;
 
@@ -341,7 +277,6 @@ public class DialogueImageDisplayController : MonoBehaviour
         originalImageSize = displaySize;
         currentZoom = 1f;
 
-        // Сбрасываем позицию
         imageRectTransform.anchoredPosition = originalImagePosition;
         targetImagePosition = originalImagePosition;
         currentVelocity = Vector2.zero;
@@ -349,10 +284,8 @@ public class DialogueImageDisplayController : MonoBehaviour
 
     private void HandleImageMode()
     {
-        // Обработка перетаскивания
         HandleDrag();
 
-        // Обработка зума
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll != 0)
         {
@@ -360,7 +293,6 @@ public class DialogueImageDisplayController : MonoBehaviour
             currentZoom += scroll * zoomStep * zoomSpeed;
             currentZoom = Mathf.Clamp(currentZoom, minZoom, maxZoom);
 
-            // Пересчитываем позицию при зуме чтобы изображение оставалось под курсором
             if (currentZoom != oldZoom)
             {
                 Vector2 mousePosition = Input.mousePosition;
@@ -368,14 +300,12 @@ public class DialogueImageDisplayController : MonoBehaviour
                 Vector2 offset = (mousePosition - imageCenter) * ((currentZoom / oldZoom) - 1);
                 targetImagePosition += offset / currentZoom;
 
-                // Применяем изменения сразу
                 imageRectTransform.anchoredPosition = targetImagePosition;
             }
 
             imageRectTransform.sizeDelta = originalImageSize * currentZoom;
         }
 
-        // Выход по Escape или ПКМ
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
         {
             HideImage();
@@ -386,7 +316,6 @@ public class DialogueImageDisplayController : MonoBehaviour
     {
         if (!enableDrag) return;
 
-        // Проверяем, не над кнопкой закрытия
         if (IsPointerOverCloseButton())
         {
             if (Input.GetMouseButtonDown(0))
@@ -396,36 +325,26 @@ public class DialogueImageDisplayController : MonoBehaviour
             }
         }
 
-        // Начало перетаскивания
         if (Input.GetMouseButtonDown(0))
         {
             isDragging = true;
             dragStartMousePosition = Input.mousePosition;
             dragStartImagePosition = imageRectTransform.anchoredPosition;
-            currentVelocity = Vector2.zero; // Сбрасываем плавность при начале перетаскивания
+            currentVelocity = Vector2.zero;
         }
-        // Завершение перетаскивания
         else if (Input.GetMouseButtonUp(0))
         {
             isDragging = false;
-
-            // При резком отпускании можно добавить инерцию здесь
-            // currentVelocity = (targetImagePosition - imageRectTransform.anchoredPosition) * inertiaFactor;
         }
 
-        // Перетаскивание
         if (isDragging && Input.GetMouseButton(0))
         {
             Vector2 currentMousePosition = Input.mousePosition;
             Vector2 delta = (currentMousePosition - dragStartMousePosition) * dragSensitivity;
 
-            // Вычисляем новую позицию
             targetImagePosition = dragStartImagePosition + delta;
-
-            // Ограничиваем позицию
             targetImagePosition = ClampPositionToBounds(targetImagePosition);
 
-            // Если плавность отключена, применяем позицию сразу
             if (!smoothDrag)
             {
                 imageRectTransform.anchoredPosition = targetImagePosition;
@@ -456,28 +375,23 @@ public class DialogueImageDisplayController : MonoBehaviour
 
     private Vector2 ClampPositionToBounds(Vector2 position)
     {
-        // Получаем текущий размер изображения с учетом зума
         float scaledWidth = originalImageSize.x * currentZoom;
         float scaledHeight = originalImageSize.y * currentZoom;
 
-        // Границы в пикселях (процент от размеров экрана)
         float boundaryWidth = Screen.width * dragBoundary;
         float boundaryHeight = Screen.height * dragBoundary;
 
-        // Вычисляем допустимые границы для центра изображения
         float minX = -scaledWidth / 2 + boundaryWidth;
         float maxX = scaledWidth / 2 - boundaryWidth;
         float minY = -scaledHeight / 2 + boundaryHeight;
         float maxY = scaledHeight / 2 - boundaryHeight;
 
-        // Если изображение меньше экрана, ограничиваем его центром
         if (scaledWidth < Screen.width)
         {
             minX = maxX = 0;
         }
         else
         {
-            // Корректируем границы чтобы изображение не уходило за экран
             float screenHalfWidth = Screen.width / 2;
             if (maxX > screenHalfWidth) maxX = screenHalfWidth - boundaryWidth;
             if (minX < -screenHalfWidth) minX = -screenHalfWidth + boundaryWidth;
@@ -494,7 +408,6 @@ public class DialogueImageDisplayController : MonoBehaviour
             if (minY < -screenHalfHeight) minY = -screenHalfHeight + boundaryHeight;
         }
 
-        // Применяем ограничения
         position.x = Mathf.Clamp(position.x, minX, maxX);
         position.y = Mathf.Clamp(position.y, minY, maxY);
 
@@ -518,9 +431,10 @@ public class DialogueImageDisplayController : MonoBehaviour
 
     private void ContinueDialogue()
     {
-        MethodInfo showNextLineMethod = typeof(DialoguesSystem).GetMethod("ShowNextLine",
+        // Используем рефлексию для вызова метода продолжения диалога после изображения
+        MethodInfo continueAfterImageMethod = typeof(DialoguesSystem).GetMethod("ContinueDialogueAfterImage",
             BindingFlags.NonPublic | BindingFlags.Instance);
-        showNextLineMethod?.Invoke(dialogueSystem, null);
+        continueAfterImageMethod?.Invoke(dialogueSystem, null);
     }
 
     private void ShowClickToContinueText()
@@ -549,13 +463,11 @@ public class DialogueImageDisplayController : MonoBehaviour
         return isImageModeActive;
     }
 
-    // Новый метод для проверки, ожидаем ли мы клик для изображения
     public bool IsWaitingForImageClick()
     {
         return waitingForImageClick;
     }
 
-    // Публичные методы для управления
     public void SetDragEnabled(bool enabled)
     {
         enableDrag = enabled;
@@ -575,13 +487,5 @@ public class DialogueImageDisplayController : MonoBehaviour
         {
             imageRectTransform.anchoredPosition = targetImagePosition;
         }
-    }
-
-    // Метод для отладки границ
-    public void DrawDebugBounds()
-    {
-        Vector2 clampedPos = ClampPositionToBounds(targetImagePosition);
-        Debug.Log($"Current Position: {targetImagePosition}, Clamped Position: {clampedPos}");
-        Debug.Log($"Image Size: {originalImageSize * currentZoom}, Zoom: {currentZoom}");
     }
 }

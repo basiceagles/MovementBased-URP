@@ -21,8 +21,9 @@ public class DialoguesSystem : MonoBehaviour
     [SerializeField] private bool dontHideOnClick = false;
 
     private int currentDialogueIndex = -1;
-    private int currentLineIndex = 0;
+    private int currentNpcLineIndex = 0;
     private bool isDialogueActive = false;
+    private bool isShowingPlayerResponse = false;
 
     [Header("Text Effects")]
     [SerializeField] private bool enableTextShake = false;
@@ -39,8 +40,11 @@ public class DialoguesSystem : MonoBehaviour
     [Header("Post-Dialogue Events")]
     [SerializeField] private List<UnityEvent> postDialogueEvents = new List<UnityEvent>();
 
-    // Ссылка на контроллер изображений
+    // ============ ДОБАВЛЕНО ДЛЯ ИЗОБРАЖЕНИЙ ============
+    [Header("Image Display")]
+    [SerializeField] private DialogueImageDisplayController imageDisplayController;
     private DialogueImageDisplayController imageController;
+    // ===================================================
 
     public event Action DialogueStarted;
     public event Action DialogueEnded;
@@ -48,8 +52,12 @@ public class DialoguesSystem : MonoBehaviour
     void Start()
     {
         HideDialogue();
-        // Ищем контроллер изображений в сцене
+        // Ищем контроллер изображений
         imageController = FindObjectOfType<DialogueImageDisplayController>();
+        if (imageDisplayController != null && imageController == null)
+        {
+            imageController = imageDisplayController;
+        }
     }
 
     void Update()
@@ -57,9 +65,11 @@ public class DialoguesSystem : MonoBehaviour
         if (!isDialogueActive)
             return;
 
-        // === ИСПРАВЛЕНИЕ: Блокируем ввод если показывается изображение ИЛИ ожидается клик для изображения ===
+        // ============ ДОБАВЛЕНО ДЛЯ ИЗОБРАЖЕНИЙ ============
+        // Блокируем ввод если показывается изображение ИЛИ ожидается клик для изображения
         if (imageController != null && (imageController.IsImageModeActive() || imageController.IsWaitingForImageClick()))
             return;
+        // ===================================================
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -69,17 +79,56 @@ public class DialoguesSystem : MonoBehaviour
             }
             else
             {
-                DialogueDataNPC data = dialogues[currentDialogueIndex];
-                bool isLastLine = (currentLineIndex >= data.lines.Length - 1);
+                AdvanceDialogue();
+            }
+        }
+    }
 
-                if (!isLastLine || !dontHideOnClick)
+    private void AdvanceDialogue()
+    {
+        DialogueDataNPC data = dialogues[currentDialogueIndex];
+
+        if (isShowingPlayerResponse)
+        {
+            isShowingPlayerResponse = false;
+            currentNpcLineIndex++;
+
+            if (currentNpcLineIndex >= data.lines.Length)
+            {
+                TriggerPostDialogueEvents();
+                if (!dontHideOnClick)
                 {
-                    ShowNextLine();
+                    HideDialogue();
                 }
+            }
+            else
+            {
+                ShowCurrentNpcLine();
+            }
+        }
+        else
+        {
+            PlayerResponse response = data.GetPlayerResponseAfter(currentNpcLineIndex);
 
-                if (isLastLine)
+            if (response != null)
+            {
+                ShowPlayerResponse(response);
+            }
+            else
+            {
+                currentNpcLineIndex++;
+
+                if (currentNpcLineIndex >= data.lines.Length)
                 {
                     TriggerPostDialogueEvents();
+                    if (!dontHideOnClick)
+                    {
+                        HideDialogue();
+                    }
+                }
+                else
+                {
+                    ShowCurrentNpcLine();
                 }
             }
         }
@@ -94,16 +143,95 @@ public class DialoguesSystem : MonoBehaviour
             return;
 
         currentDialogueIndex = index;
-        currentLineIndex = 0;
+        currentNpcLineIndex = 0;
+        isShowingPlayerResponse = false;
         isDialogueActive = true;
 
         ShowDialogue();
-        UpdateDialogueText();
-        UpdateNpcName();
+        ShowCurrentNpcLine();
 
         DialogueStarted?.Invoke();
+    }
 
+    private void ShowCurrentNpcLine()
+    {
+        DialogueDataNPC data = dialogues[currentDialogueIndex];
+
+        if (npcNameText != null)
+        {
+            npcNameText.text = data.npcName.GetLocalizedString();
+        }
+
+        UpdateDialogueText();
         PlayCurrentLineAudio();
+    }
+
+    private void ShowPlayerResponse(PlayerResponse response)
+    {
+        isShowingPlayerResponse = true;
+
+        if (npcNameText != null)
+        {
+            npcNameText.text = response.playerName.GetLocalizedString();
+        }
+
+        if (dialogueText != null)
+        {
+            if (enableTextShake)
+            {
+                StopAllCoroutines();
+            }
+
+            if (typewriterCoroutine != null)
+            {
+                StopCoroutine(typewriterCoroutine);
+                typewriterCoroutine = null;
+            }
+
+            string playerText = response.playerText.GetLocalizedString();
+
+            if (response.duration > 0f)
+            {
+                typewriterCoroutine = StartCoroutine(TypeLine(playerText, response.duration));
+            }
+            else
+            {
+                dialogueText.text = playerText;
+                isTyping = false;
+            }
+
+            if (enableTextShake && isActiveAndEnabled)
+            {
+                StartCoroutine(ShakeText());
+            }
+        }
+
+        PlayPlayerResponseAudio(response);
+    }
+
+    private void PlayPlayerResponseAudio(PlayerResponse response)
+    {
+        if (dialogueAudioSource == null || response == null)
+            return;
+
+        if (stopAudioCoroutine != null)
+        {
+            StopCoroutine(stopAudioCoroutine);
+            stopAudioCoroutine = null;
+        }
+
+        dialogueAudioSource.Stop();
+
+        if (response.voiceClip != null)
+        {
+            dialogueAudioSource.clip = response.voiceClip;
+            dialogueAudioSource.Play();
+        }
+
+        if (response.duration > 0f)
+        {
+            stopAudioCoroutine = StartCoroutine(StopAudioAfterDuration(response.duration));
+        }
     }
 
     public void StartDefaultDialogue()
@@ -130,7 +258,8 @@ public class DialoguesSystem : MonoBehaviour
 
         isDialogueActive = false;
         currentDialogueIndex = -1;
-        currentLineIndex = 0;
+        currentNpcLineIndex = 0;
+        isShowingPlayerResponse = false;
 
         if (stopAudioCoroutine != null)
         {
@@ -157,31 +286,6 @@ public class DialoguesSystem : MonoBehaviour
         }
     }
 
-    private void ShowNextLine()
-    {
-        if (!isDialogueActive || currentDialogueIndex < 0)
-            return;
-
-        DialogueDataNPC data = dialogues[currentDialogueIndex];
-        if (data == null || data.lines == null || data.lines.Length == 0)
-        {
-            HideDialogue();
-            return;
-        }
-
-        currentLineIndex++;
-
-        if (currentLineIndex >= data.lines.Length)
-        {
-            HideDialogue();
-        }
-        else
-        {
-            UpdateDialogueText();
-            PlayCurrentLineAudio();
-        }
-    }
-
     private void UpdateDialogueText()
     {
         if (!isDialogueActive || currentDialogueIndex < 0)
@@ -191,7 +295,7 @@ public class DialoguesSystem : MonoBehaviour
         if (data == null || data.lines == null || data.lines.Length == 0)
             return;
 
-        currentLineIndex = Mathf.Clamp(currentLineIndex, 0, data.lines.Length - 1);
+        currentNpcLineIndex = Mathf.Clamp(currentNpcLineIndex, 0, data.lines.Length - 1);
 
         if (dialogueText != null)
         {
@@ -206,13 +310,13 @@ public class DialoguesSystem : MonoBehaviour
                 typewriterCoroutine = null;
             }
 
-            var localizedLine = data.lines[currentLineIndex];
+            var localizedLine = data.lines[currentNpcLineIndex];
             string lineText = localizedLine.GetLocalizedString();
 
             float duration = 0f;
-            if (data.audioClipPlayDurations != null && currentLineIndex >= 0 && currentLineIndex < data.audioClipPlayDurations.Length)
+            if (data.audioClipPlayDurations != null && currentNpcLineIndex >= 0 && currentNpcLineIndex < data.audioClipPlayDurations.Length)
             {
-                duration = data.audioClipPlayDurations[currentLineIndex];
+                duration = data.audioClipPlayDurations[currentNpcLineIndex];
             }
 
             if (duration <= 0f)
@@ -220,11 +324,13 @@ public class DialoguesSystem : MonoBehaviour
                 dialogueText.text = lineText;
                 isTyping = false;
 
-                // Уведомляем контроллер изображений
+                // ============ ДОБАВЛЕНО ДЛЯ ИЗОБРАЖЕНИЙ ============
+                // Уведомляем контроллер изображений о завершении отображения строки NPC
                 if (imageController != null)
                 {
                     imageController.CheckForImage();
                 }
+                // ===================================================
             }
             else
             {
@@ -244,8 +350,6 @@ public class DialoguesSystem : MonoBehaviour
             return;
 
         DialogueDataNPC data = dialogues[currentDialogueIndex];
-        if (data == null || data.lines == null || data.lines.Length == 0)
-            return;
 
         if (typewriterCoroutine != null)
         {
@@ -266,32 +370,33 @@ public class DialoguesSystem : MonoBehaviour
 
         if (dialogueText != null)
         {
-            currentLineIndex = Mathf.Clamp(currentLineIndex, 0, data.lines.Length - 1);
-            dialogueText.text = data.lines[currentLineIndex].GetLocalizedString();
+            if (isShowingPlayerResponse)
+            {
+                PlayerResponse response = data.GetPlayerResponseAfter(currentNpcLineIndex);
+                if (response != null)
+                {
+                    dialogueText.text = response.playerText.GetLocalizedString();
+                }
+            }
+            else
+            {
+                if (data.lines != null && data.lines.Length > 0)
+                {
+                    currentNpcLineIndex = Mathf.Clamp(currentNpcLineIndex, 0, data.lines.Length - 1);
+                    dialogueText.text = data.lines[currentNpcLineIndex].GetLocalizedString();
+
+                    // ============ ДОБАВЛЕНО ДЛЯ ИЗОБРАЖЕНИЙ ============
+                    // Уведомляем контроллер изображений о завершении отображения строки NPC
+                    if (imageController != null)
+                    {
+                        imageController.CheckForImage();
+                    }
+                    // ===================================================
+                }
+            }
         }
 
         isTyping = false;
-
-        // Уведомляем контроллер изображений
-        if (imageController != null)
-        {
-            imageController.CheckForImage();
-        }
-    }
-
-    private void UpdateNpcName()
-    {
-        if (!isDialogueActive || currentDialogueIndex < 0)
-            return;
-
-        DialogueDataNPC data = dialogues[currentDialogueIndex];
-        if (data == null)
-            return;
-
-        if (npcNameText != null)
-        {
-            npcNameText.text = data.npcName.GetLocalizedString();
-        }
     }
 
     public void SetDialogueAudioSource(AudioSource source)
@@ -315,9 +420,9 @@ public class DialoguesSystem : MonoBehaviour
         }
 
         AudioClip clip = null;
-        if (data.voiceClips != null && currentLineIndex >= 0 && currentLineIndex < data.voiceClips.Length)
+        if (data.voiceClips != null && currentNpcLineIndex >= 0 && currentNpcLineIndex < data.voiceClips.Length)
         {
-            clip = data.voiceClips[currentLineIndex];
+            clip = data.voiceClips[currentNpcLineIndex];
         }
 
         dialogueAudioSource.Stop();
@@ -329,9 +434,9 @@ public class DialoguesSystem : MonoBehaviour
         }
 
         float duration = 0f;
-        if (data.audioClipPlayDurations != null && currentLineIndex >= 0 && currentLineIndex < data.audioClipPlayDurations.Length)
+        if (data.audioClipPlayDurations != null && currentNpcLineIndex >= 0 && currentNpcLineIndex < data.audioClipPlayDurations.Length)
         {
-            duration = data.audioClipPlayDurations[currentLineIndex];
+            duration = data.audioClipPlayDurations[currentNpcLineIndex];
         }
 
         if (duration > 0f)
@@ -355,11 +460,14 @@ public class DialoguesSystem : MonoBehaviour
         isTyping = false;
         typewriterCoroutine = null;
 
-        // Уведомляем контроллер изображений
-        if (imageController != null)
+        // ============ ДОБАВЛЕНО ДЛЯ ИЗОБРАЖЕНИЙ ============
+        // Уведомляем контроллер изображений о завершении отображения строки NPC
+        // Только если это строка NPC, а не ответ игрока
+        if (!isShowingPlayerResponse && imageController != null)
         {
             imageController.CheckForImage();
         }
+        // ===================================================
     }
 
     private IEnumerator ShakeText()
@@ -390,10 +498,10 @@ public class DialoguesSystem : MonoBehaviour
 
     private IEnumerator StopAudioAfterDuration(float duration)
     {
-        int lineIndexAtStart = currentLineIndex;
+        int lineIndexAtStart = currentNpcLineIndex;
         yield return new WaitForSeconds(duration);
 
-        if (isDialogueActive && currentDialogueIndex >= 0 && lineIndexAtStart == currentLineIndex && dialogueAudioSource != null)
+        if (isDialogueActive && currentDialogueIndex >= 0 && lineIndexAtStart == currentNpcLineIndex && dialogueAudioSource != null)
         {
             dialogueAudioSource.Stop();
         }
@@ -406,4 +514,52 @@ public class DialoguesSystem : MonoBehaviour
             unityEvent?.Invoke();
         }
     }
+
+    // ============ ДОБАВЛЕНО ДЛЯ ИЗОБРАЖЕНИЙ ============
+    // Метод для продолжения диалога после закрытия изображения
+    private void ContinueDialogueAfterImage()
+    {
+        if (!isDialogueActive || currentDialogueIndex < 0)
+            return;
+
+        DialogueDataNPC data = dialogues[currentDialogueIndex];
+        PlayerResponse response = data.GetPlayerResponseAfter(currentNpcLineIndex);
+
+        if (response != null)
+        {
+            // Если есть ответ игрока, показываем его
+            ShowPlayerResponse(response);
+        }
+        else
+        {
+            // Если нет ответа игрока, продолжаем диалог
+            AdvanceDialogue();
+        }
+    }
+
+    // Публичные методы для доступа к данным
+    public int GetCurrentDialogueIndex()
+    {
+        return currentDialogueIndex;
+    }
+
+    public int GetCurrentNpcLineIndex()
+    {
+        return currentNpcLineIndex;
+    }
+
+    public string GetCurrentNpcId()
+    {
+        if (currentDialogueIndex >= 0 && currentDialogueIndex < dialogues.Length && dialogues[currentDialogueIndex] != null)
+        {
+            return dialogues[currentDialogueIndex].npcId;
+        }
+        return string.Empty;
+    }
+
+    public bool IsShowingPlayerResponse()
+    {
+        return isShowingPlayerResponse;
+    }
+    // ===================================================
 }
