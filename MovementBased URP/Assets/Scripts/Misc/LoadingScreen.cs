@@ -14,11 +14,13 @@ public class LoadingScreen : MonoBehaviour
 
     private Coroutine loadingTextCoroutine;
 
-    /// <summary>
-    /// Call this to load a scene asynchronously
-    /// </summary>
     public void LoadSceneAsync(string sceneName)
     {
+        if (sceneName == "Hub" && PlayerPrefs.GetInt("HubReached", 0) == 0)
+        {
+            sceneName = "Intro1";
+        }
+
         loadingScreenHolder.SetActive(true);
 
         if (loadingTextCoroutine != null)
@@ -40,7 +42,6 @@ public class LoadingScreen : MonoBehaviour
             yield return null;
         }
 
-        // Loading finished
         UpdateLoadingText(100);
 
         yield return new WaitForSeconds(0.2f);
