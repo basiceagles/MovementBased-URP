@@ -19,27 +19,33 @@ public class LoadScene : MonoBehaviour
     
     public void LoadSceneSpecific()
     {
-        Debug.Log("[LoadScene] LoadSceneSpecific called!");
-        
         if (MoneyManager.Instance != null)
         {
-            Debug.Log("[LoadScene] Calling MoneyManager.OnPlayerDeath()");
             MoneyManager.Instance.OnPlayerDeath();
-        }
-        else
-        {
-            Debug.Log("[LoadScene] MoneyManager.Instance is NULL!");
         }
         
         if (loadScene)
         {
-            Debug.Log($"[LoadScene] Loading scene: {sceneName}");
-            SceneManager.LoadScene(sceneName);
+            if (sceneName == "Hub" && PlayerPrefs.GetInt("HubReached", 0) == 0)
+            {
+                SceneManager.LoadScene("Intro1");
+            }
+
+            else
+            {
+                SceneManager.LoadScene(sceneName);
+            }
         }
         if (restartScene)
         {
-            Debug.Log($"[LoadScene] Restarting scene: {currentScene}");
-            SceneManager.LoadScene(currentScene);
+            if (currentScene == "Intro3")
+            {
+                SceneManager.LoadScene("Intro4");
+            }
+            else
+            {
+                SceneManager.LoadScene(currentScene);
+            }
         }
     }
 
@@ -49,11 +55,26 @@ public class LoadScene : MonoBehaviour
         {
             MoneyManager.Instance.OnPlayerDeath();
         }
-        SceneManager.LoadScene(currentScene);
+
+        if (currentScene == "Intro3")
+        {
+            SceneManager.LoadScene("Intro4");
+        }
+        else
+        {
+            SceneManager.LoadScene(currentScene);
+        }
     }
     
     public void RestartWithoutMoneySave()
     {
-        SceneManager.LoadScene(currentScene);
+        if (currentScene == "Intro3")
+        {
+             SceneManager.LoadScene("Intro4");
+        }
+        else
+        {
+             SceneManager.LoadScene(currentScene);
+        }
     }
 }

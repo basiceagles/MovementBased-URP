@@ -111,6 +111,16 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (currentScene == "Intro4" || currentScene == "Hub")
+        {
+            if (PlayerPrefs.GetInt("HubReached", 0) == 0)
+            {
+                PlayerPrefs.SetInt("HubReached", 1);
+                PlayerPrefs.Save();
+            }
+        }
+
         controller = GetComponent<CharacterController>();
         originalScale = transform.localScale;
         originalRunSpeed = runSpeed;
