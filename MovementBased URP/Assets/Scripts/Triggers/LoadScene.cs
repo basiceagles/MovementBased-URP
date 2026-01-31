@@ -26,7 +26,11 @@ public class LoadScene : MonoBehaviour
         
         if (loadScene)
         {
-            if (sceneName == "Hub" && PlayerPrefs.GetInt("HubReached", 0) == 0)
+            if (currentScene == "Intro3")
+            {
+                 SceneManager.LoadScene("Intro4");
+            }
+            else if (sceneName == "Hub" && PlayerPrefs.GetInt("HubReached", 0) == 0)
             {
                 SceneManager.LoadScene("Intro1");
             }
