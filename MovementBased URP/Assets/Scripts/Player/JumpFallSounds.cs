@@ -20,29 +20,18 @@ public class JumpFallSounds : MonoBehaviour
 
     private void HandlePlayJumpAndFallSounds()
     {
-        if (isJumping && isGrounded && !hasPlayedJumpSound)
-        {
-            SoundManager.PlaySound(SoundType.JUMP);
-            hasPlayedJumpSound = true;
-        }
-        // Reset jump sound flag when player lands or stops jumping
-        if (!isJumping || !isGrounded)
-        {
-            hasPlayedJumpSound = false;
-        }
+
         
         if (wasInAir && isGrounded && !isJumping && !hasPlayedFallSound)
         {
             SoundManager.PlaySound(SoundType.FALL);
             hasPlayedFallSound = true;
         }
-         // Reset flags when player leaves ground
         if (!isGrounded)
         {
             wasInAir = true;
             hasPlayedFallSound = false;
         }
-        // Reset wasInAir when grounded for a while (optional)
         if (isGrounded && !isJumping)
         {
             wasInAir = false;

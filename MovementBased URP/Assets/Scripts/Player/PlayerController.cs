@@ -301,6 +301,7 @@ public class PlayerController : MonoBehaviour
     
     private float GetMovementSpeed()
     {
+        if (isCrouching) return crouchSpeed;
         return (Input.GetKey(runKey) || isSprintActive) ? runSpeed : walkSpeed;
     }
 
@@ -428,12 +429,14 @@ public class PlayerController : MonoBehaviour
     {
         velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         isJumping = true;
+        SoundManager.PlaySound(SoundType.JUMP);
     }
     
     private void SlideJump()
     {
         velocity.y = Mathf.Sqrt(slideJumpHeight * -2f * slideJumpGravity);
         isJumping = true;
+        SoundManager.PlaySound(SoundType.JUMP);
     }
     
     private void HandleSlide()
@@ -591,6 +594,15 @@ public class PlayerController : MonoBehaviour
         }
         
         ApplySlideVelocity(camDir);
+        
+        // Fix: Если скорость слишком мала (остановились), переходим в режим приседания, 
+        // чтобы можно было ползти (например, если над головой крыша)
+        if (currentSlideSpeed <= 0.5f)
+        {
+            isSliding = false;
+            isCrouching = true;
+            currentSlideSpeed = 0f;
+        }
     }
     
     private void ApplySlideVelocity(Vector3 direction)
