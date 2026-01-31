@@ -11,10 +11,12 @@ public class StartAGameInHub : MonoBehaviour
     [SerializeField] private AnimationClip animationClipUIClose;
     [SerializeField] private CameraController cameraController;
     [SerializeField] private float fadeDuration;
+
     [Header("Scene Names")]
     [SerializeField] private string demoSceneName;
     [SerializeField] private string tutorialSceneName;
-
+    [SerializeField] private string IntroScenename;  
+    [SerializeField] private string Intro2Scenename;  
     public void ShowGameUI()
     {
         animatorUI.Play(animationClipUI.name);
@@ -45,11 +47,21 @@ public class StartAGameInHub : MonoBehaviour
         StartCoroutine(DelayedCallCoroutine(tutorialSceneName));
     }
 
+    public void StartScene3AfterDelay()
+    {
+        StartCoroutine(DelayedCallCoroutine(IntroScenename));
+    }
+
+    public void StartScene4AfterDelay()
+    {
+        StartCoroutine(DelayedCallCoroutine(Intro2Scenename));
+    }
+
     IEnumerator DelayedCallCoroutine(string sceneName)
     {
         // Wait for the specified duration
         yield return new WaitForSeconds(fadeDuration);
-        
+
         // Call your method after delay
         SceneManager.LoadScene(sceneName);
     }

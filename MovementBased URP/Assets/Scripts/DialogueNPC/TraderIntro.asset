@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f341cbf2bbaab4f499f251be1190ccec, type: 3}
+  m_Name: TraderIntro
+  m_EditorClassIdentifier: 
+  npcId: TraderIntro
+  _npcName:
+    m_TableReference:
+      m_TableCollectionName: GUID:fe9b4044e4be1b641ac317d4f863bb2d
+    m_TableEntryReference:
+      m_KeyId: 14977238489280512
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  _lines:
+  - m_TableReference:
+      m_TableCollectionName: GUID:fe9b4044e4be1b641ac317d4f863bb2d
+    m_TableEntryReference:
+      m_KeyId: 14977115717808128
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  - m_TableReference:
+      m_TableCollectionName: GUID:fe9b4044e4be1b641ac317d4f863bb2d
+    m_TableEntryReference:
+      m_KeyId: 14977154225713152
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  - m_TableReference:
+      m_TableCollectionName: GUID:fe9b4044e4be1b641ac317d4f863bb2d
+    m_TableEntryReference:
+      m_KeyId: 14977195359252480
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  - m_TableReference:
+      m_TableCollectionName: GUID:fe9b4044e4be1b641ac317d4f863bb2d
+    m_TableEntryReference:
+      m_KeyId: 14977205819846656
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  playerResponses:
+  - afterNpcLineIndex: 0
+    playerName:
+      m_TableReference:
+        m_TableCollectionName: GUID:fe9b4044e4be1b641ac317d4f863bb2d
+      m_TableEntryReference:
+        m_KeyId: 14649396140355584
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    playerText:
+      m_TableReference:
+        m_TableCollectionName: GUID:fe9b4044e4be1b641ac317d4f863bb2d
+      m_TableEntryReference:
+        m_KeyId: 14977149221908480
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    voiceClip: {fileID: 8300000, guid: 530997eb6d4606044884c2570878483c, type: 3}
+    duration: 1
+  voiceClips:
+  - {fileID: 8300000, guid: 19f41322344da3642947236e55c227fa, type: 3}
+  - {fileID: 8300000, guid: 19f41322344da3642947236e55c227fa, type: 3}
+  - {fileID: 8300000, guid: 19f41322344da3642947236e55c227fa, type: 3}
+  - {fileID: 8300000, guid: 19f41322344da3642947236e55c227fa, type: 3}
+  audioClipPlayDurations:
+  - 2
+  - 2
+  - 2
+  - 2
+  references:
+    version: 2
+    RefIds: []
