@@ -16,7 +16,8 @@ public class StartAGameInHub : MonoBehaviour
     [SerializeField] private string demoSceneName;
     [SerializeField] private string tutorialSceneName;
     [SerializeField] private string IntroScenename;  
-    [SerializeField] private string Intro2Scenename;  
+    [SerializeField] private string Intro2Scenename;
+    [SerializeField] private string TutorialRegularSceneName;
     public void ShowGameUI()
     {
         animatorUI.Play(animationClipUI.name);
@@ -55,6 +56,11 @@ public class StartAGameInHub : MonoBehaviour
     public void StartScene4AfterDelay()
     {
         StartCoroutine(DelayedCallCoroutine(Intro2Scenename));
+    }
+
+    public void StartTutorialRegularAfterDelay()
+    {
+        StartCoroutine(DelayedCallCoroutine(TutorialRegularSceneName));
     }
 
     IEnumerator DelayedCallCoroutine(string sceneName)
