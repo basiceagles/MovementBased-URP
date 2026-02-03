@@ -153,11 +153,7 @@ public class RedEyeDetector : MonoBehaviour
                 if (playerController.isDamaged)
                 {
                     MoneyManager.SaveMoneyOnDeath();
-                    string currentScene = SceneManager.GetActiveScene().name;
-                    if (currentScene == "Intro3")
-                    {
-                        SceneManager.LoadScene("Intro4");
-                    }       
+                    SceneManager.LoadScene(deadSceneName);
                 }
                 else
                 {
@@ -206,9 +202,11 @@ public class RedEyeDetector : MonoBehaviour
 
         redEyeObjects.RemoveAll(obj => obj == null);
 
+        // Store previous state
         bool wasVisible = isRedEyeVisible;
         GameObject previousRedEye = currentRedEyeObject;
 
+        // Check visibility FIRST before finding new targets
         bool currentObjectIsVisible = currentRedEyeObject != null && IsObjectVisible(currentRedEyeObject);
         
         if (currentObjectIsVisible)
@@ -216,6 +214,7 @@ public class RedEyeDetector : MonoBehaviour
             lastVisibleTime = Time.time;
         }
 
+        // Find current target
         FindCurrentRedEye();
 
         if (currentRedEyeObject == null || mainCamera == null) 
@@ -227,10 +226,14 @@ public class RedEyeDetector : MonoBehaviour
             return;
         }
 
+        // Apply buffer and update visibility state
         bool isVisibleWithBuffer = currentObjectIsVisible || (Time.time - lastVisibleTime <= bufferTime);
         isRedEyeVisible = isVisibleWithBuffer;
 
-        if (!wasVisible && isRedEyeVisible)
+        // Handle visibility changes immediately
+        bool hasTargetChanged = currentRedEyeObject != previousRedEye;
+
+        if ((!wasVisible && isRedEyeVisible) || (isRedEyeVisible && hasTargetChanged))
         {
             StartFillCoroutine();
             OnRedEyeDetected?.Invoke();
@@ -253,15 +256,7 @@ public class RedEyeDetector : MonoBehaviour
             if (playerController.isDamaged)
             {
                 MoneyManager.SaveMoneyOnDeath();
-                string currentScene = SceneManager.GetActiveScene().name;
-                if (currentScene == "Intro3")
-                {
-                    SceneManager.LoadScene("Intro4");
-                }
-                else
-                {
-                    SceneManager.LoadScene(deadSceneName);
-                }
+                SceneManager.LoadScene(deadSceneName);
             }
             else
             {
