@@ -993,7 +993,7 @@ GameObject:
   m_Component:
   - component: {fileID: 51655920}
   - component: {fileID: 51655922}
-  - component: {fileID: 51655921}
+  - component: {fileID: 51655923}
   m_Layer: 5
   m_Name: DisplayImage
   m_TagString: Untagged
@@ -1020,7 +1020,15 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &51655921
+--- !u!222 &51655922
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 51655919}
+  m_CullTransparentMesh: 1
+--- !u!114 &51655923
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1029,7 +1037,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 51655919}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -1040,21 +1048,16 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
-  m_UVRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
---- !u!222 &51655922
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 51655919}
-  m_CullTransparentMesh: 1
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1001 &59491474
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25827,7 +25830,7 @@ PrefabInstance:
     - target: {fileID: 1206155334340768204, guid: c8764656ddf86274c8999ced8759afcd, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: ae6ce578bbf93c04f95839ae0511f078, type: 2}
+      objectReference: {fileID: 2100000, guid: c58b05377c133d64f95c596d74351eac, type: 2}
     - target: {fileID: 8317026436559655683, guid: c8764656ddf86274c8999ced8759afcd, type: 3}
       propertyPath: m_LocalPosition.x
       value: -8.609
@@ -27551,8 +27554,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   imagePanel: {fileID: 725107773}
-  displayImage: {fileID: 51655921}
-  closeButton: {fileID: 0}
+  displayImage: {fileID: 51655923}
+  closeButton: {fileID: 1983075342}
   clickToContinueText: {fileID: 0}
   maxZoom: 3
   zoomSpeed: 8
@@ -56571,7 +56574,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 71.83331, y: -25.309484}
+  m_AnchoredPosition: {x: 71.83331, y: -25.30951}
   m_SizeDelta: {x: 34, y: 34}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1983075342

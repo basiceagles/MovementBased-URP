@@ -9,7 +9,7 @@ public class DialogueImageDisplayController : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private GameObject imagePanel;
-    [SerializeField] private RawImage displayImage;
+    [SerializeField] private Image displayImage;
     [SerializeField] private Button closeButton;
     [SerializeField] private TextMeshProUGUI clickToContinueText;
 
@@ -48,11 +48,18 @@ public class DialogueImageDisplayController : MonoBehaviour
     [SerializeField] private DialogueImageData[] dialogueImages;
 
     private RectTransform imageRectTransform;
+    private RectTransform imageParentRectTransform;
     private Vector2 originalImageSize;
     private Vector2 originalImagePosition;
+    private Vector3 originalImageScale;
     private float currentZoom = 1f;
     private bool isImageModeActive = false;
     private bool waitingForImageClick = false;
+    private Sprite runtimeSprite;
+    private LayoutElement imageLayoutElement;
+    private bool originalIgnoreLayout;
+    private Transform originalImageParent;
+    private int originalImageSiblingIndex;
 
     // Перетаскивание
     private bool isDragging = false;
@@ -101,11 +108,21 @@ public class DialogueImageDisplayController : MonoBehaviour
         {
             imagePanel.SetActive(false);
             imageRectTransform = displayImage.GetComponent<RectTransform>();
+            imageParentRectTransform = imageRectTransform != null ? imageRectTransform.parent as RectTransform : null;
 
             if (imageRectTransform != null)
             {
+                originalImageParent = imageRectTransform.parent;
+                originalImageSiblingIndex = imageRectTransform.GetSiblingIndex();
                 originalImagePosition = imageRectTransform.anchoredPosition;
                 targetImagePosition = originalImagePosition;
+                originalImageSize = imageRectTransform.rect.size;
+                originalImageScale = imageRectTransform.localScale;
+                imageLayoutElement = imageRectTransform.GetComponent<LayoutElement>();
+                if (imageLayoutElement != null)
+                {
+                    originalIgnoreLayout = imageLayoutElement.ignoreLayout;
+                }
             }
         }
 
@@ -253,33 +270,56 @@ public class DialogueImageDisplayController : MonoBehaviour
 
     private void SetupImageDisplay(Texture2D image)
     {
-        displayImage.texture = image;
+        if (runtimeSprite != null)
+        {
+            Destroy(runtimeSprite);
+            runtimeSprite = null;
+        }
+
+        runtimeSprite = Sprite.Create(
+            image,
+            new Rect(0, 0, image.width, image.height),
+            new Vector2(0.5f, 0.5f)
+        );
+
+        displayImage.sprite = runtimeSprite;
+        displayImage.preserveAspect = true;
         displayImage.raycastTarget = false;
 
-        float maxWidth = Screen.width * 0.8f;
-        float maxHeight = Screen.height * 0.8f;
-
-        float imageRatio = (float)image.width / image.height;
-        float maxRatio = maxWidth / maxHeight;
-
-        Vector2 displaySize;
-
-        if (imageRatio > maxRatio)
+        // Keep the size set up in the Canvas/Inspector as the base size for zoom & drag.
+        if (imageRectTransform != null)
         {
-            displaySize = new Vector2(maxWidth, maxWidth / imageRatio);
-        }
-        else
-        {
-            displaySize = new Vector2(maxHeight * imageRatio, maxHeight);
-        }
+            // Detach from any layout-driven parent while showing the image.
+            if (imagePanel != null && imageRectTransform.parent != imagePanel.transform)
+            {
+                originalImageParent = imageRectTransform.parent;
+                originalImageSiblingIndex = imageRectTransform.GetSiblingIndex();
+                imageRectTransform.SetParent(imagePanel.transform, false);
+                imageParentRectTransform = imageRectTransform.parent as RectTransform;
+            }
 
-        imageRectTransform.sizeDelta = displaySize;
-        originalImageSize = displaySize;
+            originalImageSize = imageRectTransform.rect.size;
+            originalImageScale = imageRectTransform.localScale;
+
+            if (imageLayoutElement != null)
+            {
+                imageLayoutElement.ignoreLayout = true;
+            }
+        }
         currentZoom = 1f;
 
+        originalImagePosition = Vector2.zero;
         imageRectTransform.anchoredPosition = originalImagePosition;
         targetImagePosition = originalImagePosition;
+        imageRectTransform.localScale = originalImageScale;
         currentVelocity = Vector2.zero;
+    }
+
+    private Camera GetCanvasCamera()
+    {
+        var canvas = displayImage != null ? displayImage.canvas : null;
+        if (canvas == null) return null;
+        return canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
     }
 
     private void HandleImageMode()
@@ -295,15 +335,26 @@ public class DialogueImageDisplayController : MonoBehaviour
 
             if (currentZoom != oldZoom)
             {
-                Vector2 mousePosition = Input.mousePosition;
-                Vector2 imageCenter = imageRectTransform.position;
-                Vector2 offset = (mousePosition - imageCenter) * ((currentZoom / oldZoom) - 1);
-                targetImagePosition += offset / currentZoom;
+                if (imageParentRectTransform != null)
+                {
+                    var cam = GetCanvasCamera();
+                    Vector2 mouseLocal;
+                    if (RectTransformUtility.ScreenPointToLocalPointInRectangle(imageParentRectTransform, Input.mousePosition, cam, out mouseLocal))
+                    {
+                        float zoomFactor = currentZoom / oldZoom;
 
-                imageRectTransform.anchoredPosition = targetImagePosition;
+                        // Keep the point under the cursor stable while zooming.
+                        targetImagePosition = mouseLocal - (mouseLocal - targetImagePosition) * zoomFactor;
+                        targetImagePosition = ClampPositionToBounds(targetImagePosition);
+                    }
+                }
             }
 
-            imageRectTransform.sizeDelta = originalImageSize * currentZoom;
+            if (imageRectTransform != null)
+            {
+                imageRectTransform.localScale = originalImageScale * currentZoom;
+                imageRectTransform.anchoredPosition = targetImagePosition;
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
@@ -339,16 +390,26 @@ public class DialogueImageDisplayController : MonoBehaviour
 
         if (isDragging && Input.GetMouseButton(0))
         {
-            Vector2 currentMousePosition = Input.mousePosition;
-            Vector2 delta = (currentMousePosition - dragStartMousePosition) * dragSensitivity;
+            if (imageParentRectTransform == null)
+            {
+                return;
+            }
 
+            var cam = GetCanvasCamera();
+            Vector2 startLocal;
+            Vector2 currentLocal;
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(imageParentRectTransform, dragStartMousePosition, cam, out startLocal) ||
+                !RectTransformUtility.ScreenPointToLocalPointInRectangle(imageParentRectTransform, Input.mousePosition, cam, out currentLocal))
+            {
+                return;
+            }
+
+            Vector2 delta = (currentLocal - startLocal) * dragSensitivity;
             targetImagePosition = dragStartImagePosition + delta;
             targetImagePosition = ClampPositionToBounds(targetImagePosition);
 
-            if (!smoothDrag)
-            {
-                imageRectTransform.anchoredPosition = targetImagePosition;
-            }
+            // Always update position during an active drag, even when smoothDrag is enabled.
+            imageRectTransform.anchoredPosition = targetImagePosition;
         }
     }
 
@@ -375,41 +436,37 @@ public class DialogueImageDisplayController : MonoBehaviour
 
     private Vector2 ClampPositionToBounds(Vector2 position)
     {
+        if (imageParentRectTransform == null)
+        {
+            return position;
+        }
+
         float scaledWidth = originalImageSize.x * currentZoom;
         float scaledHeight = originalImageSize.y * currentZoom;
 
-        float boundaryWidth = Screen.width * dragBoundary;
-        float boundaryHeight = Screen.height * dragBoundary;
+        Vector2 parentSize = imageParentRectTransform.rect.size;
+        float boundaryWidth = parentSize.x * dragBoundary;
+        float boundaryHeight = parentSize.y * dragBoundary;
 
-        float minX = -scaledWidth / 2 + boundaryWidth;
-        float maxX = scaledWidth / 2 - boundaryWidth;
-        float minY = -scaledHeight / 2 + boundaryHeight;
-        float maxY = scaledHeight / 2 - boundaryHeight;
-
-        if (scaledWidth < Screen.width)
+        if (scaledWidth <= parentSize.x)
         {
-            minX = maxX = 0;
+            position.x = 0;
         }
         else
         {
-            float screenHalfWidth = Screen.width / 2;
-            if (maxX > screenHalfWidth) maxX = screenHalfWidth - boundaryWidth;
-            if (minX < -screenHalfWidth) minX = -screenHalfWidth + boundaryWidth;
+            float maxOffsetX = (scaledWidth - parentSize.x) * 0.5f + boundaryWidth;
+            position.x = Mathf.Clamp(position.x, -maxOffsetX, maxOffsetX);
         }
 
-        if (scaledHeight < Screen.height)
+        if (scaledHeight <= parentSize.y)
         {
-            minY = maxY = 0;
+            position.y = 0;
         }
         else
         {
-            float screenHalfHeight = Screen.height / 2;
-            if (maxY > screenHalfHeight) maxY = screenHalfHeight - boundaryHeight;
-            if (minY < -screenHalfHeight) minY = -screenHalfHeight + boundaryHeight;
+            float maxOffsetY = (scaledHeight - parentSize.y) * 0.5f + boundaryHeight;
+            position.y = Mathf.Clamp(position.y, -maxOffsetY, maxOffsetY);
         }
-
-        position.x = Mathf.Clamp(position.x, minX, maxX);
-        position.y = Mathf.Clamp(position.y, minY, maxY);
 
         return position;
     }
@@ -419,12 +476,32 @@ public class DialogueImageDisplayController : MonoBehaviour
         if (!isImageModeActive) return;
 
         imagePanel.SetActive(false);
-        displayImage.texture = null;
+        displayImage.sprite = null;
+        if (runtimeSprite != null)
+        {
+            Destroy(runtimeSprite);
+            runtimeSprite = null;
+        }
         isImageModeActive = false;
         currentZoom = 1f;
         isDragging = false;
 
         displayImage.raycastTarget = true;
+
+        if (imageLayoutElement != null)
+        {
+            imageLayoutElement.ignoreLayout = originalIgnoreLayout;
+        }
+
+        if (imageRectTransform != null && originalImageParent != null && imageRectTransform.parent != originalImageParent)
+        {
+            imageRectTransform.SetParent(originalImageParent, false);
+            imageRectTransform.SetSiblingIndex(originalImageSiblingIndex);
+            imageParentRectTransform = imageRectTransform.parent as RectTransform;
+            imageRectTransform.anchoredPosition = originalImagePosition;
+            targetImagePosition = originalImagePosition;
+            imageRectTransform.localScale = originalImageScale;
+        }
 
         ContinueDialogue();
     }
