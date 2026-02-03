@@ -1,37 +1,4 @@
 using UnityEngine;
-using UnityEditor;
-using System.Collections;
-
-[CustomEditor(typeof(SteamIntegration))]
-public class SteamIntegrationEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        DrawDefaultInspector();
-
-        SteamIntegration steam = (SteamIntegration)target;
-
-        string AchievementID = steam.AchievementID;
-
-        GUILayout.Space(10);
-        GUILayout.Label("Achievement Controls", EditorStyles.boldLabel);
-
-        if (GUILayout.Button("Check Achievement"))
-        {
-            steam.IsThisAchievementUnlocked(AchievementID);
-        }
-
-        if (GUILayout.Button("Unlock Achievement"))
-        {
-            steam.UnlockAchievment(AchievementID);
-        }
-
-        if (GUILayout.Button("Clear Achievement"))
-        {
-            steam.ClearAchievments(AchievementID);
-        }
-    }
-}
 
 public class SteamIntegration : MonoBehaviour
 {
@@ -40,11 +7,10 @@ public class SteamIntegration : MonoBehaviour
     [Header("Achievement Debug")]
     public string AchievementID;
 
-    private uint appID = 4187280; // playtest ID
+    private uint appID = 4392010; // playtest ID
 
     private void Awake()
     {
-        // Singleton enforcement
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -80,7 +46,7 @@ public class SteamIntegration : MonoBehaviour
     }
 
     // ---------------- ACHIEVEMENTS ----------------
-    
+
     public static void UnlockIfNotUnlocked(string id)
     {
         if (Instance == null)
@@ -89,16 +55,10 @@ public class SteamIntegration : MonoBehaviour
             return;
         }
 
-        Instance.UnlockIfNotUnlocked_Internal(id);
-    }
-
-    private void UnlockIfNotUnlocked_Internal(string id)
-    {
         var ach = new Steamworks.Data.Achievement(id);
 
         if (ach.State)
         {
-            // Already unlocked → do nothing
             Debug.Log($"Achievement {id} already unlocked.");
             return;
         }
@@ -107,7 +67,7 @@ public class SteamIntegration : MonoBehaviour
         Debug.Log($"Achievement {id} unlocked.");
     }
 
-    // Debug helpers (Inspector buttons use these)
+    // Debug helpers
 
     public void IsThisAchievementUnlocked(string id)
     {
