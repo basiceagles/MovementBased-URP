@@ -231,7 +231,9 @@ public class RedEyeDetector : MonoBehaviour
         isRedEyeVisible = isVisibleWithBuffer;
 
         // Handle visibility changes immediately
-        if (!wasVisible && isRedEyeVisible)
+        bool hasTargetChanged = currentRedEyeObject != previousRedEye;
+
+        if ((!wasVisible && isRedEyeVisible) || (isRedEyeVisible && hasTargetChanged))
         {
             StartFillCoroutine();
             OnRedEyeDetected?.Invoke();
