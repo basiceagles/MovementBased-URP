@@ -113,6 +113,8 @@ public class RandomSpawner : MonoBehaviour
         List<Transform> availableSpawnPoints = new List<Transform>();
         foreach (Transform sp in spawnPoints)
         {
+            if (sp == null) continue;
+            
             int currentChildren = parentToSpawnPoint ? sp.childCount : 0;
             if (currentChildren < maxObjectsToSpawn)
             {

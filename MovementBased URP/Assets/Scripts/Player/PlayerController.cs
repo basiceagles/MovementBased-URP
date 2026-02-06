@@ -58,6 +58,7 @@ public class PlayerController : MonoBehaviour
     public float currentSlideSpeed;
     public bool isSliding;
     private float slideTimer;
+    private bool isSlowSlide;
     private bool isCrouching;
     private bool wantsToStandUp;
     private bool wantsToSlide;
@@ -311,6 +312,7 @@ public class PlayerController : MonoBehaviour
     
     private float GetMovementSpeed()
     {
+        if (isCrouching) return crouchSpeed;
         return (Input.GetKey(runKey) || isSprintActive) ? runSpeed : walkSpeed;
     }
 
@@ -438,12 +440,14 @@ public class PlayerController : MonoBehaviour
     {
         velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         isJumping = true;
+        SoundManager.PlaySound(SoundType.JUMP);
     }
     
     private void SlideJump()
     {
         velocity.y = Mathf.Sqrt(slideJumpHeight * -2f * slideJumpGravity);
         isJumping = true;
+        SoundManager.PlaySound(SoundType.JUMP);
     }
     
     private void HandleSlide()
@@ -464,7 +468,7 @@ public class PlayerController : MonoBehaviour
         if (wantsToSlide && isGrounded)
         {
             float speed = Mathf.Max(currentSpeed, currentSlideSpeed);
-            if (speed >= 10f)
+            if (speed >= 7f)
             {
                 StartSlide();
             }
@@ -502,7 +506,7 @@ public class PlayerController : MonoBehaviour
     
     private bool CanStartSlide()
     {
-        return currentSpeed > 10f && Input.GetAxisRaw("Vertical") > 0.1f;
+        return currentSpeed >= 7f && Input.GetAxisRaw("Vertical") > 0.1f;
     }
     
     private bool CanStandUp()
@@ -538,6 +542,9 @@ public class PlayerController : MonoBehaviour
     {
         isSliding = true;
         slideTimer = 0f;
+        
+        isSlowSlide = horizontalVelocity.magnitude <= 11f;
+        
         currentSlideSpeed = Mathf.Max(horizontalVelocity.magnitude, slideSpeed);
         SetCrouchScale();
     }
@@ -587,20 +594,28 @@ public class PlayerController : MonoBehaviour
         Vector3 camDir = transform.forward;
         camDir.y = 0;
         camDir.Normalize();
-        
+
         slideTimer += Time.deltaTime;
-        
-        if (slideTimer > slideDecayDelay)
+        float appliedDecayDelay = isSlowSlide ? 0f : slideDecayDelay;
+        float appliedDecayRate = isSlowSlide ? slideDecayRate * 1.5f : slideDecayRate;
+
+        if (slideTimer > appliedDecayDelay)
         {
-            currentSlideSpeed = Mathf.Max(currentSlideSpeed - slideDecayRate * Time.deltaTime, 0f);
+            currentSlideSpeed = Mathf.Max(currentSlideSpeed - appliedDecayRate * Time.deltaTime, 0f);
         }
         else
         {
-            currentSlideSpeed = currentSlideSpeed > slideSpeed ?
-                Mathf.Max(currentSlideSpeed - slideAcceleration * 0.5f * Time.deltaTime, slideSpeed) : slideSpeed;
+            currentSlideSpeed = currentSlideSpeed > slideSpeed ? Mathf.Max(currentSlideSpeed - slideAcceleration * 0.5f * Time.deltaTime, slideSpeed) : currentSlideSpeed;
         }
         
         ApplySlideVelocity(camDir);
+        
+        if (currentSlideSpeed <= 0.5f)
+        {
+            isSliding = false;
+            isCrouching = true;
+            currentSlideSpeed = 0f;
+        }
     }
     
     private void ApplySlideVelocity(Vector3 direction)

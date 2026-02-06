@@ -211,4 +211,17 @@ public class RunnerEnemy : MonoBehaviour
             }
         }
     }
+    private void OnDestroy()
+    {
+        CameraShake[] shakers = FindObjectsOfType<CameraShake>();
+        foreach (CameraShake shaker in shakers)
+        {
+            if (shaker != null)
+            {
+                shaker.ConstantlyShakeStop();
+                shaker.ConstantlyShakeStopSmoothly();
+                shaker.StopShake();
+            }
+        }
+    }
 }
