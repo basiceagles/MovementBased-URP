@@ -534,10 +534,10 @@ public class Settings : MonoBehaviour
         }
 
         // ВРЕМЕННО: reset уровня на кнопку R
-        //if (!isMainMenu && !mainMenuIsActive && Input.GetKeyDown(KeyCode.R))
-        //{
-        //    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        //}
+        if (!isMainMenu && !mainMenuIsActive && Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 
     private void CheckForDisplayChanges()
