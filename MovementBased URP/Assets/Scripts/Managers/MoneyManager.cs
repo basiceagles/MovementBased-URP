@@ -20,7 +20,7 @@ public class MoneyManager : MonoBehaviour
     public float moneyMultiplier = 1.0f;
 
     [Header("Current State")]
-    [SerializeField] private int totalMoney = 0;
+    public int totalMoney = 0;
     [SerializeField] private int levelsCompleted = 0;
     [SerializeField] private DifficultyType currentDifficulty = DifficultyType.Easy;
     
