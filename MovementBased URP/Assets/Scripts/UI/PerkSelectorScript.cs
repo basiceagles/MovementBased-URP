@@ -80,6 +80,8 @@ public class PerkSelectorScript : MonoBehaviour
     [SerializeField] private int timeToAdd1;
     [SerializeField] private int timeToAdd2;
     [SerializeField] private int timeToAdd3;
+    [Header("Add Falling Platforms Perk References")]
+    [Range(0, 100)][SerializeField] private int platformsSpawnChance = 25;
 
     private GameObject targetProcuderalGeneration;
     private LevelGenerator levelGenerator;
@@ -668,5 +670,9 @@ public class PerkSelectorScript : MonoBehaviour
     {
         spawnBlueEye = true;
         timer.totalSeconds = timer.totalSeconds + blueEyeTimeToAdd;
+    }
+    public void ButtonFallingPlatformsSpawner()
+    {
+        levelGenerator.platformsChance = platformsSpawnChance;
     }
 }

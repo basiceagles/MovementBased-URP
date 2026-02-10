@@ -163,7 +163,9 @@ GameObject:
   - component: {fileID: 3613623963466415105}
   - component: {fileID: 7951722939564130811}
   - component: {fileID: 3407343985781969289}
-  m_Layer: 0
+  - component: {fileID: 8989358127761352087}
+  - component: {fileID: 4890493622830322446}
+  m_Layer: 17
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -345,9 +347,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wallStickForce: 8
-  minSpeedToStart: 8
-  requireMovementTowardWall: 1
-  minAngleToWall: 45
   wallLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -553,7 +552,71 @@ MonoBehaviour:
   occlusionLayers:
     serializedVersion: 2
     m_Bits: 16384
-  showDebugGizmos: 1
+  showDebugGizmos: 0
+--- !u!114 &8989358127761352087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557733885150758004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87d6b77db8821114bb0b277f41c096c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickupKey: 101
+  pickupRange: 3
+  pickupTag: Barel
+  holdPoint: {fileID: 2869990086773852535}
+  holdOffset: {x: 0, y: 0, z: 0}
+  pickupSpeed: 15
+  throwKey: 323
+  throwForce: 20
+  throwUpForce: 5
+  enableChargeThrow: 1
+  maxChargeTime: 2
+  maxChargeMultiplier: 2
+  addSpinOnThrow: 1
+  spinForce: 5
+  usePhysicsHold: 1
+  holdStrength: 1000
+  holdDamping: 10
+  freezeRotationWhenHeld: 1
+  playerCamera: {fileID: 2000828764072764332}
+  raycastOrigin: {fileID: 4005968262995598657}
+--- !u!114 &4890493622830322446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557733885150758004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87d6b77db8821114bb0b277f41c096c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickupKey: 101
+  pickupRange: 3
+  pickupTag: Barel
+  holdPoint: {fileID: 6622540561179833226}
+  holdOffset: {x: 0, y: 0, z: 0}
+  pickupSpeed: 15
+  throwKey: 323
+  throwForce: 20
+  throwUpForce: 5
+  enableChargeThrow: 1
+  maxChargeTime: 2
+  maxChargeMultiplier: 2
+  addSpinOnThrow: 1
+  spinForce: 5
+  usePhysicsHold: 1
+  holdStrength: 1000
+  holdDamping: 10
+  freezeRotationWhenHeld: 1
+  playerCamera: {fileID: 2000828764072764332}
+  raycastOrigin: {fileID: 4005968262995598657}
 --- !u!1 &1786397657753048215
 GameObject:
   m_ObjectHideFlags: 0
@@ -610,7 +673,7 @@ MonoBehaviour:
   maxSwingDistance: 25
   swingForce: 3
   swingSpeedBonus: 3
-  swingingEnabled: 1
+  swingingEnabled: 0
   currentSwingSpeed: 18
   swingAngle: 0
   currentRopeLengthDebug: 0
@@ -899,6 +962,7 @@ Transform:
   - {fileID: 7690408842432544986}
   - {fileID: 4495070930067499774}
   - {fileID: 6622540561179833226}
+  - {fileID: 2869990086773852535}
   m_Father: {fileID: 3469260907815785715}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &2000828764072764332
@@ -965,7 +1029,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_RenderShadows: 1
-  m_RequiresDepthTextureOption: 2
+  m_RequiresDepthTextureOption: 1
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
   m_Cameras:
@@ -1247,7 +1311,7 @@ MonoBehaviour:
   currentFillValue: 0
   isRedEyeVisible: 0
   audioSource: {fileID: 7902459169574237243}
-  deadSceneName: TimerDead
+  deadSceneName: WatcherDead
   playerTarget: {fileID: 1557733885150758004}
   redEyeObjects: []
   blueEyeObjects: []
@@ -1541,6 +1605,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4005968262995598657}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6046389404669336220
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2869990086773852535}
+  m_Layer: 0
+  m_Name: holdPoint (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2869990086773852535
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6046389404669336220}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.94, z: 1.96}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4005968262995598657}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7923699575329384124
 GameObject:
   m_ObjectHideFlags: 0
@@ -1601,7 +1696,7 @@ MonoBehaviour:
   grappleSpeed: 20
   grapplingCd: 0.5
   canPickupNode: 0
-  grapplingEnabled: 1
+  grapplingEnabled: 0
   ropeSegments: 25
   ropeWaveSpeed: 20
   ropeWaveHeight: 0.5

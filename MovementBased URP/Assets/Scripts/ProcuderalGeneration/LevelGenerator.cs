@@ -17,6 +17,7 @@ public class LevelGenerator : MonoBehaviour
         Holes,
         RedEye,
         RedWalls,
+        Platforms,
         NodeExchanger
     }
 
@@ -101,6 +102,8 @@ public class LevelGenerator : MonoBehaviour
     public int redEyeChance = 25;
     [Range(0, 100)]
     public int redWallsChance = 25;
+    [Range(0, 100)]
+    public int platformsChance = 25;
     [Range(0, 100)]
     public int nodeExchangerChance = 25;
 
@@ -602,6 +605,7 @@ public class LevelGenerator : MonoBehaviour
             case LevelType.Holes: return holesChance;
             case LevelType.RedEye: return redEyeChance;
             case LevelType.RedWalls: return redWallsChance;
+            case LevelType.Platforms: return platformsChance;
             case LevelType.NodeExchanger: return nodeExchangerChance;
             default: return 25;
         }

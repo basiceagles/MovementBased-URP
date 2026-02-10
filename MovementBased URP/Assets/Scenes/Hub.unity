@@ -8669,11 +8669,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 288905660}
   m_CullTransparentMesh: 1
---- !u!4 &290305262 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6622540561179833226, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
-  m_PrefabInstance: {fileID: 1123764456140826848}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &290946218
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11057,6 +11052,7 @@ MonoBehaviour:
   holesChance: 0
   redEyeChance: 0
   redWallsChance: 0
+  platformsChance: 25
   nodeExchangerChance: 0
   numberOfLevels: 10
   numberOfLevelsToAdd: 1
@@ -34697,11 +34693,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 1, y: 1}
---- !u!1 &1151050030 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1557733885150758004, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
-  m_PrefabInstance: {fileID: 1123764456140826848}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1158492000
 GameObject:
   m_ObjectHideFlags: 0
@@ -48964,11 +48955,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76b188a500dbf694ab8e9d9169564051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &1613522947 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4005968262995598657, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
-  m_PrefabInstance: {fileID: 1123764456140826848}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1613533146
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -52784,7 +52770,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3343798156140563583, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
   m_PrefabInstance: {fileID: 1123764456140826848}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1151050030}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 542f55fd64623e4418728cb12eae1fca, type: 3}
@@ -52795,44 +52781,12 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1802631790307948027, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
   m_PrefabInstance: {fileID: 1123764456140826848}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1151050030}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e083a2996d4c34f41aa6078edc7ada77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1773325627
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1151050030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87d6b77db8821114bb0b277f41c096c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pickupKey: 101
-  pickupRange: 3
-  pickupTag: Barel
-  holdPoint: {fileID: 290305262}
-  holdOffset: {x: 0, y: 0, z: 0}
-  pickupSpeed: 15
-  throwKey: 323
-  throwForce: 20
-  throwUpForce: 5
-  enableChargeThrow: 1
-  maxChargeTime: 2
-  maxChargeMultiplier: 2
-  addSpinOnThrow: 1
-  spinForce: 5
-  usePhysicsHold: 1
-  holdStrength: 1000
-  holdDamping: 10
-  freezeRotationWhenHeld: 1
-  playerCamera: {fileID: 1382079967}
-  raycastOrigin: {fileID: 1613522947}
 --- !u!4 &1780870925 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5675707718447426769, guid: 144d7474894047c4590be9aafda03b84, type: 3}
@@ -59413,6 +59367,7 @@ MonoBehaviour:
   timeToAdd1: 20
   timeToAdd2: 40
   timeToAdd3: 60
+  platformsSpawnChance: 25
   isPerkMenuOpen: 0
   grappling: {fileID: 1008693407}
   moneyManager: {fileID: 0}
@@ -62567,10 +62522,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 1863173299891983089, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
-      propertyPath: grapplingEnabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3343798156140563583, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: sprintFillImage
       value: 
@@ -62619,10 +62570,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3738881548484672034, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
-      propertyPath: swingingEnabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7639928502226673217, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: crosshairSwitcher
       value: 
@@ -62630,10 +62577,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1557733885150758004, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1773325627}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
 --- !u!1 &1123764456140826849 stripped
 GameObject:
