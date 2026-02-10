@@ -7095,6 +7095,22 @@ MonoBehaviour:
     levelType: 0
   - levelPrefab: {fileID: 7542523503345584635, guid: c51b8504bca65954ba9d3aa31ff68df9, type: 3}
     levelType: 0
+  - levelPrefab: {fileID: 3488966937011951078, guid: 379041d5e64d0244e94fcc94c3125ab6, type: 3}
+    levelType: 1
+  - levelPrefab: {fileID: 5559504252592889412, guid: 57bae4d42dbd5ca409fa2ce46a2dfa2f, type: 3}
+    levelType: 1
+  - levelPrefab: {fileID: 2510368624349057147, guid: 58f1e9fc4ca725a40a54ba2fb5e0a6bb, type: 3}
+    levelType: 1
+  - levelPrefab: {fileID: 27179941147825252, guid: 6dd089f88e39d3d4fa25ca614a779a49, type: 3}
+    levelType: 1
+  - levelPrefab: {fileID: 4309392818507741948, guid: de43091d267541d4f8b5ebdcaf061d9d, type: 3}
+    levelType: 1
+  - levelPrefab: {fileID: 4224750029784015164, guid: 47d6d5c7bc5117f4db1e4f3fd4a6e426, type: 3}
+    levelType: 1
+  - levelPrefab: {fileID: 7422256887693791606, guid: 405e17fce4220ef4d85d532704805dd2, type: 3}
+    levelType: 0
+  - levelPrefab: {fileID: 4470035045623801167, guid: f279b35fbbb13cb4c88d3038ab5b470c, type: 3}
+    levelType: 0
   closedMediumLevels:
   - levelPrefab: {fileID: 1477064973750662499, guid: af22a6494b433e240afe6702ba4bce8d, type: 3}
     levelType: 0
@@ -7121,7 +7137,7 @@ MonoBehaviour:
   closedHardChance: 0
   runnerStartChance: 30
   standardChance: 25
-  swingChance: 0
+  swingChance: 25
   grappleChance: 0
   waterChance: 0
   doubleJumpChance: 0
@@ -18460,7 +18476,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1863173299891983089, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: grapplingEnabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2000828764072764332, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: m_CullingMask.m_Bits
@@ -18564,7 +18580,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3738881548484672034, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: swingingEnabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4005968262995598657, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: m_LocalRotation.w
