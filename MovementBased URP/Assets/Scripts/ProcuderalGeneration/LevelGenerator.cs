@@ -172,7 +172,26 @@ public class LevelGenerator : MonoBehaviour
 
     void ToggleGrappleAndSwingToRotation()
     {
-        
+        bool grappleBought = PlayerPrefs.GetInt("Meta_GrappleEnabled", 0) == 1;
+        bool swingBought = PlayerPrefs.GetInt("Meta_SwingEnabled", 0) == 1;
+
+        if (grappleBought)
+        {
+            grappleChance = 25;
+        }
+        else
+        {
+            grappleChance = 0;
+        }
+
+        if (swingBought)
+        {
+            swingChance = 25;
+        }
+        else
+        {
+            swingChance = 0;
+        }
     }
 
     public void UpdateLevelsCounts()
