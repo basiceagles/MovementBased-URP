@@ -7,8 +7,9 @@ public class JumpFallSounds : MonoBehaviour
     private bool isJumping;
     private bool isGrounded;
     private bool wasInAir;
-    private bool hasPlayedJumpSound;
     private bool hasPlayedFallSound;
+    private float lastJumpTime;
+    private float airTimeCounter;
 
     void Update()
     {
@@ -20,26 +21,32 @@ public class JumpFallSounds : MonoBehaviour
 
     private void HandlePlayJumpAndFallSounds()
     {
-
-        
         if (wasInAir && isGrounded && !isJumping && !hasPlayedFallSound)
         {
-            SoundManager.PlaySound(SoundType.FALL);
-            hasPlayedFallSound = true;
+            if (Time.time - lastJumpTime >= 0.5f && airTimeCounter >= 0.15f)
+            {
+                SoundManager.PlaySound(SoundType.FALL);
+                hasPlayedFallSound = true;
+            }
         }
+
         if (!isGrounded)
         {
             wasInAir = true;
             hasPlayedFallSound = false;
+            airTimeCounter += Time.deltaTime;
         }
-        if (isGrounded && !isJumping)
+        else if (!isJumping)
         {
             wasInAir = false;
+            airTimeCounter = 0f;
         }
     }
 
     public void CallJumpSoundMethod()
     {
         SoundManager.PlaySound(SoundType.JUMP);
+        lastJumpTime = Time.time;
+        airTimeCounter = 0f;
     }
 }

@@ -67,6 +67,7 @@ public class Settings : MonoBehaviour
     public DialogueUIReferences dialogueUIReferences;
     public KeyRebindManager keyRebindManager;
     public Camera mainCamera;
+    public PlayerController playerController;
 
     private Resolution[] resolutions;
     private List<string> uniqueResolutions = new List<string>();
@@ -87,6 +88,11 @@ public class Settings : MonoBehaviour
     private GameObject fpsCounterTarget;
     private bool mainMenuIsActive = false;
     private bool settingsIsActive = false;
+    
+    private float timeScaleBeforePause = 1f;
+
+    public bool IsPaused => mainMenuIsActive || settingsIsActive;
+
     private AudioSource[] allAudioSourcesInScene;
     [Header("Other References")]
     [SerializeField] private PerkSelectorScript perkSelectorScript;
@@ -100,7 +106,7 @@ public class Settings : MonoBehaviour
         }
 
         s_Instance = this;
-        DontDestroyOnLoad(gameObject); // optional but recommended
+        DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
@@ -109,6 +115,13 @@ public class Settings : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+        }
+        else
+        {
+            if (playerController == null)
+            {
+                playerController = FindObjectOfType<PlayerController>();
+            }
         }
 
         fpsCounterTarget = GameObject.Find("FpsCounterUI");
@@ -397,7 +410,7 @@ public class Settings : MonoBehaviour
 
         if (!isMainMenu)
         {
-            Time.timeScale = 1f;
+            Time.timeScale = timeScaleBeforePause;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
 
@@ -406,6 +419,11 @@ public class Settings : MonoBehaviour
             if (cameraController != null)
             {
                 cameraController.enabled = true;
+            }
+
+            if (playerController != null)
+            {
+                playerController.SetMovementEnabled(true);
             }
         }
 
@@ -426,6 +444,7 @@ public class Settings : MonoBehaviour
 
         if (!isMainMenu)
         {
+            timeScaleBeforePause = Time.timeScale;
             Time.timeScale = 0f;
 
             PauseAllAudioSource();
@@ -434,6 +453,11 @@ public class Settings : MonoBehaviour
             {
                 cameraController.enabled = false;
             }
+
+            if (playerController != null)
+            {
+                playerController.SetMovementEnabled(false);
+            }
         }
     }
 
@@ -441,11 +465,17 @@ public class Settings : MonoBehaviour
     {
         if (!isMainMenu)
         {
+            timeScaleBeforePause = Time.timeScale;
             Time.timeScale = 0f;
 
             if (cameraController != null)
             {
                 cameraController.enabled = false;
+            }
+
+            if (playerController != null)
+            {
+                playerController.SetMovementEnabled(false);
             }
 
             settingsUI.SetActive(true);
@@ -482,13 +512,18 @@ public class Settings : MonoBehaviour
     {
         if (!isMainMenu)
         {
-            Time.timeScale = 1f;
+            Time.timeScale = timeScaleBeforePause;
 
             UnPauseAllAudioSource();
 
             if (cameraController != null)
             {
                 cameraController.enabled = true;
+            }
+
+            if (playerController != null)
+            {
+                playerController.SetMovementEnabled(true);
             }
 
             Cursor.lockState = CursorLockMode.Locked;
