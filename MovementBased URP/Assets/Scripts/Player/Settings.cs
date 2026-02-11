@@ -465,7 +465,7 @@ public class Settings : MonoBehaviour
     {
         if (!isMainMenu)
         {
-            //timeScaleBeforePause = Time.timeScale; УДОЛИ НАХУЙ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            //timeScaleBeforePause = Time.timeScale; //УДОЛИ НАХУЙ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             Time.timeScale = 0f;
 
             if (cameraController != null)
