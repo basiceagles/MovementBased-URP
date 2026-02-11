@@ -10,6 +10,7 @@ public class DeathScreenUI : MonoBehaviour
     [Header("Money UI")]
     [SerializeField] private TextMeshProUGUI moneyEarnedText;
     [SerializeField] private TextMeshProUGUI moneyTotalText;
+    [SerializeField] private TextMeshProUGUI multiplierText;
 
     private void Start()
     {
@@ -33,6 +34,11 @@ public class DeathScreenUI : MonoBehaviour
         if (moneyTotalText != null)
         {
             moneyTotalText.text = RunStats.MoneyTotal.ToString();
+        }
+        if (multiplierText != null)
+        {
+            int percent = Mathf.RoundToInt(RunStats.MoneyMultiplier * 100f);
+            multiplierText.text = percent.ToString() + "%";
         }
     }
     
