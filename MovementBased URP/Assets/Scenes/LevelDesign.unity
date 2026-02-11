@@ -7472,7 +7472,7 @@ MonoBehaviour:
   - levelPrefab: {fileID: 2725554643805625721, guid: a0c4d6ae3e285ed4a9aebfa0657bcbae, type: 3}
     levelType: 0
   - levelPrefab: {fileID: 8839726536920636983, guid: 5d2e9feaa92bf334fbf6f682eeac3f94, type: 3}
-    levelType: 10
+    levelType: 11
   - levelPrefab: {fileID: 2070107143032970244, guid: 02c0946727a9c2040805c35f0882e690, type: 3}
     levelType: 0
   - levelPrefab: {fileID: 6827742087343365466, guid: 4952afaa724b2ab41944fa2034814928, type: 3}
@@ -7499,7 +7499,7 @@ MonoBehaviour:
     levelType: 0
   - levelPrefab: {fileID: 5263212725076357722, guid: a60c9cc8e4699064eae9a547e46af9ca, type: 3}
     levelType: 0
-  - levelPrefab: {fileID: 495048584851282034, guid: e9aff2095ee8cdc44a1c1c582df6eca5, type: 3}
+  - levelPrefab: {fileID: 7422256887693791606, guid: 405e17fce4220ef4d85d532704805dd2, type: 3}
     levelType: 10
   closedMediumLevels:
   - levelPrefab: {fileID: 1477064973750662499, guid: af22a6494b433e240afe6702ba4bce8d, type: 3}
@@ -7538,7 +7538,7 @@ MonoBehaviour:
   redWallsChance: 0
   platformsChance: 0
   nodeExchangerChance: 0
-  numberOfLevels: 20
+  numberOfLevels: 1
   numberOfLevelsToAdd: 2
   generateOnStart: 1
   cycle: 0
@@ -14995,10 +14995,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1336950694}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 299.995, y: 0}
-  m_SizeDelta: {x: 559.99, y: 48.01}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &673122666
 MonoBehaviour:
@@ -19600,6 +19600,10 @@ PrefabInstance:
       propertyPath: sprintFillContainer
       value: 
       objectReference: {fileID: 624271888}
+    - target: {fileID: 3407343985781969289, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+      propertyPath: maxDistance
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 3469260907815785715, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 10.02
@@ -27092,10 +27096,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1336950694}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 227.005, y: -48.01}
-  m_SizeDelta: {x: 414.01, y: 24.01}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1127173052
 MonoBehaviour:
@@ -36637,7 +36641,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1542823303
 RectTransform:
   m_ObjectHideFlags: 0
@@ -41910,7 +41914,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2045860301}
         m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
-        m_MethodName: ButtonPickupNodesPerk
+        m_MethodName: ClosePerkMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -41922,7 +41926,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 2045860301}
         m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
-        m_MethodName: ClosePerkMenu
+        m_MethodName: ButtonLightBreakerPerk
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -42310,7 +42314,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2045860301}
         m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
-        m_MethodName: ButtonPickupNodesPerk
+        m_MethodName: ClosePerkMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -42322,7 +42326,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 2045860301}
         m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
-        m_MethodName: ClosePerkMenu
+        m_MethodName: ButtonLightFixerPerk
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -42909,7 +42913,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1783734466
 RectTransform:
   m_ObjectHideFlags: 0
@@ -42929,9 +42933,9 @@ RectTransform:
   - {fileID: 280893390}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 300, y: -424.66644}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1783734467
@@ -44902,10 +44906,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1336950694}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 214.255, y: -72.02}
-  m_SizeDelta: {x: 388.51, y: 24.01}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1885895260
 MonoBehaviour:
@@ -49067,7 +49071,7 @@ MonoBehaviour:
     moneyMultiplierDelta: 12
     moneyMultiplierText: {fileID: 2075667190}
   - gameObject: {fileID: 2099889391}
-    spawnAtMenuOpen: 0
+    spawnAtMenuOpen: 1
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
     moneyMultiplierDelta: 8
@@ -49091,7 +49095,7 @@ MonoBehaviour:
     moneyMultiplierDelta: -15
     moneyMultiplierText: {fileID: 776860191}
   - gameObject: {fileID: 1749684089}
-    spawnAtMenuOpen: 0
+    spawnAtMenuOpen: 1
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
     moneyMultiplierDelta: 8
@@ -49127,14 +49131,14 @@ MonoBehaviour:
     moneyMultiplierDelta: 12
     moneyMultiplierText: {fileID: 2000206127}
   - gameObject: {fileID: 1553725378}
-    spawnAtMenuOpen: 0
+    spawnAtMenuOpen: 1
     timesAmountToDeactivate: 1
     currentDeactivationCount: 0
     moneyMultiplierDelta: 10
     moneyMultiplierText: {fileID: 469767392}
   amountToActivate: 3
   ButtonPerkNone: {fileID: 1783734465}
-  spawnNonePerkButton: 0
+  spawnNonePerkButton: 1
   buttonHierarchies:
   - parentButton: {fileID: 1252162123}
     childButtons:
@@ -49153,6 +49157,12 @@ MonoBehaviour:
     - {fileID: 96488642}
     objectsToEnable:
     - {fileID: 96488642}
+    isActive: 0
+  - parentButton: {fileID: 2099889391}
+    childButtons:
+    - {fileID: 2146543365}
+    objectsToEnable:
+    - {fileID: 2146543365}
     isActive: 0
   animationClip: {fileID: 7400000, guid: a399a34f0ab73244297190d85f19dbc2, type: 2}
   animator: {fileID: 741717970}
@@ -49187,6 +49197,8 @@ MonoBehaviour:
   timeToAdd2: 40
   timeToAdd3: 60
   platformsSpawnChance: 25
+  lightBreakChance: 0
+  leversToSpawnDefault: 1
   isPerkMenuOpen: 0
   grappling: {fileID: 0}
   moneyManager: {fileID: 0}
@@ -50541,7 +50553,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2099889392
 RectTransform:
   m_ObjectHideFlags: 0
@@ -50561,9 +50573,9 @@ RectTransform:
   - {fileID: 1116395949}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: -299.3329}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2099889393
@@ -50686,7 +50698,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2045860301}
         m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
-        m_MethodName: ButtonPickupNodesPerk
+        m_MethodName: ButtonLever1Perk
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -50740,6 +50752,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 2099889391}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2045860301}
+        m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
+        m_MethodName: OnParentButtonClick
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 3
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -51150,7 +51174,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2146543366
 RectTransform:
   m_ObjectHideFlags: 0
@@ -51170,9 +51194,9 @@ RectTransform:
   - {fileID: 268158838}
   m_Father: {fileID: 741717967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: -399.3329}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2146543367
@@ -51295,7 +51319,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2045860301}
         m_TargetAssemblyTypeName: PerkSelectorScript, Assembly-CSharp
-        m_MethodName: ButtonPickupNodesPerk
+        m_MethodName: ButtonLever2Perk
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

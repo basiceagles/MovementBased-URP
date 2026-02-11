@@ -10,6 +10,9 @@ public class LeverRandomSpawner : MonoBehaviour
     
     [Header("Spawn Points")]
     public GameObject[] spawnPoints;
+
+    private GameObject perkSelectorScriptTarget;
+    private PerkSelectorScript perkSelectorScript;
     
     
     private List<GameObject> spawnedLevers = new List<GameObject>();
@@ -18,11 +21,22 @@ public class LeverRandomSpawner : MonoBehaviour
     {
         if (useMaxLeversToSpawnFromPerkManager)
         {
-            
+            FindPerkManager();
         }
         SpawnLevers();
     }
     
+    void FindPerkManager()
+    {
+        perkSelectorScriptTarget = GameObject.Find("PerkSelectorManager");
+        perkSelectorScript = perkSelectorScriptTarget.GetComponent<PerkSelectorScript>();
+
+        if (perkSelectorScript != null)
+        {
+            maxLeversToSpawn = perkSelectorScript.leversToSpawnDefault;
+        }
+    }
+
     void SpawnLevers()
     {
         // Calculate how many levers we can actually spawn

@@ -17,11 +17,26 @@ public class LightsController : MonoBehaviour
     private List<Animator> lightAnimators = new List<Animator>();
     private List<Animator> lampAnimators = new List<Animator>();
 
+    private GameObject perkSelectorScriptTarget;
+    private PerkSelectorScript perkSelectorScript;
+
 
     void Start()
     {
         // Get all animator components from the gameobjects
         GetAnimatorComponents();
+        FindPerkManager();
+    }
+
+    void FindPerkManager()
+    {
+        perkSelectorScriptTarget = GameObject.Find("PerkSelectorManager");
+        perkSelectorScript = perkSelectorScriptTarget.GetComponent<PerkSelectorScript>();
+
+        if (perkSelectorScript != null)
+        {
+            shutdownChance = perkSelectorScript.lightBreakChance;
+        }
     }
 
     void GetAnimatorComponents()

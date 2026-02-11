@@ -82,6 +82,10 @@ public class PerkSelectorScript : MonoBehaviour
     [SerializeField] private int timeToAdd3;
     [Header("Add Falling Platforms Perk References")]
     [Range(0, 100)][SerializeField] private int platformsSpawnChance = 25;
+    [Header("Lighting Break References")]
+    [Range(0, 100)] public int lightBreakChance = 30;
+    [Header("Levers To Spawn References")]
+    public int leversToSpawnDefault = 1;
 
     private GameObject targetProcuderalGeneration;
     private LevelGenerator levelGenerator;
@@ -318,10 +322,27 @@ public class PerkSelectorScript : MonoBehaviour
             return;
         }
         
-        // Check if amount to activate is 0 or less - don't spawn anything
-        if (amountToActivate <= 0)
+        bool shouldSpawnNonePerkButton = spawnNonePerkButton && ButtonPerkNone != null;
+        int randomPerksToActivate = shouldSpawnNonePerkButton ? Mathf.Max(amountToActivate - 1, 0) : amountToActivate;
+        
+        // Deactivate all objects first
+        foreach (SpawnableObject spawnable in objectsArray)
         {
-            Debug.LogWarning("amountToActivate is 0 or less, no objects will be activated.");
+            if (spawnable.gameObject != null)
+                spawnable.gameObject.SetActive(false);
+        }
+        
+        if (shouldSpawnNonePerkButton)
+        {
+            ButtonPerkNone.SetActive(true);
+        }
+        
+        if (randomPerksToActivate <= 0)
+        {
+            if (!shouldSpawnNonePerkButton)
+            {
+                Debug.LogWarning("amountToActivate is 0 or less, no objects will be activated.");
+            }
             return;
         }
         
@@ -331,7 +352,10 @@ public class PerkSelectorScript : MonoBehaviour
         {
             if (spawnable.gameObject != null && spawnable.spawnAtMenuOpen)
             {
-                availableObjects.Add(spawnable);
+                if (!shouldSpawnNonePerkButton || spawnable.gameObject != ButtonPerkNone)
+                {
+                    availableObjects.Add(spawnable);
+                }
             }
         }
         
@@ -343,29 +367,19 @@ public class PerkSelectorScript : MonoBehaviour
         }
         
         // Ensure we don't try to activate more objects than available
-        int actualAmountToActivate = Mathf.Min(amountToActivate, availableObjects.Count);
+        int actualAmountToActivate = Mathf.Min(randomPerksToActivate, availableObjects.Count);
         
         // Shuffle the available objects using Fisher-Yates algorithm
         ShuffleList(availableObjects);
         
-        // Deactivate all objects first
-        foreach (SpawnableObject spawnable in objectsArray)
-        {
-            if (spawnable.gameObject != null)
-                spawnable.gameObject.SetActive(false);
-        }
-        
         // Activate the first 'actualAmountToActivate' objects from the shuffled list
         for (int i = 0; i < actualAmountToActivate; i++)
         {
-            if (i < availableObjects.Count)
-            {
-                availableObjects[i].gameObject.SetActive(true);
-                Debug.Log($"Activated: {availableObjects[i].gameObject.name}");
-            }
+            availableObjects[i].gameObject.SetActive(true);
+            Debug.Log($"Activated: {availableObjects[i].gameObject.name}");
         }
         
-        Debug.Log($"Activated {actualAmountToActivate} out of {availableObjects.Count} available objects");
+        Debug.Log($"Activated {actualAmountToActivate} out of {availableObjects.Count} available objects" + (shouldSpawnNonePerkButton ? " (+ ButtonPerkNone)" : ""));
     }
 
     // Proper Fisher-Yates shuffle implementation
@@ -380,7 +394,7 @@ public class PerkSelectorScript : MonoBehaviour
         }
     }
 
-    // Button hierarchy methods
+    // Button hierarchy methods.
     public void OnParentButtonClick(int hierarchyIndex)
     {
         if (hierarchyIndex >= 0 && hierarchyIndex < buttonHierarchies.Length)
@@ -674,5 +688,25 @@ public class PerkSelectorScript : MonoBehaviour
     public void ButtonFallingPlatformsSpawner()
     {
         levelGenerator.platformsChance = platformsSpawnChance;
+    }
+
+    public void ButtonLightBreakerPerk()
+    {
+        lightBreakChance = 80;
+    }
+
+    public void ButtonLightFixerPerk()
+    {
+        lightBreakChance = 0;
+    }
+
+    public void ButtonLever1Perk()
+    {
+        leversToSpawnDefault++;
+    }
+
+    public void ButtonLever2Perk()
+    {
+        leversToSpawnDefault++;
     }
 }
