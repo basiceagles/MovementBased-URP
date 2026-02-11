@@ -196,10 +196,8 @@ public class ObjectPickupSystem : MonoBehaviour
         heldRigidbody.isKinematic = false;
         heldRigidbody.useGravity = true;
         
-        // Fix: Force no constraints to allow natural tumbling/rolling after throw
         heldRigidbody.constraints = RigidbodyConstraints.None;
         
-        // Fix: Set collision detection to ContinuousDynamic for better collision response at high speeds
         heldRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         
         Vector3 throwDirection = raycastOrigin.forward;
@@ -216,7 +214,6 @@ public class ObjectPickupSystem : MonoBehaviour
             heldRigidbody.AddTorque(randomSpin, ForceMode.Impulse);
         }
 
-        // Ensure the object is not sleeping
         heldRigidbody.WakeUp();
         
         heldObject = null;
