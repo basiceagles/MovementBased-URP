@@ -285,8 +285,8 @@ MonoBehaviour:
   slideDecayRate: 7
   currentSlideSpeed: 0
   isSliding: 0
-  groundCheckDistance: 0.5
-  groundCheckRadius: 0.7
+  groundCheckDistance: 0.3
+  groundCheckRadius: 0.6
   gizmoLineCount: 8
   groundLayer:
     serializedVersion: 2
@@ -1313,6 +1313,11 @@ MonoBehaviour:
   audioSource: {fileID: 7902459169574237243}
   deadSceneName: WatcherDead
   playerTarget: {fileID: 1557733885150758004}
+  enableCameraPull: 1
+  pullStrength: 3
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
   redEyeObjects: []
   blueEyeObjects: []
 --- !u!114 &7639928502226673217
