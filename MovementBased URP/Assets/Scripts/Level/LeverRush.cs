@@ -136,25 +136,23 @@ public class LeverRush : MonoBehaviour
     {
         if (spawnPoint == null) return;
 
-        float mainRoll = Random.Range(0f, 100f);
+        PlayerController player = FindObjectOfType<PlayerController>();
+        bool isPlayerDamaged = (player != null && player.isDamaged);
 
-        if (mainRoll <= 20f)
+        float roll = Random.Range(0f, 100f);
+        GameObject prefabToSpawn = null;
+
+        if (isPlayerDamaged)
         {
-            if (medkitPrefab != null)
+            if (roll <= 80f)
             {
-                Instantiate(medkitPrefab, spawnPoint.position, spawnPoint.rotation);
+                prefabToSpawn = medkitPrefab;
             }
-        }
-        else
-        {
-            float moneyRoll = Random.Range(0f, 100f);
-            GameObject prefabToSpawn = null;
-
-            if (moneyRoll <= 60f)
+            else if (roll <= 90f)
             {
                 prefabToSpawn = money100Prefab;
             }
-            else if (moneyRoll <= 90f)
+            else if (roll <= 97f)
             {
                 prefabToSpawn = money200Prefab;
             }
@@ -162,11 +160,34 @@ public class LeverRush : MonoBehaviour
             {
                 prefabToSpawn = money300Prefab;
             }
-
-            if (prefabToSpawn != null)
+        }
+        else
+        {
+            if (roll <= 20f)
             {
-                Instantiate(prefabToSpawn, spawnPoint.position, spawnPoint.rotation);
+                prefabToSpawn = medkitPrefab;
             }
+            else
+            {
+                float moneyRoll = Random.Range(0f, 100f);
+                if (moneyRoll <= 60f)
+                {
+                    prefabToSpawn = money100Prefab;
+                }
+                else if (moneyRoll <= 90f)
+                {
+                    prefabToSpawn = money200Prefab;
+                }
+                else
+                {
+                    prefabToSpawn = money300Prefab;
+                }
+            }
+        }
+
+        if (prefabToSpawn != null)
+        {
+            Instantiate(prefabToSpawn, spawnPoint.position, spawnPoint.rotation);
         }
     }
 

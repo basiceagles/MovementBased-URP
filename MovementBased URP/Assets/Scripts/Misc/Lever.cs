@@ -88,7 +88,6 @@ public class Lever : MonoBehaviour
         HideUITip();
         HideUIKeybind();
 
-        //Данная хуйня вызывается или проверяет потом все ли рычаги активировы, если да, то открывает дверь
         if (leverSearcherComponent != null)
         {
             leverSearcherComponent.CheckLeverStatus();
