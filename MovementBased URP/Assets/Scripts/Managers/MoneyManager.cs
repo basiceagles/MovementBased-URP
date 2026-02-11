@@ -20,7 +20,7 @@ public class MoneyManager : MonoBehaviour
     public float moneyMultiplier = 1.0f;
 
     [Header("Current State")]
-    [SerializeField] private int totalMoney = 0;
+    public int totalMoney = 0;
     [SerializeField] private int levelsCompleted = 0;
     [SerializeField] private DifficultyType currentDifficulty = DifficultyType.Easy;
     
@@ -83,24 +83,17 @@ public class MoneyManager : MonoBehaviour
             ResetAllMoney();
         }
         
-        // Track play time when timer is running
         if (isTimerRunning)
         {
             totalPlayTime += Time.deltaTime;
         }
     }
     
-    /// <summary>
-    /// Start the play timer. Call when player exits perk room.
-    /// </summary>
     public void StartPlayTimer()
     {
         isTimerRunning = true;
     }
     
-    /// <summary>
-    /// Stop the play timer. Call when player enters perk room.
-    /// </summary>
     public void StopPlayTimer()
     {
         isTimerRunning = false;
@@ -129,23 +122,20 @@ public class MoneyManager : MonoBehaviour
 
     public void OnPlayerDeath()
     {
-        // Stop timer on death
         isTimerRunning = false;
         
-        // Save to PlayerPrefs for money calculation on next run
         PlayerPrefs.SetInt(LEVELS_COMPLETED_KEY, levelsCompleted);
         PlayerPrefs.SetInt(CURRENT_DIFFICULTY_KEY, (int)currentDifficulty);
         PlayerPrefs.Save();
         
-        // Calculate earned money
         int moneyPerLevel = GetMoneyValueForDifficulty(currentDifficulty);
         int earnedMoney = Mathf.RoundToInt(moneyPerLevel * levelsCompleted * moneyMultiplier);
         
-        // Save to RunStats for death screen display
         RunStats.LevelsCompleted = levelsCompleted;
         RunStats.DifficultyType = (int)currentDifficulty;
         RunStats.MoneyEarned = earnedMoney;
         RunStats.MoneyTotal = totalMoney + earnedMoney;
+        RunStats.MoneyMultiplier = moneyMultiplier;
         RunStats.TotalPlayTime = totalPlayTime;
     }
     public static void SaveMoneyOnDeath()
@@ -283,7 +273,6 @@ public class MoneyManager : MonoBehaviour
         float elapsed = 0f;
         RectTransform rect = totalMoneyText.rectTransform;
 
-        // Set color to warning color
         totalMoneyText.color = notEnoughMoneyColor;
 
         while (elapsed < notEnoughMoneyDuration)
@@ -291,14 +280,12 @@ public class MoneyManager : MonoBehaviour
             elapsed += Time.unscaledDeltaTime;
             float t = elapsed / notEnoughMoneyDuration;
 
-            // Simple left-right shake using sine
             float offset = Mathf.Sin(t * Mathf.PI * 10f) * notEnoughMoneyShakeAmount;
             rect.anchoredPosition = originalMoneyTextPosition + new Vector3(offset, 0f, 0f);
 
             yield return null;
         }
 
-        // Restore original state
         rect.anchoredPosition = originalMoneyTextPosition;
         totalMoneyText.color = originalMoneyTextColor;
         notEnoughMoneyRoutine = null;

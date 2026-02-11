@@ -11,6 +11,18 @@ public class EnemyOverlayManager : MonoBehaviour
 
     public void CallRedEyeOverlay()
     {
-        animator.Play(damagedAnimClip.name);
+        if (animator != null && animator.gameObject != null)
+        {
+            animator.gameObject.SetActive(true);
+            animator.Play(damagedAnimClip.name);
+        }
+    }
+
+    public void DisableRedEyeOverlay()
+    {
+        if (animator != null && animator.gameObject != null)
+        {
+            animator.gameObject.SetActive(false);
+        }
     }
 }

@@ -28,6 +28,13 @@ public class RedEyeDetector : MonoBehaviour
     [SerializeField] private string deadSceneName;
     [SerializeField] private GameObject playerTarget;
     
+    [Header("Camera Pull Settings")]
+    [SerializeField] private bool enableCameraPull = true;
+    [SerializeField] private float pullStrength = 3f;
+    [SerializeField] private LayerMask playerLayer;
+    private CameraController cameraController;
+    private HashSet<GameObject> eyesSighted = new HashSet<GameObject>();
+    
     private Camera mainCamera;
     public List<GameObject> redEyeObjects;
     public List<GameObject> blueEyeObjects;
@@ -70,6 +77,7 @@ public class RedEyeDetector : MonoBehaviour
         
         mainCamera = Camera.main;
         cameraShake = mainCamera.GetComponent<CameraShake>();
+        cameraController = mainCamera.GetComponent<CameraController>();
         currentFillValue = 0f;
 
         if (mainCamera == null)
@@ -198,15 +206,14 @@ public class RedEyeDetector : MonoBehaviour
 
     void Update()
     {
+        HandleCameraPull();
         HandleBlueEyeLogic();
 
         redEyeObjects.RemoveAll(obj => obj == null);
 
-        // Store previous state
         bool wasVisible = isRedEyeVisible;
         GameObject previousRedEye = currentRedEyeObject;
 
-        // Check visibility FIRST before finding new targets
         bool currentObjectIsVisible = currentRedEyeObject != null && IsObjectVisible(currentRedEyeObject);
         
         if (currentObjectIsVisible)
@@ -214,7 +221,6 @@ public class RedEyeDetector : MonoBehaviour
             lastVisibleTime = Time.time;
         }
 
-        // Find current target
         FindCurrentRedEye();
 
         if (currentRedEyeObject == null || mainCamera == null) 
@@ -226,11 +232,9 @@ public class RedEyeDetector : MonoBehaviour
             return;
         }
 
-        // Apply buffer and update visibility state
         bool isVisibleWithBuffer = currentObjectIsVisible || (Time.time - lastVisibleTime <= bufferTime);
         isRedEyeVisible = isVisibleWithBuffer;
 
-        // Handle visibility changes immediately
         bool hasTargetChanged = currentRedEyeObject != previousRedEye;
 
         if ((!wasVisible && isRedEyeVisible) || (isRedEyeVisible && hasTargetChanged))
@@ -426,5 +430,77 @@ public class RedEyeDetector : MonoBehaviour
         }
         
         fillCoroutine = null;
+    }
+
+    private void HandleCameraPull()
+    {
+        if (!enableCameraPull || mainCamera == null || cameraController == null) return;
+
+        GameObject activeObserver = null;
+
+        foreach (GameObject redEye in redEyeObjects)
+        {
+            if (redEye == null) continue;
+
+            if (CanRedEyeSeePlayer(redEye))
+            {
+                if (!eyesSighted.Contains(redEye))
+                {
+                    cameraController.SnapToLookAt(redEye.transform.position);
+                    eyesSighted.Add(redEye);
+                }
+
+                activeObserver = redEye;
+                break;
+            }
+            else
+            {
+                eyesSighted.Remove(redEye);
+            }
+        }
+        if (activeObserver != null)
+        {
+            ApplyPullToTarget(activeObserver);
+        }
+    }
+
+    private bool CanRedEyeSeePlayer(GameObject redEye)
+    {
+        Vector3 eyePos = redEye.transform.position;
+        Vector3 playerPos = mainCamera.transform.position;
+        Vector3 dir = (playerPos - eyePos).normalized;
+        float dist = Vector3.Distance(eyePos, playerPos);
+
+        if (dist > detectionRange) return false;
+
+        RaycastHit hit;
+        LayerMask combinedMask = obstacleLayers | playerLayer;
+
+        if (Physics.Raycast(eyePos, dir, out hit, dist + 1f, combinedMask, QueryTriggerInteraction.Ignore))
+        {
+            if (((1 << hit.collider.gameObject.layer) & playerLayer.value) != 0 || hit.collider.CompareTag("Player"))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    private void ApplyPullToTarget(GameObject target)
+    {
+        Vector3 dirToTarget = (target.transform.position - mainCamera.transform.position).normalized;
+        
+        Vector3 currentForward = mainCamera.transform.forward;
+        currentForward.y = 0;
+        Vector3 targetForward = dirToTarget;
+        targetForward.y = 0;
+        float angleYaw = Vector3.SignedAngle(currentForward, targetForward, Vector3.up);
+        
+        float currentPitch = mainCamera.transform.localEulerAngles.x;
+        if (currentPitch > 180) currentPitch -= 360;
+        float targetPitch = -Mathf.Asin(dirToTarget.y) * Mathf.Rad2Deg;
+        float anglePitch = targetPitch - currentPitch;
+        cameraController.AddExternalRotation(angleYaw * pullStrength * Time.deltaTime, -anglePitch * pullStrength * Time.deltaTime);
     }
 }
