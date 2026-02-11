@@ -156,14 +156,23 @@ public class LevelGenerator : MonoBehaviour
     public DifficultyType currentDifficultyType = DifficultyType.Easy;
     public int currentLevelInSequence = 0;
 
+
+
     private void Start()
     {
         InitializeBatchingSettings();
+
+        ToggleGrappleAndSwingToRotation();
 
         if (generateOnStart)
         {
             GenerateLevels();
         }
+    }
+
+    void ToggleGrappleAndSwingToRotation()
+    {
+        
     }
 
     public void UpdateLevelsCounts()
