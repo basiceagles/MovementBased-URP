@@ -4,9 +4,9 @@ using System.Collections;
 public class LightingFader : MonoBehaviour
 {
     [Header("Lighting Colors")]
-    public Vector3 outsideColor = new Vector3(121f, 121f, 121f); // Sky blue
+    public Vector3 outsideColor = new Vector3(121f, 121f, 121f); 
     public Vector3 outsideFogColor = new Vector3(91f, 91f, 91f); 
-    public Vector3 roomColor = new Vector3(57f, 57f, 57f); // Warm white
+    public Vector3 roomColor = new Vector3(57f, 57f, 57f); 
     public Vector3 roomFogColor = new Vector3(35f, 35f, 35f);
     
     [Header("Fog Settings")]
@@ -19,7 +19,6 @@ public class LightingFader : MonoBehaviour
     
     private Coroutine currentFadeCoroutine;
     
-    // Call this method to fade from outsideColor to roomColor
     public void CallFadeIn()
     {
         if (currentFadeCoroutine != null)
@@ -37,10 +36,8 @@ public class LightingFader : MonoBehaviour
             startFogColor, targetFogColor,
             outsideFogDensity, roomFogDensity, 
             fadeTime));
-
     }
     
-    // Call this method to fade from roomColor to outsideColor
     public void CallFadeOut()
     {
         if (currentFadeCoroutine != null)
@@ -58,10 +55,8 @@ public class LightingFader : MonoBehaviour
             startFogColor, targetFogColor,
             roomFogDensity, outsideFogDensity, 
             fadeTime));
-
     }
     
-    // Coroutine to handle the fade transition for both lighting and fog
     private IEnumerator FadeLightingAndFog(Color startLightColor, Color targetLightColor, 
                                          Color startFogColor, Color targetFogColor,
                                          float startFogDensity, float targetFogDensity, 
@@ -74,20 +69,14 @@ public class LightingFader : MonoBehaviour
             elapsedTime += Time.deltaTime;
             float t = Mathf.Clamp01(elapsedTime / duration);
             
-            // Lerp between lighting colors
             Color currentLightColor = Color.Lerp(startLightColor, targetLightColor, t);
-            
-            // Apply to lighting environment
             RenderSettings.ambientLight = currentLightColor;
             
-            // Handle fog transition if enabled
             if (enableFogTransition)
             {
-                // Lerp between fog colors
                 Color currentFogColor = Color.Lerp(startFogColor, targetFogColor, t);
                 RenderSettings.fogColor = currentFogColor;
                 
-                // Lerp between fog densities
                 float currentFogDensity = Mathf.Lerp(startFogDensity, targetFogDensity, t);
                 RenderSettings.fogDensity = currentFogDensity;
             }
@@ -95,7 +84,6 @@ public class LightingFader : MonoBehaviour
             yield return null;
         }
         
-        // Ensure we end exactly with the target values
         RenderSettings.ambientLight = targetLightColor;
         
         if (enableFogTransition)
@@ -107,17 +95,13 @@ public class LightingFader : MonoBehaviour
         currentFadeCoroutine = null;
     }
     
-    // Helper method to convert Vector3 to Color
     private Color Vector3ToColor(Vector3 colorVector)
     {
-        // Convert from 0-255 range to 0-1 range for Color
         return new Color(colorVector.x / 255f, colorVector.y / 255f, colorVector.z / 255f);
     }
     
-    // Optional: Initialize fog settings on start
     private void Start()
     {
-        // Ensure fog is enabled if we're using fog transitions
         if (enableFogTransition)
         {
             RenderSettings.fog = true;

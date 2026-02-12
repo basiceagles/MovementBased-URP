@@ -4,15 +4,11 @@ using UnityEngine;
 public class HookTracker : MonoBehaviour
 {
     [Header("Settings")]
-    [Tooltip("Радиус")]
     [SerializeField] private float activationRadius = 10f;
     
-    [Tooltip("UI Tip")]
     [SerializeField] private GameObject hookTarget;
     
-    [Header("Debug")]
-    [SerializeField] private bool showGizmos = true;
-    
+        
     private Transform player;
     private Transform cam;
     private Grappling grapplingScript;
@@ -216,34 +212,4 @@ public class HookTracker : MonoBehaviour
         return hookTarget != null ? hookTarget.transform.position : transform.position;
     }
 
-    private void OnDrawGizmos()
-    {
-        if (!showGizmos)
-        {
-            return;
-        }
-        
-        if (isPriority)
-        {
-            Gizmos.color = Color.green;
-        }
-        else if (isActive)
-        {
-            Gizmos.color = Color.yellow;
-        }
-        else
-        {
-            Gizmos.color = Color.gray;
-        }
-            
-        Gizmos.DrawWireSphere(transform.position, activationRadius);
-        
-        if (hookTarget != null)
-        {
-            Gizmos.color = isPriority ? Color.cyan : Color.gray;
-            Gizmos.DrawLine(transform.position, hookTarget.transform.position);
-            Gizmos.DrawWireSphere(hookTarget.transform.position, 0.5f);
-        }
     }
-}
-

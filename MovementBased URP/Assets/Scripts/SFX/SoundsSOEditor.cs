@@ -1,6 +1,3 @@
-//Author: Small Hedge Games
-//Updated: 13/06/2024
-
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
@@ -29,7 +26,10 @@ namespace SmallHedge.SoundManager
             {
                 for (int i = 0; i < soundList.Length; ++i)
                 {
-                    sounds.Add(soundList[i].name, soundList[i]);
+                    if (i < soundList.Length && soundList[i].name != null && !sounds.ContainsKey(soundList[i].name))
+                    {
+                        sounds.Add(soundList[i].name, soundList[i]);
+                    }
                 }
             }
 

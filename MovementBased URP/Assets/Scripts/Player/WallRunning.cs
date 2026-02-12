@@ -21,6 +21,12 @@ public class WallRunning : MonoBehaviour
     [Header("References")]
     [SerializeField] private Transform cam;
     [SerializeField] private JumpFallSounds jumpFallSounds;
+    
+    [Header("Wall Coverage")]
+    [SerializeField] private float minCoveragePercentage = 0.7f;
+    [SerializeField] private int coverageGridSize = 10;
+    
+    private Camera mainCam;
     private KeyCode jumpKey = KeyCode.Space;
 
     private PlayerController pc;
@@ -38,6 +44,8 @@ public class WallRunning : MonoBehaviour
     private void Start()
     {
         pc = GetComponent<PlayerController>();
+        if (cam != null) mainCam = cam.GetComponent<Camera>();
+        if (mainCam == null) mainCam = Camera.main;
     }
 
     private void Update()
@@ -99,7 +107,8 @@ public class WallRunning : MonoBehaviour
         }
         
         Vector3 origin = transform.position;
-        Collider[] wallColliders = Physics.OverlapSphere(origin, sphereRadius, wallLayer);
+        float currentRadius = isWallRunning ? sphereRadius * 1.5f : sphereRadius;
+        Collider[] wallColliders = Physics.OverlapSphere(origin, currentRadius, wallLayer);
         bool wallFound = false;
         
         foreach (Collider wallCollider in wallColliders)
@@ -115,7 +124,7 @@ public class WallRunning : MonoBehaviour
                 
                 wallNormal = -directionToWall;
                 
-                if (Physics.Raycast(origin - directionToWall * 0.1f, directionToWall, out RaycastHit hit, sphereRadius + 0.5f, wallLayer))
+                if (Physics.Raycast(origin - directionToWall * 0.1f, directionToWall, out RaycastHit hit, currentRadius + 0.5f, wallLayer))
                 {
                     wallFaceNormal = hit.normal;
                 }
@@ -127,7 +136,7 @@ public class WallRunning : MonoBehaviour
                 currentWall = wallCollider;
                 wallFound = true;
                 
-                if (!isWallRunning && CanStartWallRun())
+                if (!isWallRunning && CanStartWallRun(wallCollider))
                 {
                     StartWallRun();
                 }
@@ -147,12 +156,42 @@ public class WallRunning : MonoBehaviour
         }
     }
     
-    private bool CanStartWallRun()
+    private bool CanStartWallRun(Collider wall)
     {
         bool hasEnoughSpeed = pc.CanWallRun;
         bool notGrounded = !pc.grounded;
         
-        return hasEnoughSpeed && notGrounded;
+        if (!hasEnoughSpeed || !notGrounded) return false;
+        
+        return IsWallCoveringCamera(wall);
+    }
+
+    private bool IsWallCoveringCamera(Collider wall)
+    {
+        if (mainCam == null) return false;
+
+        int hits = 0;
+        int totalRays = coverageGridSize * coverageGridSize;
+        float step = 1.0f / coverageGridSize;
+
+        for (int x = 0; x < coverageGridSize; x++)
+        {
+            for (int y = 0; y < coverageGridSize; y++)
+            {
+                Ray ray = mainCam.ViewportPointToRay(new Vector3(x * step + step / 2f, y * step + step / 2f, 0));
+                
+                if (Physics.Raycast(ray, out RaycastHit hit, sphereRadius + 2f, wallLayer))
+                {
+                    if (hit.collider == wall)
+                    {
+                        hits++;
+                    }
+                }
+            }
+        }
+
+        float coverage = (float)hits / totalRays;
+        return coverage >= minCoveragePercentage;
     }
 
     private void StartWallRun()

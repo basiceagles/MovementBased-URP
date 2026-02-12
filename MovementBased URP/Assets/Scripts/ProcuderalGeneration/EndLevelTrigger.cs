@@ -54,24 +54,17 @@ public class EndLevelTrigger : MonoBehaviour
     {
         if (!other.gameObject.CompareTag(tagFilter)) return;
 
-        // Stop play time tracking
         if (MoneyManager.Instance != null)
         {
             MoneyManager.Instance.StopPlayTimer();
         }
 
-        //itemPickup.useInteraction = false;
-
-        // Notify level completion for money tracking
         levelGenerator.NotifyLevelCompleted();
 
         perkSelector.OpenPerkMenu();
         perkSelectorAnimator.Play("PerkSelectorMenu");
         
         slideMetalDoorManager.CloseDoor();
-
-        //ПЕРЕДЕЛАТЬ
-        //cycleIntText.text = currentCycle.ToString();
         
         musicManagerScript.StopPlayingMusic();
 

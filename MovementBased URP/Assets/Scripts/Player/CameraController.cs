@@ -120,7 +120,6 @@ public class CameraController : MonoBehaviour
         }
         else
         {
-            //reset tilt
             currentTilt = Mathf.SmoothDamp(currentTilt, 0, ref tiltVelocity, tiltSmoothTime);
             Vector3 finalRotation = new Vector3(rotationX, 0f, currentTilt);
             transform.localRotation = Quaternion.Euler(finalRotation);

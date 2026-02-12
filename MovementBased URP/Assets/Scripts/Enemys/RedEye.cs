@@ -67,7 +67,6 @@ public class RedEyeDetector : MonoBehaviour
         playerController = playerTarget.GetComponent<PlayerController>();
         enemyOverlayManagerTarget = GameObject.Find("EnemyOverlaysManager");
         if (enemyOverlayManagerTarget != null) enemyOverlayManager = enemyOverlayManagerTarget.GetComponent<EnemyOverlayManager>();
-        else Debug.LogWarning("EnemyOverlayManager is not set!");
 
         globalVolumeTarget = GameObject.Find("Global Volume");
         globalVolume = globalVolumeTarget.GetComponent<Volume>();
@@ -80,11 +79,6 @@ public class RedEyeDetector : MonoBehaviour
         cameraController = mainCamera.GetComponent<CameraController>();
         currentFillValue = 0f;
 
-        if (mainCamera == null)
-        {
-            Debug.LogError("No main camera found in scene!");
-        }
-
         redEyeObjects = new List<GameObject>();
         Invoke("FindRedEyeGameobjects", 0.1f);
 
@@ -95,15 +89,10 @@ public class RedEyeDetector : MonoBehaviour
     {
         GameObject[] foundObjects = GameObject.FindGameObjectsWithTag(targetTag);
         
-        if (foundObjects == null || foundObjects.Length == 0)
-        {
-            Debug.LogWarning($"No objects with tag '{targetTag}' found in scene.");
-        }
-        else
+        if (foundObjects != null && foundObjects.Length > 0)
         {
             redEyeObjects.Clear();
             redEyeObjects.AddRange(foundObjects);
-            Debug.Log($"Found {redEyeObjects.Count} RedEye objects in scene");
         }
     }
     
@@ -124,9 +113,6 @@ public class RedEyeDetector : MonoBehaviour
 
         isInsideBlueEyeRadius = true;
 
-        // Only set a new current BlueEye when we don't already track one.
-        // This ensures that overlapping BlueEye colliders don't
-        // overwrite the first one and break exit damage logic.
         if (currentBlueEyeObject == null)
         {
             currentBlueEyeObject = blueEye;
@@ -319,10 +305,6 @@ public class RedEyeDetector : MonoBehaviour
             lastVisibleTime = Time.time;
             
         }
-        else if (closestVisibleRedEye == null && currentRedEyeObject != null)
-        {
-            
-        }
     }
     
     private bool IsObjectVisible(GameObject targetObject)
@@ -446,7 +428,6 @@ public class RedEyeDetector : MonoBehaviour
             {
                 if (!eyesSighted.Contains(redEye))
                 {
-                    cameraController.SnapToLookAt(redEye.transform.position);
                     eyesSighted.Add(redEye);
                 }
 

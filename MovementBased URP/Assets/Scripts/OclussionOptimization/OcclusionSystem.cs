@@ -6,10 +6,7 @@ public class OcclusionSystem : MonoBehaviour
     [Header("Occlusion Settings")]
     public float maxDistance = 50f;
     public float checkInterval = 0.5f;
-    public LayerMask occlusionLayers = -1; // Which layers to occlude
-    
-    [Header("Debug")]
-    public bool showDebugGizmos = true;
+    public LayerMask occlusionLayers = -1;
     
     private List<GameObject> occludableObjects = new List<GameObject>();
     private float checkTimer = 0f;
@@ -30,11 +27,8 @@ public class OcclusionSystem : MonoBehaviour
 
     void FindOccludableObjects()
     {
-        // Find all objects with the Occludable tag
         GameObject[] foundObjects = GameObject.FindGameObjectsWithTag("StaticForOcclusion");
         occludableObjects.AddRange(foundObjects);
-        
-        Debug.Log($"Found {occludableObjects.Count} occludable objects");
     }
 
     void Update()
@@ -58,7 +52,6 @@ public class OcclusionSystem : MonoBehaviour
             
             if (distance > maxDistance)
             {
-                // Object is too far - disable it
                 if (obj.activeInHierarchy)
                 {
                     obj.SetActive(false);
@@ -66,7 +59,6 @@ public class OcclusionSystem : MonoBehaviour
             }
             else
             {
-                // Object is within range - enable it
                 if (!obj.activeInHierarchy)
                 {
                     obj.SetActive(true);
@@ -75,7 +67,6 @@ public class OcclusionSystem : MonoBehaviour
         }
     }
 
-    // Manually add objects to the occlusion system
     public void AddOccludableObject(GameObject obj)
     {
         if (!occludableObjects.Contains(obj))
@@ -84,32 +75,11 @@ public class OcclusionSystem : MonoBehaviour
         }
     }
 
-    // Manually remove objects from the occlusion system
     public void RemoveOccludableObject(GameObject obj)
     {
         if (occludableObjects.Contains(obj))
         {
             occludableObjects.Remove(obj);
-        }
-    }
-
-    // Draw debug gizmos in the scene view
-    void OnDrawGizmosSelected()
-    {
-        if (!showDebugGizmos) return;
-        
-        // Draw occlusion radius
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, maxDistance);
-        
-        // Draw lines to occluded objects
-        Gizmos.color = Color.red;
-        foreach (GameObject obj in occludableObjects)
-        {
-            if (obj != null && !obj.activeInHierarchy)
-            {
-                Gizmos.DrawLine(transform.position, obj.transform.position);
-            }
         }
     }
 }

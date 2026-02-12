@@ -30,7 +30,6 @@ public class Settings : MonoBehaviour
     {
         if (Instance == null)
         {
-            Debug.LogWarning("Settings instance not ready yet");
             return;
         }
 
@@ -465,7 +464,6 @@ public class Settings : MonoBehaviour
     {
         if (!isMainMenu)
         {
-            //timeScaleBeforePause = Time.timeScale; //УДОЛИ НАХУЙ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             Time.timeScale = 0f;
 
             if (cameraController != null)
@@ -568,7 +566,6 @@ public class Settings : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
-        // ВРЕМЕННО: reset уровня на кнопку R
         if (!isMainMenu && !mainMenuIsActive && Input.GetKeyDown(KeyCode.R))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

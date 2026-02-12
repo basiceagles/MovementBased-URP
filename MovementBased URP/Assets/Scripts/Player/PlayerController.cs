@@ -66,8 +66,7 @@ public class PlayerController : MonoBehaviour
     [Header("Ground Check")]
     [SerializeField] private float groundCheckDistance;
     [SerializeField] private float groundCheckRadius = 0.9f;
-    [SerializeField] private int gizmoLineCount = 8;
-    [SerializeField] private LayerMask groundLayer;
+        [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask slideLayer;
     [SerializeField] private LayerMask rampLayer;
     
@@ -710,41 +709,7 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.Euler(euler);
     }
     
-    private void OnDrawGizmos()
-    {
-        if (controller == null)
-        {
-            controller = GetComponent<CharacterController>();
-            if (controller == null) return;
-        }
-        
-        float scaleMultiplier = 1f;
-        if (originalScale.y > 0)
-        {
-            scaleMultiplier = transform.localScale.y / originalScale.y;
-        }
-        
-        Vector3 origin = transform.position + Vector3.up * (controller.radius * 0.5f * scaleMultiplier);
-        float checkDist = groundCheckDistance + controller.radius * 0.5f * scaleMultiplier;
-        float sphereRadius = controller.radius * groundCheckRadius * scaleMultiplier;
-        
-        Gizmos.color = isGrounded ? Color.green : Color.red;
-        Gizmos.DrawWireSphere(origin, sphereRadius);
-        
-        Vector3 endPos = origin + Vector3.down * checkDist;
-        Gizmos.DrawWireSphere(endPos, sphereRadius);
-        
-        int lineCount = Mathf.Max(3, gizmoLineCount);
-        float angleStep = 360f / lineCount;
-        
-        for (int i = 0; i < lineCount; i++)
-        {
-            float angle = i * angleStep * Mathf.Deg2Rad;
-            Vector3 offset = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * sphereRadius;
-            Gizmos.DrawLine(origin + offset, endPos + offset);
-        }
-    }
-
+    
     public void SetKeybinds(KeyCode crouch, KeyCode run, KeyCode jump)
     {
         slideKey = crouch;

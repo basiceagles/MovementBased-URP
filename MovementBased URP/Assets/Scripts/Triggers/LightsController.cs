@@ -5,12 +5,10 @@ using SmallHedge.SoundManager;
 public class LightsController : MonoBehaviour
 {
     [Header("Light Objects")]
-    [Tooltip("Drag and drop GameObjects with animators here")]
     public GameObject[] lightObjects;
     public GameObject[] lampObjects;
 
     [Header("Shutdown Settings")]
-    [Tooltip("Chance of lights shutting down (0-100%)")]
     [Range(0, 100)]
     public float shutdownChance = 30f;
 
@@ -20,10 +18,8 @@ public class LightsController : MonoBehaviour
     private GameObject perkSelectorScriptTarget;
     private PerkSelectorScript perkSelectorScript;
 
-
     void Start()
     {
-        // Get all animator components from the gameobjects
         GetAnimatorComponents();
         FindPerkManager();
     }
@@ -71,12 +67,10 @@ public class LightsController : MonoBehaviour
 
     public void LightsShutdownMethod()
     {
-        // Calculate if we hit the chance
         float randomValue = Random.Range(0f, 100f);
         
         if (randomValue <= shutdownChance)
         {
-            // Chance hit - trigger the animation on all objects
             TriggerShutdownAnimation();
         }
     }

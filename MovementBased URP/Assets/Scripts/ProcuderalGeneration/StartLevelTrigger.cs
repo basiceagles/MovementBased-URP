@@ -22,7 +22,6 @@ public class StartLevelTrigger : MonoBehaviour
         musicManagerScript.PlayMusic();
         targetTimer.StartCountdown();
         
-        // Start play time tracking
         if (MoneyManager.Instance != null)
         {
             MoneyManager.Instance.StartPlayTimer();

@@ -94,7 +94,6 @@ public class Swinging : MonoBehaviour
             return;
         }
 
-
         if (Input.GetKeyDown(swingKey))
         {
             StartSwing();

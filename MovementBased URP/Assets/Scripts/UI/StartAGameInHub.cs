@@ -65,10 +65,8 @@ public class StartAGameInHub : MonoBehaviour
 
     IEnumerator DelayedCallCoroutine(string sceneName)
     {
-        // Wait for the specified duration
         yield return new WaitForSeconds(fadeDuration);
 
-        // Call your method after delay
         SceneManager.LoadScene(sceneName);
     }
 }

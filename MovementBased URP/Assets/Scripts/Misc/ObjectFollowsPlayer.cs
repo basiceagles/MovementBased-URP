@@ -49,17 +49,4 @@ public class ObjectFollowsPlayer : MonoBehaviour
         // Update position
         transform.position = currentPosition;
     }
-
-    // Optional: Add this method to draw gizmos in the Scene view for debugging
-    void OnDrawGizmosSelected()
-    {
-        if (targetToFollow != null)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(transform.position, targetToFollow.position);
-            
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(targetToFollow.position + positionOffset, 0.5f);
-        }
-    }
 }

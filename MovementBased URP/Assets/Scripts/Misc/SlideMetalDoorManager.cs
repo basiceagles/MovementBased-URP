@@ -29,44 +29,30 @@ public class SlideMetalDoorManager : MonoBehaviour
 
     void Start()
     {
-        // Validate chances
-        //if (alreadyChecked) return;
         ValidateChances();
         SpawnOpenDoor();
-        //alreadyChecked = true;
     }
 
     void OnEnable()
     {
-        //if (alreadyChecked) return;
         ValidateChances();
         SpawnOpenDoor();
-        //alreadyChecked = true;
     }
 
     public void OpenSlideDoor()
     {
-        // Calculate which animation to play based on chances
         string triggerToPlay = GetRandomAnimationTrigger();
-        
-        // Play the selected animation
         doorAnimator.SetTrigger(triggerToPlay);
-        
-        // Play the corresponding audio
         PlayAudioForAnimation(triggerToPlay);
     }
 
     string GetRandomAnimationTrigger()
     {
-        // Generate a random number between 0 and 100
         float randomValue = Random.Range(0f, 100f);
-
-        // Check if random value falls within the normal animation chance
         if (randomValue <= normalAnimationChance)
         {
             return normalAnimationTrigger;
         }
-        // Otherwise play the broken animation
         else
         {
             return brokenAnimationTrigger;
@@ -97,9 +83,7 @@ public class SlideMetalDoorManager : MonoBehaviour
 
     void ValidateChances()
     {
-        // Ensure chances don't exceed 100%
         float totalChance = normalAnimationChance + brokenAnimationChance;
-
         if (totalChance > 100f)
         {
             float normalizationFactor = 100f / totalChance;
@@ -114,7 +98,6 @@ public class SlideMetalDoorManager : MonoBehaviour
         {
             doorAnimator.SetBool("MetalSlideSpawnOpen", true);
             doorAnimator.SetBool("MetalSlideClose", false);
-            Debug.LogWarning("DOOR OPENED YES IT DID TRUST ME");
         }
         
     }

@@ -6,7 +6,7 @@ public class CallScreenFader : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private Image fadeImage;
-    [SerializeField] private GameObject fadeImageGameobject; // Should be a CHILD GameObject
+    [SerializeField] private GameObject fadeImageGameobject; 
 
     [Header("Fade Settings")]
     [SerializeField] private float fadeInDuration = 1f;
@@ -18,12 +18,10 @@ public class CallScreenFader : MonoBehaviour
 
     void Start()
     {
-        // Make sure THIS GameObject (with the script) stays active
         gameObject.SetActive(true);
         
         if (fadeImage == null)
         {
-            Debug.LogError("Fade Image is missing!");
             return;
         }
 
@@ -34,14 +32,12 @@ public class CallScreenFader : MonoBehaviour
 
         if (fadeOutOnStart)
         {
-            // Start with image visible and fully opaque
             fadeImageGameobject.SetActive(true);
-            SetAlphaImmediate(1f); // Use immediate alpha set
+            SetAlphaImmediate(1f); 
             CallScreenFadeOut();
         }
         else
         {
-            // Start with image hidden
             fadeImageGameobject.SetActive(false);
             SetAlphaImmediate(0f);
         }
@@ -51,7 +47,6 @@ public class CallScreenFader : MonoBehaviour
     {
         if (isFading) return;
         
-        Debug.Log("CallScreenFadeIn called");
         StopCurrentFade();
         currentFade = StartCoroutine(FadeIn());
     }
@@ -60,7 +55,6 @@ public class CallScreenFader : MonoBehaviour
     {
         if (isFading) return;
         
-        Debug.Log("CallScreenFadeOut called");
         StopCurrentFade();
         currentFade = StartCoroutine(FadeOut());
     }
@@ -68,12 +62,9 @@ public class CallScreenFader : MonoBehaviour
     private IEnumerator FadeIn()
     {
         isFading = true;
-        Debug.Log("Starting FadeIn - From alpha: 0 to 1");
         
-        // Ensure the fade image GameObject is active
         fadeImageGameobject.SetActive(true);
         
-        // Always start from 0 alpha for FadeIn
         SetAlphaImmediate(0f);
         
         float elapsed = 0f;
@@ -91,18 +82,14 @@ public class CallScreenFader : MonoBehaviour
 
         SetAlphaImmediate(targetAlpha);
         isFading = false;
-        Debug.Log("FadeIn complete");
     }
 
     private IEnumerator FadeOut()
     {
         isFading = true;
-        Debug.Log("Starting FadeOut - From alpha: 1 to 0");
         
-        // Ensure the fade image GameObject is active at the start of fade
         fadeImageGameobject.SetActive(true);
         
-        // Always start from 1 alpha for FadeOut
         SetAlphaImmediate(1f);
         
         float elapsed = 0f;
@@ -115,23 +102,19 @@ public class CallScreenFader : MonoBehaviour
             float progress = Mathf.Clamp01(elapsed / fadeOutDuration);
             float alpha = Mathf.Lerp(startAlpha, targetAlpha, progress);
             SetAlpha(alpha);
-            Debug.Log($"FadeOut progress: {progress}, alpha: {alpha}"); // Debug line
             yield return null;
         }
 
         SetAlphaImmediate(targetAlpha);
         
-        // Hide the fade image GameObject after fade completes
         fadeImageGameobject.SetActive(false);
         isFading = false;
-        Debug.Log("FadeOut complete - GameObject hidden");
     }
 
     private void SetAlpha(float alpha)
     {
         if (fadeImage == null) 
         {
-            Debug.LogError("FadeImage is null in SetAlpha!");
             return;
         }
         
@@ -144,7 +127,6 @@ public class CallScreenFader : MonoBehaviour
     {
         if (fadeImage == null) 
         {
-            Debug.LogError("FadeImage is null in SetAlphaImmediate!");
             return;
         }
         
@@ -152,7 +134,6 @@ public class CallScreenFader : MonoBehaviour
         c.a = alpha;
         fadeImage.color = c;
         
-        // Force the Image to update
         if (fadeImage.enabled)
         {
             fadeImage.enabled = false;
@@ -170,13 +151,11 @@ public class CallScreenFader : MonoBehaviour
         }
     }
     
-    // For debugging - call these from buttons to test
     public void DebugSetAlpha(float alpha)
     {
         if (fadeImage != null)
         {
             SetAlphaImmediate(alpha);
-            Debug.Log($"Set alpha to: {alpha}, Current color: {fadeImage.color}");
         }
     }
     
@@ -185,7 +164,6 @@ public class CallScreenFader : MonoBehaviour
         if (fadeImageGameobject != null)
         {
             fadeImageGameobject.SetActive(!fadeImageGameobject.activeSelf);
-            Debug.Log($"GameObject active: {fadeImageGameobject.activeSelf}");
         }
     }
 }

@@ -82,7 +82,6 @@ public class DoorHit : MonoBehaviour
 
     private void Update()
     {
-        // 1. Pause & Error Guard
         if (Settings.Instance != null)
         {
             if (Settings.Instance.IsPaused)
@@ -96,7 +95,6 @@ public class DoorHit : MonoBehaviour
             return;
         }
 
-        // 2. State Determination
         if (triggerCollider != null)
         {
             _isPlayerInside = triggerCollider.bounds.Contains(_player.transform.position);
@@ -109,7 +107,6 @@ public class DoorHit : MonoBehaviour
         bool canSlowMo = _isPlayerInside && _player.currentSpeed >= minSpeed && !_isKicked;
         float targetTime = canSlowMo ? slowMoTimeScale : 1f;
 
-        // 3. Kick Logic
         if (canSlowMo)
         {
             if (Input.GetKeyDown(kickKey))
@@ -125,7 +122,6 @@ public class DoorHit : MonoBehaviour
             }
         }
 
-        // 4. Time & Transitions
         float recov = _isKicked ? 3f : 1f;
         _effectLerp = Mathf.SmoothDamp(_effectLerp, canSlowMo ? 1f : 0f, ref _lerpVel, 1f / (slowMoTransitionSpeed * recov), Mathf.Infinity, Time.unscaledDeltaTime);
         

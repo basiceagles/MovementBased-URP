@@ -31,7 +31,6 @@ public class CameraHeadBob : MonoBehaviour
     {
         if (playerController == null) return;
 
-        // Use only horizontal velocity (X and Z axes) for head bobbing
         float speed = playerController.horizontalVelocity.magnitude;
         bool isMoving = speed > 0.1f && playerController.grounded;
         bool isSliding = playerController.isSliding;

@@ -61,7 +61,6 @@ public class ItemPickup : MonoBehaviour
         grapple = GameObject.Find("Grapple");
         playerCamera = GetComponent<Camera>();
         
-        // Find or create holdPointBuffer
         holdPointBuffer = GameObject.Find("holdPointBuffer");
         
         grapplingScript = FindObjectOfType<Grappling>();
@@ -163,7 +162,6 @@ public class ItemPickup : MonoBehaviour
             }
         }
 
-        // Cast ray to find interactable objects with Lever script
         if (Physics.Raycast(ray, out hit, pickupRange, leverLayer))
         {
             hitLever = hit.collider.GetComponent<Lever>();
@@ -179,8 +177,6 @@ public class ItemPickup : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, pickupRange, npcLayer))
         {
-            // Use GetComponentInParent so NPC scripts can live on a parent object
-            // while the collider is on a child.
             hitDialogueStarter = hit.collider.GetComponentInParent<DialogueStarterByName>();
 
             if (hitDialogueStarter != null)
@@ -196,7 +192,6 @@ public class ItemPickup : MonoBehaviour
             isLookingAtGrappleable = true;
         }
 
-        //grinder ui
         if (isLookingAtGrinder && currentGrinder != null && !wasLookingAtGrinder && isHolding)
         {
             currentGrinder.ShowUITip();
@@ -204,7 +199,6 @@ public class ItemPickup : MonoBehaviour
             crosshairSwitcher.ShowSwitchCrosshair();
         }
 
-        //grinder ui
         if (!isLookingAtGrinder && wasLookingAtGrinder && previousGrinder != null)
         {
             previousGrinder.HideUITip();
@@ -212,7 +206,6 @@ public class ItemPickup : MonoBehaviour
             crosshairSwitcher.HideSwitchCrosshair();
         }
 
-        // Update previous lever reference
         if (!isLookingAtGrinder)
         {
             previousGrinder = currentGrinder;
@@ -223,7 +216,6 @@ public class ItemPickup : MonoBehaviour
             previousGrinder = currentGrinder;
         }
 
-        // Handle ShowUIKeybind call (only when starting to look at a lever)
         if (isLookingAtLever && currentLever != null && !wasLookingAtLever && !isCollected)
         {
             currentLever.ShowUIKeybind();
@@ -231,7 +223,6 @@ public class ItemPickup : MonoBehaviour
             crosshairSwitcher.ShowSwitchCrosshair();
         }
 
-        // Handle HideUIKeybind call (when stopping looking at a lever)
         if (!isLookingAtLever && wasLookingAtLever && previousLever != null)
         {
             previousLever.HideUIKeybind();
@@ -239,7 +230,6 @@ public class ItemPickup : MonoBehaviour
             crosshairSwitcher.HideSwitchCrosshair();
         }
 
-        // Update previous lever reference
         if (!isLookingAtLever)
         {
             previousLever = currentLever;
@@ -250,7 +240,6 @@ public class ItemPickup : MonoBehaviour
             previousLever = currentLever;
         }
   
-        // Update previous NPC reference
         if (!isLookingAtNPC)
         {
             previousDialogueStarterByName = currentDialogueStarterByName;
@@ -345,7 +334,6 @@ public class ItemPickup : MonoBehaviour
             rb.useGravity = false;
         }
         
-        // Set parent to holdPointBuffer
         heldItem.transform.SetParent(holdPointBuffer.transform);
         
         heldItem.transform.position = holdPoint.position;
@@ -361,7 +349,6 @@ public class ItemPickup : MonoBehaviour
             return;
         }
 
-        // Remove parent relationship
         heldItem.transform.SetParent(null);
 
         if (itemCollider != null)
@@ -385,7 +372,6 @@ public class ItemPickup : MonoBehaviour
     {
         currentGrinder.GrinderInsertNode();
 
-        // Remove parent before destroying
         if (heldItem != null)
         {
             heldItem.transform.SetParent(null);

@@ -30,7 +30,6 @@ public class Trigger : MonoBehaviour
     {
         if (!String.IsNullOrEmpty(tagFilter) && !other.gameObject.CompareTag(tagFilter)) return;
         
-        // Execute all trigger enter events with their respective delays
         ExecuteEventsWithDelay(onTriggerEnterEvents);
         
         if (destroyOnTriggerEvent)
@@ -47,7 +46,6 @@ public class Trigger : MonoBehaviour
     {
         if (!String.IsNullOrEmpty(tagFilter) && !other.gameObject.CompareTag(tagFilter)) return;
         
-        // Execute all trigger exit events with their respective delays
         ExecuteEventsWithDelay(onTriggerExitEvents);
 
         if (clearEventsOnTriggerEventOnExit)

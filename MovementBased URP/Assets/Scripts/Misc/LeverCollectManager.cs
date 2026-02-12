@@ -1,10 +1,10 @@
 using UnityEngine;
-//УДАЛИ НАХУЙ
+
 public class LeverCollectManager : MonoBehaviour
 {
     [Header("Settings")]
     public string targetTag = "LeverManager";
-    public string componentType = "Lever"; // Change to your component name
+    public string componentType = "Lever"; 
     [Header("References")]
     [SerializeField] private GameObject leverManager;
 
@@ -21,7 +21,6 @@ public class LeverCollectManager : MonoBehaviour
     {
         if (boxCollider == null) return;
 
-        // Use the box collider's bounds to search for objects with the target tag
         Collider[] collidersInRange = Physics.OverlapBox(
             transform.TransformPoint(boxCollider.center),
             boxCollider.size * 0.5f,
@@ -34,8 +33,6 @@ public class LeverCollectManager : MonoBehaviour
             {
                 leverManager = collider.gameObject;
                 leverComponent = leverManager.GetComponent(componentType);
-
-                Debug.Log("Found " + targetTag + ": " + leverManager.name);
                 return;
             }
         }

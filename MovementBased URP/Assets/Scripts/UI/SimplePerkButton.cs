@@ -17,41 +17,33 @@ public class ButtonPerkController : MonoBehaviour, IPointerEnterHandler, IPointe
 
     void Start()
     {
-        // Validate arrays
         if (buttons.Length != gameObjects.Length)
         {
-            Debug.LogError("Buttons and GameObjects arrays must have the same length!");
             return;
         }
 
-        // Initialize tracking array
         isPointerOverButton = new bool[buttons.Length];
 
-        // Add listeners for each button
         for (int i = 0; i < buttons.Length; i++)
         {
-            int index = i; // Important: capture the index for the closure
+            int index = i; 
             
             if (buttons[i] != null)
             {
-                // Add event triggers for highlight/unhighlight
                 var trigger = buttons[i].gameObject.GetComponent<EventTrigger>();
                 if (trigger == null)
                     trigger = buttons[i].gameObject.AddComponent<EventTrigger>();
 
-                // Create entry for pointer enter (highlight)
                 var entryEnter = new EventTrigger.Entry();
                 entryEnter.eventID = EventTriggerType.PointerEnter;
                 entryEnter.callback.AddListener((data) => { OnButtonHighlighted(index); });
                 trigger.triggers.Add(entryEnter);
 
-                // Create entry for pointer exit (unhighlight)
                 var entryExit = new EventTrigger.Entry();
                 entryExit.eventID = EventTriggerType.PointerExit;
                 entryExit.callback.AddListener((data) => { OnButtonUnhighlighted(index); });
                 trigger.triggers.Add(entryExit);
 
-                // Create entry for pointer click (to handle button hide scenarios)
                 var entryClick = new EventTrigger.Entry();
                 entryClick.eventID = EventTriggerType.PointerClick;
                 entryClick.callback.AddListener((data) => { ForceHideAllUI(); });
@@ -62,7 +54,6 @@ public class ButtonPerkController : MonoBehaviour, IPointerEnterHandler, IPointe
 
     void Update()
     {
-        // Check if any button that had pointer over is now hidden or disabled
         for (int i = 0; i < buttons.Length; i++)
         {
             if (isPointerOverButton[i] && (buttons[i] == null || !buttons[i].gameObject.activeInHierarchy || !buttons[i].interactable))
@@ -74,12 +65,10 @@ public class ButtonPerkController : MonoBehaviour, IPointerEnterHandler, IPointe
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        // This is for the component itself, not needed if using EventTrigger
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        // This is for the component itself, not needed if using EventTrigger
     }
 
     private void OnButtonHighlighted(int index)

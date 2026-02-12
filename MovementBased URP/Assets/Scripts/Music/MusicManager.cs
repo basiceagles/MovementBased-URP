@@ -55,8 +55,6 @@ public class MusicManager : MonoBehaviour
         
         InitializeShuffleSystem();
 
-
-        //GOVNOKOD
         ambientAudioSource.Play();
     }
     
@@ -77,7 +75,6 @@ public class MusicManager : MonoBehaviour
     {
         if (audioClips == null || audioClips.Length == 0)
         {
-            Debug.LogWarning("No audio clips assigned!");
             return;
         }
         
@@ -104,8 +101,6 @@ public class MusicManager : MonoBehaviour
         musicPlayingUITextAnimator.SetTrigger("CallMusicPlayer");
         musicPlayingUIText.text = audioClips[randomIndex].name;
 
-        //Debug.Log($"Now playing: {audioClips[randomIndex].name} (Index: {randomIndex})");
-
         ambientAudioSource.Stop();
     }
     
@@ -120,7 +115,6 @@ public class MusicManager : MonoBehaviour
             else
             {
                 audioSource.Stop();
-                Debug.Log("Music stopped");
             }
         }
         ambientAudioSource.Play();
@@ -145,7 +139,6 @@ public class MusicManager : MonoBehaviour
         reverbFilter.enabled = true;
         echoFilter.enabled = true;
         
-        
         float startVolume = audioSource.volume;
         float timer = 0f;
         
@@ -165,8 +158,6 @@ public class MusicManager : MonoBehaviour
 
         reverbFilter.enabled = false;
         echoFilter.enabled = false;
-        
-        Debug.Log("Music stopped with effects");
     }
     
     private int GetRandomClipIndex()
@@ -212,8 +203,6 @@ public class MusicManager : MonoBehaviour
     
     private void ResetShuffleSystem()
     {
-        Debug.Log("All clips played! Resetting shuffle system...");
-        
         availableIndices.Clear();
         availableIndices.AddRange(playedIndices);
         playedIndices.Clear();
@@ -235,7 +224,6 @@ public class MusicManager : MonoBehaviour
     public void ResetShuffle()
     {
         InitializeShuffleSystem();
-        Debug.Log("Shuffle system reset");
     }
     
     public bool IsPlaying()

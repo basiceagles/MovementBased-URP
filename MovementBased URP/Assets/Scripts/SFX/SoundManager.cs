@@ -1,6 +1,3 @@
-//Author: Small Hedge Games
-//Updated: 13/06/2024
-
 using System;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -46,7 +43,6 @@ namespace SmallHedge.SoundManager
         {
             if (source == null)
             {
-                Debug.LogWarning("No AudioSource provided to stop the sound.");
                 return;
             }
 
@@ -57,13 +53,10 @@ namespace SmallHedge.SoundManager
             {
                 if (source.clip == clip)
                 {
-                    Debug.Log($"Stopped sound: {clip.name}");
                     source.Stop();
                     return;
                 }
             }
-
-            Debug.LogWarning("The provided AudioSource is not playing any of the specified sounds.");
         }
     }
 

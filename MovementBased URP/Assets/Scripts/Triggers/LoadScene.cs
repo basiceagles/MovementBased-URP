@@ -9,7 +9,6 @@ public class LoadScene : MonoBehaviour
     private string currentScene;
     
     [Header("Money Settings")]
-    [Tooltip("If true, will save money before restarting (player death)")]
     public bool saveMoneyOnRestart = true;
 
     void Start()
@@ -34,7 +33,6 @@ public class LoadScene : MonoBehaviour
             {
                 SceneManager.LoadScene("Intro1");
             }
-
             else
             {
                 SceneManager.LoadScene(sceneName);

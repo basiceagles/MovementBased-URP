@@ -61,5 +61,4 @@ public class PerkShopUi : MonoBehaviour
         itemPickup.SetInteractionEnabled(true);
         playerController.SetMovementEnabled(true);
     }
-
 }

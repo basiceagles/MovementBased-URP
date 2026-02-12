@@ -1,7 +1,5 @@
 using UnityEngine;
-//Это скрипт для рычагов всех
-//Он как скрипт души чекает коснулись ли до него крюком или активировал, метод Collect
-//Он отвечает за анимации рычага, также ищет геймобжект ЛевелМанагер, и за показ UI
+
 public class Lever : MonoBehaviour
 {
     [Header("UI Settings")]
@@ -24,38 +22,28 @@ public class Lever : MonoBehaviour
     public string targetTag = "LeverManager";
     public string componentType = "LeverSearcher";
 
-    [Header("Debug")]
-    public bool showDebug = true;
-
     private BoxCollider boxCollider;
     private GameObject leverManager;
     private LeverSearcher leverSearcherComponent;
 
-
     void Start()
     {
-        // Get reference to existing box collider
         boxCollider = GetComponent<BoxCollider>();
-
-        // Инвок чтобы дать предметам загрузится
         Invoke("SearchForLeverManager", 0.1f);
 
         crosshairSwitcherTarget = GameObject.Find("CrossHairUI");
         crosshairSwitcher = crosshairSwitcherTarget.GetComponent<CrosshairSwitcher>();
     }
 
-    //Ищем левел манагер объект с помощью коллайдера, в нем нам нужен в скрипт LeverCollectManager, и метод CheckCollectStatus
     void SearchForLeverManager()
     {
         if (boxCollider == null) return;
 
-        // Use the box collider's bounds to search for objects with the target tag
         Collider[] collidersInRange = Physics.OverlapBox(
             transform.TransformPoint(boxCollider.center),
             boxCollider.size * 0.5f,
             transform.rotation
         );
-
 
         foreach (Collider collider in collidersInRange)
         {
@@ -66,14 +54,12 @@ public class Lever : MonoBehaviour
 
                 if (leverSearcherComponent != null)
                 {
-                    if (showDebug) Debug.Log("Found LeverManager with LeverSearcher via collision: " + leverManager.name);
                     break;
                 }
             }
         }
     }
 
-    // Коллект метод проверяет актвировали ли мы рычаг или нет
     public void Collect()
     {
         if (collected == true) return;
@@ -84,7 +70,6 @@ public class Lever : MonoBehaviour
         }
         collected = true;
 
-        // Hide UI elements
         HideUITip();
         HideUIKeybind();
 
@@ -99,7 +84,6 @@ public class Lever : MonoBehaviour
         }
     }
 
-    //Методы для показа UI
     public void HideUITip()
     {
         if (uiToolTip != null)

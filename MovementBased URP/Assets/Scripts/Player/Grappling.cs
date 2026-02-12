@@ -61,7 +61,6 @@ public class Grappling : MonoBehaviour
             return;
         } 
 
-
         if (Input.GetKeyDown(grappleKey))
         {
             StartGrapple();
@@ -86,7 +85,6 @@ public class Grappling : MonoBehaviour
 
     private void UpdateGrapplePull()
     {
-        
         float dist = Vector3.Distance(player.position, grapplePoint);
         if (dist < 1f) 
         {
@@ -363,7 +361,6 @@ public class Grappling : MonoBehaviour
         return grapplingEnabled;
     }
 
-    // Методы для HookTracker
     public bool IsGrapplingActive()
     {
         return grappling;

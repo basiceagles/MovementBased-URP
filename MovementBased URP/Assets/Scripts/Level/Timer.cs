@@ -39,24 +39,17 @@ public class Timer : MonoBehaviour
         timerText.text = "SAFE";
     }
 
-    /// <summary>
-    /// Starts the countdown timer
-    /// </summary>
     public void StartCountdown()
     {
-        // Stop any existing countdown
         StopCountdown();
         
-        // Reset flags and time
         isThresholdCalled = false;
         isBelowThresholdCalled = false;
         CalculateTotalTime();
         currentTime = totalTimeInSeconds;
         
-        // Start countdown coroutine
         countdownCoroutine = StartCoroutine(CountdownCoroutine());
         
-        // Trigger initial update
         UpdateCountdownDisplay();
     }
 
@@ -70,38 +63,31 @@ public class Timer : MonoBehaviour
     {
         while (currentTime > 0)
         {
-            // Check threshold conditions
             CheckThresholdConditions();
             
-            // Update countdown
             currentTime -= Time.deltaTime;
-            currentTime = Mathf.Max(0, currentTime); // Prevent negative values
+            currentTime = Mathf.Max(0, currentTime); 
             
-            // Update display
             UpdateCountdownDisplay();
             
             yield return null;
         }
         
-        // Countdown complete
         OnCountdownComplete();
         countdownCoroutine = null;
     }
 
     private void CheckThresholdConditions()
     {
-        // Check if countdown is under threshold (called every frame while under threshold)
         if (currentTime <= thresholdSeconds && currentTime > 0)
         {
             OnCountdownUnderThreshold();
         }
-        // Check if countdown is above threshold (called every frame while above threshold)
         else if (currentTime > thresholdSeconds)
         {
             OnCountdownAboveThreshold();
         }
         
-        // Check if countdown just went below threshold (called once)
         if (currentTime <= thresholdSeconds && !isBelowThresholdCalled)
         {
             OnCountdownBelowThreshold();
@@ -113,7 +99,6 @@ public class Timer : MonoBehaviour
     {
         string formattedTime = FormatTime(currentTime);
         
-        // Update TextMeshPro text if auto-update is enabled
         if (autoUpdateText)
         {
             UpdateTimerText(formattedTime);
@@ -122,13 +107,11 @@ public class Timer : MonoBehaviour
     
     private void OnCountdownUnderThreshold()
     {
-        // Update text color when under threshold
         if (timerText != null)
         {
             timerText.color = thresholdColor;
         }
         
-        // Increase music pitch
         if (musicManagerAS != null)
         {
             musicManagerAS.pitch = 1.1f;
@@ -137,13 +120,11 @@ public class Timer : MonoBehaviour
 
     private void OnCountdownAboveThreshold()
     {
-        // Update text color when above threshold
         if (timerText != null)
         {
             timerText.color = normalColor;
         }
         
-        // Reset music pitch
         if (musicManagerAS != null)
         {
             musicManagerAS.pitch = 1.0f;
@@ -152,16 +133,10 @@ public class Timer : MonoBehaviour
 
     private void OnCountdownBelowThreshold()
     {
-        Debug.Log("Warning: Time below threshold!");
     }
 
     private void OnCountdownComplete()
     {
-        // Add countdown completion logic here
-        // For example: trigger game over, play sound, etc.
-        Debug.Log("Countdown complete!");
-
-        // Reset music pitch when timer completes
         if (musicManagerAS != null)
         {
             musicManagerAS.pitch = 1.0f;
@@ -178,9 +153,6 @@ public class Timer : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Formats time in 00:00:00 format (minutes:seconds:milliseconds)
-    /// </summary>
     private string FormatTime(float timeInSeconds)
     {
         int minutes = Mathf.FloorToInt(timeInSeconds / 60f);
@@ -190,25 +162,19 @@ public class Timer : MonoBehaviour
         return $"{minutes:00}:{seconds:00}:{milliseconds:00}";
     }
 
-    /// <summary>
-    /// Stops and resets the countdown timer
-    /// </summary>
     public void StopAndReset()
     {
-        // Stop coroutine
         if (countdownCoroutine != null)
         {
             StopCoroutine(countdownCoroutine);
             countdownCoroutine = null;
         }
         
-        // Reset time and flags
         CalculateTotalTime();
         currentTime = totalTimeInSeconds;
         isThresholdCalled = false;
         isBelowThresholdCalled = false;
         
-        // Reset text color and music pitch
         if (timerText != null)
         {
             timerText.color = normalColor;
@@ -219,16 +185,9 @@ public class Timer : MonoBehaviour
             musicManagerAS.pitch = 1.0f;
         }
 
-
-        // Update display to initial time
-        //UpdateCountdownDisplay();
-
         timerText.text = "SAFE";
     }
 
-    /// <summary>
-    /// Stops the countdown without resetting
-    /// </summary>
     public void StopCountdown()
     {
         if (countdownCoroutine != null)

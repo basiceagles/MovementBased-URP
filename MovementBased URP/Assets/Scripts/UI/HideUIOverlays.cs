@@ -4,20 +4,17 @@ using UnityEngine.UI;
 
 public class HideUIOverlays : MonoBehaviour
 {
-    // Array of buttons
     public Button[] buttons;
 
-    // Array of overlays (GameObjects)
     public GameObject[] overlays;
     public GameObject[] images;
     public Button firstSelectedButton;
 
     private void Start()
     {
-        // Add listeners to each button
         for (int i = 0; i < buttons.Length; i++)
         {
-            int index = i; // Capture the index for the listener
+            int index = i; 
             buttons[i].onClick.AddListener(() => OnButtonClicked(index));
         }
         EventSystem.current.SetSelectedGameObject(firstSelectedButton.gameObject);
@@ -25,10 +22,8 @@ public class HideUIOverlays : MonoBehaviour
 
     private void OnButtonClicked(int index)
     {
-        // Hide all overlays
         HideAllOverlays();
 
-        // Show the overlay corresponding to the clicked button's index
         if (index >= 0 && index < overlays.Length)
         {
             overlays[index].SetActive(true);
