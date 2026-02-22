@@ -295,7 +295,7 @@ public class PerkSelectorScript : MonoBehaviour
             anim.SetTrigger("Normal");
         }
     }
-    
+
     public void ActivateRandomObjects()
     {
         foreach (SpawnableObject spawnable in objectsArray)
@@ -303,47 +303,65 @@ public class PerkSelectorScript : MonoBehaviour
             if (spawnable.gameObject != null && !spawnable.spawnAtMenuOpen)
                 spawnable.gameObject.SetActive(false);
         }
-        
+
         if (objectsArray.Length == 0)
         {
             return;
         }
-        
-        if (amountToActivate <= 0)
+
+        bool shouldForceNonePerk = spawnNonePerkButton && ButtonPerkNone != null;
+
+        if (amountToActivate <= 0 && !shouldForceNonePerk)
         {
             return;
         }
-        
-        List<SpawnableObject> availableObjects = new List<SpawnableObject>();
+
+        List<SpawnableObject> availableNonNoneObjects = new List<SpawnableObject>();
+        SpawnableObject nonePerkSpawnable = null;
+
         foreach (SpawnableObject spawnable in objectsArray)
         {
-            if (spawnable.gameObject != null && spawnable.spawnAtMenuOpen)
+            if (spawnable.gameObject == null || !spawnable.spawnAtMenuOpen)
             {
-                availableObjects.Add(spawnable);
+                continue;
             }
+
+            if (shouldForceNonePerk && spawnable.gameObject == ButtonPerkNone)
+            {
+                nonePerkSpawnable = spawnable;
+                continue;
+            }
+
+            availableNonNoneObjects.Add(spawnable);
         }
-        
-        if (availableObjects.Count == 0)
+
+        if (availableNonNoneObjects.Count == 0 && nonePerkSpawnable == null)
         {
             return;
         }
-        
-        int actualAmountToActivate = Mathf.Min(amountToActivate, availableObjects.Count);
-        
-        ShuffleList(availableObjects);
-        
+
+        ShuffleList(availableNonNoneObjects);
+
         foreach (SpawnableObject spawnable in objectsArray)
         {
             if (spawnable.gameObject != null)
                 spawnable.gameObject.SetActive(false);
         }
-        
+
+        int activatedCount = 0;
+
+        if (nonePerkSpawnable != null)
+        {
+            nonePerkSpawnable.gameObject.SetActive(true);
+            activatedCount++;
+        }
+
+        int remainingToActivate = Mathf.Max(0, amountToActivate - activatedCount);
+        int actualAmountToActivate = Mathf.Min(remainingToActivate, availableNonNoneObjects.Count);
+
         for (int i = 0; i < actualAmountToActivate; i++)
         {
-            if (i < availableObjects.Count)
-            {
-                availableObjects[i].gameObject.SetActive(true);
-            }
+            availableNonNoneObjects[i].gameObject.SetActive(true);
         }
     }
 

@@ -187,10 +187,16 @@ public class Swinging : MonoBehaviour
                 return;
             }
 
-            if (!Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, maxSwingDistance, whatIsGrappleable))
+            if (!Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, maxSwingDistance))
             {
                 return;
             }
+
+            if (((1 << hit.collider.gameObject.layer) & whatIsGrappleable) == 0)
+            {
+                return;
+            }
+
             swingPoint = hit.point;
         }
         

@@ -11,6 +11,7 @@ public class HookTracker : MonoBehaviour
         
     private Transform player;
     private Transform cam;
+    private Camera camComponent;
     private Grappling grapplingScript;
     private Swinging swingingScript;
     private PlayerController pc;
@@ -39,7 +40,8 @@ public class HookTracker : MonoBehaviour
         if (playerObj != null)
         {
             player = playerObj.transform;
-            cam = Camera.main?.transform;
+            camComponent = Camera.main;
+            cam = camComponent?.transform;
             grapplingScript = playerObj.GetComponentInChildren<Grappling>();
             swingingScript = playerObj.GetComponentInChildren<Swinging>();
             pc = playerObj.GetComponent<PlayerController>();
@@ -57,6 +59,30 @@ public class HookTracker : MonoBehaviour
         
         float distance = Vector3.Distance(transform.position, player.position);
         isActive = distance <= activationRadius;
+
+        if (isActive && camComponent != null)
+        {
+            Vector3 viewportPoint = camComponent.WorldToViewportPoint(transform.position);
+            bool onScreen = viewportPoint.z > 0 && viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1;
+
+            if (!onScreen)
+            {
+                isActive = false;
+            }
+            else
+            {
+                Vector3 dirToTarget = transform.position - cam.position;
+                float dist = dirToTarget.magnitude;
+                
+                if (Physics.Raycast(cam.position, dirToTarget.normalized, out RaycastHit hit, dist - 0.1f))
+                {
+                    if (hit.transform != player && !hit.transform.IsChildOf(player))
+                    {
+                        isActive = false;
+                    }
+                }
+            }
+        }
 
         if (IsAnyHookActive())
         {

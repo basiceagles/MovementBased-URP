@@ -11973,6 +11973,7 @@ MonoBehaviour:
   holesChance: 0
   redEyeChance: 0
   redWallsChance: 0
+  platformsChance: 25
   nodeExchangerChance: 0
   numberOfLevels: 0
   numberOfLevelsToAdd: 0
@@ -64247,6 +64248,9 @@ MonoBehaviour:
   timeToAdd1: 20
   timeToAdd2: 40
   timeToAdd3: 60
+  platformsSpawnChance: 25
+  lightBreakChance: 30
+  leversToSpawnDefault: 1
   isPerkMenuOpen: 0
   grappling: {fileID: 1008693407}
   moneyManager: {fileID: 0}
@@ -68413,6 +68417,10 @@ PrefabInstance:
     - target: {fileID: 1802631790307948027, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: minAngleToWall
       value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802631790307948027, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+      propertyPath: minCoveragePercentage
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 1802631790307948027, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: requireMovementTowardWall

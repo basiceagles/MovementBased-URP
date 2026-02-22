@@ -60537,7 +60537,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activationRadius: 10
   hookTarget: {fileID: 1423452968}
-  showGizmos: 1
 --- !u!1001 &2093912439
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -62478,6 +62477,10 @@ PrefabInstance:
     - target: {fileID: 1557733885150758004, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802631790307948027, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+      propertyPath: minCoveragePercentage
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 3343798156140563583, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: sprintFillImage

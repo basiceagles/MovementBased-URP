@@ -287,7 +287,6 @@ MonoBehaviour:
   isSliding: 0
   groundCheckDistance: 0.3
   groundCheckRadius: 0.6
-  gizmoLineCount: 8
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -358,6 +357,8 @@ MonoBehaviour:
   tiltSpeed: 5
   cam: {fileID: 4005968262995598657}
   jumpFallSounds: {fileID: 7951722939564130811}
+  minCoveragePercentage: 0.3
+  coverageGridSize: 10
 --- !u!114 &7164832184900963903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -552,7 +553,6 @@ MonoBehaviour:
   occlusionLayers:
     serializedVersion: 2
     m_Bits: 16384
-  showDebugGizmos: 0
 --- !u!114 &8989358127761352087
 MonoBehaviour:
   m_ObjectHideFlags: 0
