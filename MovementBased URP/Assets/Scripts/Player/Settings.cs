@@ -559,17 +559,17 @@ public class Settings : MonoBehaviour
         
         CheckForDisplayChanges();
         
-        /*if (Input.GetKeyDown(KeyCode.Delete))
+        if (Input.GetKeyDown(KeyCode.Delete))
         {
             PlayerPrefs.DeleteAll();
             PlayerPrefs.Save();
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }*/
+        }
 
-        /*if (!isMainMenu && !mainMenuIsActive && Input.GetKeyDown(KeyCode.R))
+        if (!isMainMenu && !mainMenuIsActive && Input.GetKeyDown(KeyCode.R))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }*/
+        }
     }
 
     private void CheckForDisplayChanges()
