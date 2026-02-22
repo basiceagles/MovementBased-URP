@@ -7498,9 +7498,9 @@ MonoBehaviour:
   - levelPrefab: {fileID: 7422256887693791606, guid: 405e17fce4220ef4d85d532704805dd2, type: 3}
     levelType: 10
   - levelPrefab: {fileID: 3488966937011951078, guid: 379041d5e64d0244e94fcc94c3125ab6, type: 3}
-    levelType: 1
+    levelType: 2
   - levelPrefab: {fileID: 5559504252592889412, guid: 57bae4d42dbd5ca409fa2ce46a2dfa2f, type: 3}
-    levelType: 1
+    levelType: 2
   - levelPrefab: {fileID: 27179941147825252, guid: 6dd089f88e39d3d4fa25ca614a779a49, type: 3}
     levelType: 1
   - levelPrefab: {fileID: 4309392818507741948, guid: de43091d267541d4f8b5ebdcaf061d9d, type: 3}
@@ -7509,6 +7509,8 @@ MonoBehaviour:
     levelType: 1
   - levelPrefab: {fileID: 4470035045623801167, guid: f279b35fbbb13cb4c88d3038ab5b470c, type: 3}
     levelType: 10
+  - levelPrefab: {fileID: 3652016794686186664, guid: 433abe72d3441ee42846acd69ef15df5, type: 3}
+    levelType: 2
   closedMediumLevels:
   - levelPrefab: {fileID: 1477064973750662499, guid: af22a6494b433e240afe6702ba4bce8d, type: 3}
     levelType: 0
@@ -7533,7 +7535,7 @@ MonoBehaviour:
   closedChance: 25
   closedMediumChance: 0
   closedHardChance: 0
-  runnerStartChance: 30
+  runnerStartChance: 100
   standardChance: 25
   swingChance: 0
   grappleChance: 0
@@ -19605,8 +19607,16 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 1802631790307948027, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+      propertyPath: coverageGridSize
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802631790307948027, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: minCoveragePercentage
       value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1863173299891983089, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+      propertyPath: grapplingCd
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3343798156140563583, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: sprintFillImage

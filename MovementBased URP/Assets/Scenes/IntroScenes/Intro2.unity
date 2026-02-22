@@ -2076,6 +2076,7 @@ MonoBehaviour:
   holesChance: 0
   redEyeChance: 0
   redWallsChance: 0
+  platformsChance: 25
   nodeExchangerChance: 0
   numberOfLevels: 10
   numberOfLevelsToAdd: 1
@@ -7961,7 +7962,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activationRadius: 10
   hookTarget: {fileID: 1853061660}
-  showGizmos: 1
 --- !u!1 &251532686
 GameObject:
   m_ObjectHideFlags: 0
@@ -21494,7 +21494,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activationRadius: 10
   hookTarget: {fileID: 747262736}
-  showGizmos: 1
 --- !u!1001 &758793964
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -42563,6 +42562,9 @@ MonoBehaviour:
   timeToAdd1: 20
   timeToAdd2: 40
   timeToAdd3: 60
+  platformsSpawnChance: 25
+  lightBreakChance: 30
+  leversToSpawnDefault: 1
   isPerkMenuOpen: 0
   grappling: {fileID: 1491714241}
   moneyManager: {fileID: 0}
@@ -43946,6 +43948,10 @@ PrefabInstance:
     - target: {fileID: 1557733885150758004, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802631790307948027, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+      propertyPath: coverageGridSize
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 1863173299891983089, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: grapplingEnabled

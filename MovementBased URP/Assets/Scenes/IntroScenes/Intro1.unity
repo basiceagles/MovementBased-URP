@@ -23514,6 +23514,7 @@ MonoBehaviour:
   holesChance: 0
   redEyeChance: 0
   redWallsChance: 0
+  platformsChance: 25
   nodeExchangerChance: 0
   numberOfLevels: 10
   numberOfLevelsToAdd: 1
@@ -28987,6 +28988,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 1802631790307948027, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
+      propertyPath: coverageGridSize
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 1863173299891983089, guid: a88dc446fad327c439f36eaff0dc22f8, type: 3}
       propertyPath: grapplingEnabled
       value: 0
@@ -33213,6 +33218,9 @@ MonoBehaviour:
   timeToAdd1: 20
   timeToAdd2: 40
   timeToAdd3: 60
+  platformsSpawnChance: 25
+  lightBreakChance: 30
+  leversToSpawnDefault: 1
   isPerkMenuOpen: 0
   grappling: {fileID: 1588002105}
   moneyManager: {fileID: 0}
