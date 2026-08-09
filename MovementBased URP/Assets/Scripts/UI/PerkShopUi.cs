@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 public class PerkShopUi : MonoBehaviour
 {
     [SerializeField] private GameObject keybindHint;
-    [SerializeField] private CameraController cameraController;
     [SerializeField] private PlayerController playerController;
     [SerializeField] private ItemPickup itemPickup;
     [SerializeField] private Animator moneyTextAnimator;
@@ -43,9 +42,12 @@ public class PerkShopUi : MonoBehaviour
         moneyTextAnimator.Play(openTextAnimation.name);
         perkSelectorAnimator.Play(openPerkSelectorAnimation.name);
 
-        cameraController.SetCameraMovementEnabled(false);
-        itemPickup.SetInteractionEnabled(false);
-        playerController.SetMovementEnabled(false);
+        if (playerController != null)
+        {
+            playerController.SetCameraMovementEnabled(false);
+            playerController.SetMovementEnabled(false);
+        }
+        if (itemPickup != null) itemPickup.SetInteractionEnabled(false);
     }
 
     public void ClosePerkShop()
@@ -57,8 +59,11 @@ public class PerkShopUi : MonoBehaviour
         moneyTextAnimator.Play(closeTextAnimation.name);
         perkSelectorAnimator.Play(closePerkSelectorAnimation.name);
 
-        cameraController.SetCameraMovementEnabled(true);
-        itemPickup.SetInteractionEnabled(true);
-        playerController.SetMovementEnabled(true);
+        if (playerController != null)
+        {
+            playerController.SetCameraMovementEnabled(true);
+            playerController.SetMovementEnabled(true);
+        }
+        if (itemPickup != null) itemPickup.SetInteractionEnabled(true);
     }
 }

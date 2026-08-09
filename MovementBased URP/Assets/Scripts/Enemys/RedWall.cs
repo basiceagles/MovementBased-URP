@@ -23,7 +23,14 @@ public class RedWall : MonoBehaviour
 
         if (playerController.isDamaged && other)
         {
-            SceneManager.LoadScene(deadSceneName);
+            if (SceneManager.GetActiveScene().name == "Intro3")
+            {
+                SceneManager.LoadScene("Intro4");
+            }
+            else
+            {
+                SceneManager.LoadScene(deadSceneName);
+            }
         }
         else
         {

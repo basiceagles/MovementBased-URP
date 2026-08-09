@@ -1,9 +1,6 @@
 using UnityEngine;
 
-public class LeaveGame : MonoBehaviour
+public class LeaveGame : TriggerActions
 {
-    public void LeaveTheGame()
-    {
-        Application.Quit();
-    }
 }
+

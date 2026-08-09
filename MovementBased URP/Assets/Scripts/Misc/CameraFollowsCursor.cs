@@ -9,49 +9,29 @@ public class CameraFollowsCursor : MonoBehaviour
     
     private Vector3 originalPosition;
     private Vector3 targetOffset;
+    private float halfScreenWidth;
+    private float halfScreenHeight;
 
-    void Start()
+    private void Start()
     {
         originalPosition = transform.position;
+        halfScreenWidth = Screen.width * 0.5f;
+        halfScreenHeight = Screen.height * 0.5f;
     }
 
-    void Update()
+    private void Update()
     {
-        Vector2 screenCenter = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
-        Vector2 cursorPosition = Input.mousePosition;
+        if (halfScreenWidth == 0f) return;
+
+        Vector3 mousePos = Input.mousePosition;
+        float normX = (mousePos.x - halfScreenWidth) / halfScreenWidth;
+        float normY = (mousePos.y - halfScreenHeight) / halfScreenHeight;
         
-        // Calculate normalized offset from center
-        Vector2 normalizedOffset = new Vector2(
-            (cursorPosition.x - screenCenter.x) / screenCenter.x,
-            (cursorPosition.y - screenCenter.y) / screenCenter.y
-        );
+        float dirMultiplier = inverse ? -1f : 1f;
+        targetOffset.x = Mathf.Clamp(normX * sensitivity * dirMultiplier, -maxOffset, maxOffset);
+        targetOffset.y = Mathf.Clamp(normY * sensitivity * dirMultiplier, -maxOffset, maxOffset);
+        targetOffset.z = 0f;
         
-        // Apply inverse toggle
-        if (inverse)
-        {
-            // Inverse movement
-            targetOffset = new Vector3(
-                -normalizedOffset.x * sensitivity,
-                -normalizedOffset.y * sensitivity,
-                0
-            );
-        }
-        else
-        {
-            // Normal movement (same direction as cursor)
-            targetOffset = new Vector3(
-                normalizedOffset.x * sensitivity,
-                normalizedOffset.y * sensitivity,
-                0
-            );
-        }
-        
-        // Clamp the target offset
-        targetOffset.x = Mathf.Clamp(targetOffset.x, -maxOffset, maxOffset);
-        targetOffset.y = Mathf.Clamp(targetOffset.y, -maxOffset, maxOffset);
-        
-        // Smoothly move the camera to the target position
-        Vector3 targetPosition = originalPosition + targetOffset;
-        transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * smoothSpeed);
+        transform.position = Vector3.Lerp(transform.position, originalPosition + targetOffset, Time.deltaTime * smoothSpeed);
     }
 }

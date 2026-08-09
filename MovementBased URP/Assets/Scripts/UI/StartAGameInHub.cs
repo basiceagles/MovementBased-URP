@@ -9,7 +9,7 @@ public class StartAGameInHub : MonoBehaviour
     [SerializeField] private Animator animatorUI;
     [SerializeField] private AnimationClip animationClipUI;
     [SerializeField] private AnimationClip animationClipUIClose;
-    [SerializeField] private CameraController cameraController;
+    [SerializeField] private PlayerController playerController;
     [SerializeField] private float fadeDuration;
 
     [Header("Scene Names")]
@@ -25,7 +25,8 @@ public class StartAGameInHub : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        cameraController.SetCameraMovementEnabled(false);
+        if (playerController != null)
+            playerController.SetCameraMovementEnabled(false);
     }
 
     public void HideGameUI()
@@ -35,7 +36,8 @@ public class StartAGameInHub : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        cameraController.SetCameraMovementEnabled(true);
+        if (playerController != null)
+            playerController.SetCameraMovementEnabled(true);
     }
 
     public void StartDemoAfterDelay()

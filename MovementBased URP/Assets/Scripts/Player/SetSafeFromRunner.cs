@@ -2,22 +2,23 @@ using UnityEngine;
 
 public class SetSafeFromRunner : MonoBehaviour
 {
-    private GameObject playerTarget;
     private PlayerController playerController;
 
-    void Start()
+    private void Start()
     {
-        playerTarget = GameObject.Find("Player");
-        playerController = playerTarget.GetComponent<PlayerController>();
+        playerController = GetComponentInParent<PlayerController>();
+        if (playerController == null)
+            playerController = FindObjectOfType<PlayerController>();
     }
 
     public void SetSafe()
     {
-        playerController.isSafeFromRunner = true;
+        if (playerController != null) playerController.isSafeFromRunner = true;
     }
 
     public void SetUnSafe()
     {
-        playerController.isSafeFromRunner = false;
+        if (playerController != null) playerController.isSafeFromRunner = false;
     }
 }
+

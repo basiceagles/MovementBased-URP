@@ -37,7 +37,6 @@ public class PerkSelectorScript : MonoBehaviour
     public ButtonHierarchy[] buttonHierarchies; 
     
     private GameObject mainCamera;
-    private CameraController cameraController;
 
     [Header("Prop Selector Animator")]
     [SerializeField] private AnimationClip animationClip;
@@ -120,8 +119,7 @@ public class PerkSelectorScript : MonoBehaviour
     void Start()
     {
         mainCamera = GameObject.Find("Main Camera");
-        cameraController = mainCamera.GetComponent<CameraController>();
-        itemPickup = mainCamera.GetComponent<ItemPickup>();
+        itemPickup = mainCamera != null ? mainCamera.GetComponent<ItemPickup>() : null;
 
         targetProcuderalGeneration = GameObject.Find("ProcuderalGeneration");
         levelGenerator = targetProcuderalGeneration.GetComponent<LevelGenerator>();
@@ -178,9 +176,10 @@ public class PerkSelectorScript : MonoBehaviour
         itemPickup.useInteraction = false;
 
         Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        cameraController.enabled = false;
-        
+        if (playerController != null)
+        {
+            playerController.SetCameraMovementEnabled(false);
+        }
         CheckAndEnableNonePerk();
         
         ActivateRandomObjects();
@@ -227,9 +226,10 @@ public class PerkSelectorScript : MonoBehaviour
     {
         itemPickup.useInteraction = true;
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        cameraController.enabled = true;
+        if (playerController != null)
+        {
+            playerController.SetCameraMovementEnabled(true);
+        }
         
         ResetAllButtonAnimations();
         

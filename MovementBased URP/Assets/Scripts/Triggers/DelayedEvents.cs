@@ -16,26 +16,37 @@ public class DelayedEvents : MonoBehaviour
 
     void Start()
     {
-        if (callOnStart)
+        if (callOnStart && events != null)
         {
-            foreach (TimedEvent timedEvent in events)
+            for (int i = 0; i < events.Length; i++)
             {
-                StartCoroutine(ExecuteEvent(timedEvent.unityEvent, timedEvent.delay));
+                if (events[i] != null && events[i].unityEvent != null)
+                {
+                    StartCoroutine(ExecuteEvent(events[i].unityEvent, events[i].delay));
+                }
             }
         }
     }
 
-    IEnumerator ExecuteEvent(UnityEvent unityEvent, float delay)
+    private IEnumerator ExecuteEvent(UnityEvent unityEvent, float delay)
     {
-        yield return new WaitForSeconds(delay);
-        unityEvent.Invoke();
+        if (delay > 0f)
+        {
+            yield return new WaitForSeconds(delay);
+        }
+        unityEvent?.Invoke();
     }
 
-    public void CallDelayedEvent ()
+    public void CallDelayedEvent()
     {
-        foreach (TimedEvent timedEvent in events)
+        if (events == null) return;
+
+        for (int i = 0; i < events.Length; i++)
         {
-            StartCoroutine(ExecuteEvent(timedEvent.unityEvent, timedEvent.delay));
+            if (events[i] != null && events[i].unityEvent != null)
+            {
+                StartCoroutine(ExecuteEvent(events[i].unityEvent, events[i].delay));
+            }
         }
     }
 }

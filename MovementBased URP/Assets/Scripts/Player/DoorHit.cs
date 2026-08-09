@@ -29,7 +29,6 @@ public class DoorHit : MonoBehaviour
     private Rigidbody _doorRb;
     private Camera _cam;
     private CameraShake _shake;
-    private SpeedFOVEffect _speedFov;
     private ChromaticAberration _chromatic;
     private LensDistortion _lens;
     private Vignette _vignette;
@@ -62,7 +61,6 @@ public class DoorHit : MonoBehaviour
             _cam = Camera.main;
             _origFov = _cam.fieldOfView;
             _shake = _cam.GetComponent<CameraShake>();
-            _speedFov = _cam.GetComponent<SpeedFOVEffect>();
         }
 
         _origFixedDelta = Time.fixedDeltaTime;
@@ -82,12 +80,9 @@ public class DoorHit : MonoBehaviour
 
     private void Update()
     {
-        if (Settings.Instance != null)
+        if (Settings.Instance != null && Settings.Instance.IsPaused)
         {
-            if (Settings.Instance.IsPaused)
-            {
-                return;
-            }
+            return;
         }
 
         if (_player == null)
@@ -95,13 +90,9 @@ public class DoorHit : MonoBehaviour
             return;
         }
 
-        if (triggerCollider != null)
+        if (triggerCollider != null && !_isPlayerInside)
         {
             _isPlayerInside = triggerCollider.bounds.Contains(_player.transform.position);
-        }
-        else
-        {
-            _isPlayerInside = false;
         }
 
         bool canSlowMo = _isPlayerInside && _player.currentSpeed >= minSpeed && !_isKicked;
@@ -151,11 +142,6 @@ public class DoorHit : MonoBehaviour
     {
         if (_cam != null)
         {
-            if (_speedFov != null)
-            {
-                _speedFov.enabled = _effectLerp < 0.1f;
-            }
-
             float breath = Mathf.Sin(Time.unscaledTime * 3.5f) * 1.5f * _effectLerp;
             _cam.fieldOfView = Mathf.Lerp(_origFov, _origFov + slowMoFovChange + breath, _effectLerp);
 
@@ -319,11 +305,6 @@ public class DoorHit : MonoBehaviour
             _bloom.intensity.value = 0;
         }
 
-        if (_speedFov != null)
-        {
-            _speedFov.enabled = true;
-        }
-
         AudioSource[] sources = FindObjectsOfType<AudioSource>();
         foreach (var s in sources)
         {
@@ -364,10 +345,18 @@ public class DoorHit : MonoBehaviour
 
     private void OnTriggerEnter(Collider o)
     {
-        if (o.CompareTag("Player"))
+        if (o.CompareTag("Player") || (_player != null && o.gameObject == _player.gameObject))
         {
             _isPlayerInside = true;
-            _entrySpeed = _player.currentSpeed;
+            if (_player != null) _entrySpeed = _player.currentSpeed;
+        }
+    }
+
+    private void OnTriggerExit(Collider o)
+    {
+        if (o.CompareTag("Player") || (_player != null && o.gameObject == _player.gameObject))
+        {
+            _isPlayerInside = false;
         }
     }
 

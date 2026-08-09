@@ -142,7 +142,14 @@ public class Timer : MonoBehaviour
             musicManagerAS.pitch = 1.0f;
         }
 
-        SceneManager.LoadScene(deadSceneName);
+        if (SceneManager.GetActiveScene().name == "Intro3")
+        {
+            SceneManager.LoadScene("Intro4");
+        }
+        else
+        {
+            SceneManager.LoadScene(deadSceneName);
+        }
     }
 
     private void UpdateTimerText(string timeString)

@@ -32,7 +32,6 @@ public class RedEyeDetector : MonoBehaviour
     [SerializeField] private bool enableCameraPull = true;
     [SerializeField] private float pullStrength = 3f;
     [SerializeField] private LayerMask playerLayer;
-    private CameraController cameraController;
     private HashSet<GameObject> eyesSighted = new HashSet<GameObject>();
     
     private Camera mainCamera;
@@ -75,8 +74,7 @@ public class RedEyeDetector : MonoBehaviour
         globalVolume.profile.TryGet<ChromaticAberration>(out chromaticAberration);
         
         mainCamera = Camera.main;
-        cameraShake = mainCamera.GetComponent<CameraShake>();
-        cameraController = mainCamera.GetComponent<CameraController>();
+        cameraShake = mainCamera != null ? mainCamera.GetComponent<CameraShake>() : null;
         currentFillValue = 0f;
 
         redEyeObjects = new List<GameObject>();
@@ -147,7 +145,14 @@ public class RedEyeDetector : MonoBehaviour
                 if (playerController.isDamaged)
                 {
                     MoneyManager.SaveMoneyOnDeath();
-                    SceneManager.LoadScene(deadSceneName);
+                    if (SceneManager.GetActiveScene().name == "Intro3")
+                    {
+                        SceneManager.LoadScene("Intro4");
+                    }
+                    else
+                    {
+                        SceneManager.LoadScene(deadSceneName);
+                    }
                 }
                 else
                 {
@@ -246,7 +251,14 @@ public class RedEyeDetector : MonoBehaviour
             if (playerController.isDamaged)
             {
                 MoneyManager.SaveMoneyOnDeath();
-                SceneManager.LoadScene(deadSceneName);
+                if (SceneManager.GetActiveScene().name == "Intro3")
+                {
+                    SceneManager.LoadScene("Intro4");
+                }
+                else
+                {
+                    SceneManager.LoadScene(deadSceneName);
+                }
             }
             else
             {
@@ -416,7 +428,7 @@ public class RedEyeDetector : MonoBehaviour
 
     private void HandleCameraPull()
     {
-        if (!enableCameraPull || mainCamera == null || cameraController == null) return;
+        if (!enableCameraPull || mainCamera == null || playerController == null) return;
 
         GameObject activeObserver = null;
 
@@ -482,6 +494,9 @@ public class RedEyeDetector : MonoBehaviour
         if (currentPitch > 180) currentPitch -= 360;
         float targetPitch = -Mathf.Asin(dirToTarget.y) * Mathf.Rad2Deg;
         float anglePitch = targetPitch - currentPitch;
-        cameraController.AddExternalRotation(angleYaw * pullStrength * Time.deltaTime, -anglePitch * pullStrength * Time.deltaTime);
+        if (playerController != null)
+        {
+            playerController.AddExternalRotation(angleYaw * pullStrength * Time.deltaTime, -anglePitch * pullStrength * Time.deltaTime);
+        }
     }
 }

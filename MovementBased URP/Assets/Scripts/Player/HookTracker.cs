@@ -57,8 +57,8 @@ public class HookTracker : MonoBehaviour
         if (player == null || hookTarget == null)
             return;
         
-        float distance = Vector3.Distance(transform.position, player.position);
-        isActive = distance <= activationRadius;
+        float radiusSqr = activationRadius * activationRadius;
+        isActive = (transform.position - player.position).sqrMagnitude <= radiusSqr;
 
         if (isActive && camComponent != null)
         {
@@ -72,13 +72,16 @@ public class HookTracker : MonoBehaviour
             else
             {
                 Vector3 dirToTarget = transform.position - cam.position;
-                float dist = dirToTarget.magnitude;
-                
-                if (Physics.Raycast(cam.position, dirToTarget.normalized, out RaycastHit hit, dist - 0.1f))
+                float distSqr = dirToTarget.sqrMagnitude;
+                if (distSqr > 0.01f)
                 {
-                    if (hit.transform != player && !hit.transform.IsChildOf(player))
+                    float dist = Mathf.Sqrt(distSqr);
+                    if (Physics.Raycast(cam.position, dirToTarget / dist, out RaycastHit hit, dist - 0.1f))
                     {
-                        isActive = false;
+                        if (hit.transform != player && !hit.transform.IsChildOf(player))
+                        {
+                            isActive = false;
+                        }
                     }
                 }
             }

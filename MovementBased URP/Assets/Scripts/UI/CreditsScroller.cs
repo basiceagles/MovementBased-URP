@@ -85,6 +85,16 @@ public class CreditsScroller : MonoBehaviour
         get { return isScrolling; }
     }
     
+    public void CallStart()
+    {
+        StartScroll();
+    }
+
+    public void CallStop()
+    {
+        StopScroll();
+    }
+
     void OnDisable()
     {
         if (isScrolling)

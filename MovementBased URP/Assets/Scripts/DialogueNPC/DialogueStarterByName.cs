@@ -5,7 +5,6 @@ public class DialogueStarterByName : MonoBehaviour
 {
     [SerializeField] private DialoguesSystem dialogueSystem;
     [SerializeField] private GameObject UITip;
-    [SerializeField] private CameraController cameraController;
     [SerializeField] private AudioSource dialogueAudioSource;
     [SerializeField] private PlayerController playerController;
     [SerializeField] private ItemPickup itemPickup;
@@ -83,16 +82,12 @@ public class DialogueStarterByName : MonoBehaviour
             if (playerController != null)
             {
                 playerController.SetMovementEnabled(false);
+                playerController.SetCameraMovementEnabled(false);
             }
 
             if (itemPickup != null)
             {
                 itemPickup.SetInteractionEnabled(false);
-            }
-
-            if (cameraController != null)
-            {
-                cameraController.SetCameraMovementEnabled(false);
             }
             dialogueSystem.StartDialogue(index);
         }
@@ -137,13 +132,9 @@ public class DialogueStarterByName : MonoBehaviour
         anyDialoguePlaying = false;
         isDialoguePlaying = false;
 
-        if (EnableCameraAtEnd && cameraController != null)
-        {
-            cameraController.SetCameraMovementEnabled(true);
-        }
-
         if (EnableCameraAtEnd && playerController != null)
         {
+            playerController.SetCameraMovementEnabled(true);
             playerController.SetMovementEnabled(true);
         }
 

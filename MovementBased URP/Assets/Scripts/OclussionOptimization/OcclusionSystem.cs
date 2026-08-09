@@ -27,8 +27,12 @@ public class OcclusionSystem : MonoBehaviour
 
     void FindOccludableObjects()
     {
+        occludableObjects.Clear();
         GameObject[] foundObjects = GameObject.FindGameObjectsWithTag("StaticForOcclusion");
-        occludableObjects.AddRange(foundObjects);
+        if (foundObjects != null)
+        {
+            occludableObjects.AddRange(foundObjects);
+        }
     }
 
     void Update()
@@ -44,22 +48,30 @@ public class OcclusionSystem : MonoBehaviour
 
     void UpdateOcclusion()
     {
-        foreach (GameObject obj in occludableObjects)
+        float maxDistSqr = maxDistance * maxDistance;
+        Vector3 currentPos = transform.position;
+
+        for (int i = occludableObjects.Count - 1; i >= 0; i--)
         {
-            if (obj == null) continue;
-            
-            float distance = Vector3.Distance(transform.position, obj.transform.position);
-            
-            if (distance > maxDistance)
+            GameObject obj = occludableObjects[i];
+            if (obj == null)
             {
-                if (obj.activeInHierarchy)
+                occludableObjects.RemoveAt(i);
+                continue;
+            }
+            
+            float distSqr = (currentPos - obj.transform.position).sqrMagnitude;
+            
+            if (distSqr > maxDistSqr)
+            {
+                if (obj.activeSelf)
                 {
                     obj.SetActive(false);
                 }
             }
             else
             {
-                if (!obj.activeInHierarchy)
+                if (!obj.activeSelf)
                 {
                     obj.SetActive(true);
                 }

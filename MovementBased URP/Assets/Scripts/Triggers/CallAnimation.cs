@@ -1,12 +1,6 @@
 using UnityEngine;
 
-public class CallAnimation : MonoBehaviour
+public class CallAnimation : TriggerActions
 {
-    [SerializeField] private AnimationClip animationClip;
-    [SerializeField] private Animator animator;
-
-    public void PlayAnimation()
-    {
-        animator.Play(animationClip.name);
-    }
 }
+

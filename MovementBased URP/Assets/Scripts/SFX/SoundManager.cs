@@ -22,8 +22,14 @@ namespace SmallHedge.SoundManager
 
         public static void PlaySound(SoundType sound, AudioSource source = null, float volume = 1)
         {
-            SoundList soundList = instance.SO.sounds[(int)sound];
+            if (instance == null || instance.SO == null) return;
+            int index = (int)sound;
+            if (index < 0 || index >= instance.SO.sounds.Length) return;
+
+            SoundList soundList = instance.SO.sounds[index];
             AudioClip[] clips = soundList.sounds;
+            if (clips == null || clips.Length == 0) return;
+
             AudioClip randomClip = clips[UnityEngine.Random.Range(0, clips.Length)];
 
             if (source)
@@ -33,25 +39,27 @@ namespace SmallHedge.SoundManager
                 source.volume = volume * soundList.volume;
                 source.Play();
             }
-            else
+            else if (instance.audioSource != null)
             {
                 instance.audioSource.outputAudioMixerGroup = soundList.mixer;
                 instance.audioSource.PlayOneShot(randomClip, volume * soundList.volume);
             }
         }
+
         public static void StopSound(SoundType sound, AudioSource source)
         {
-            if (source == null)
-            {
-                return;
-            }
+            if (source == null || instance == null || instance.SO == null) return;
 
-            SoundList soundList = instance.SO.sounds[(int)sound];
+            int index = (int)sound;
+            if (index < 0 || index >= instance.SO.sounds.Length) return;
+
+            SoundList soundList = instance.SO.sounds[index];
             AudioClip[] clips = soundList.sounds;
+            if (clips == null) return;
 
-            foreach (AudioClip clip in clips)
+            for (int i = 0; i < clips.Length; i++)
             {
-                if (source.clip == clip)
+                if (source.clip == clips[i])
                 {
                     source.Stop();
                     return;

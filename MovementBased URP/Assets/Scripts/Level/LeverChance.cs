@@ -34,21 +34,12 @@ public class LeverChance : MonoBehaviour
             return;
         }
 
-        float distance = Vector3.Distance(transform.position, playerCamera.transform.position);
-
-        if (distance <= activationRange)
+        float rangeSqr = activationRange * activationRange;
+        if ((transform.position - playerCamera.transform.position).sqrMagnitude <= rangeSqr)
         {
             hasRolled = true;
             float roll = Random.Range(0f, 100f);
-            
-            if (roll <= rollChance)
-            {
-                targetLever.SetActive(true);
-            }
-            else
-            {
-                targetLever.SetActive(false);
-            }
+            targetLever.SetActive(roll <= rollChance);
         }
     }
 }

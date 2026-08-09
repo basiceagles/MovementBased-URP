@@ -1,13 +1,5 @@
 using UnityEngine;
 
-public class DestroyAfterTime : MonoBehaviour
+public class DestroyAfterTime : TriggerActions
 {
-    [Header("Destroy Settings")]
-    public GameObject objectToDestroy;
-    public float delay = 5f;
-
-    public void CallDestroyAfterTime()
-    {
-        Destroy(objectToDestroy, delay);
-    }
-}
+}

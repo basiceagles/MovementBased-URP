@@ -72,6 +72,8 @@ public class WallRunning : MonoBehaviour
         }
     }
 
+    private static readonly Collider[] wallBuffer = new Collider[16];
+
     private void FixedUpdate()
     {
         CheckForWalls();
@@ -108,11 +110,14 @@ public class WallRunning : MonoBehaviour
         
         Vector3 origin = transform.position;
         float currentRadius = isWallRunning ? sphereRadius * 1.5f : sphereRadius;
-        Collider[] wallColliders = Physics.OverlapSphere(origin, currentRadius, wallLayer);
+        int hitCount = Physics.OverlapSphereNonAlloc(origin, currentRadius, wallBuffer, wallLayer);
         bool wallFound = false;
         
-        foreach (Collider wallCollider in wallColliders)
+        for (int i = 0; i < hitCount; i++)
         {
+            Collider wallCollider = wallBuffer[i];
+            if (wallCollider == null) continue;
+
             Vector3 closestPoint = wallCollider.ClosestPoint(origin);
             Vector3 directionToWall = (closestPoint - origin).normalized;
             if (Mathf.Abs(Vector3.Dot(directionToWall, Vector3.up)) < 0.3f)

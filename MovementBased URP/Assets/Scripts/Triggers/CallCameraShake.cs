@@ -2,23 +2,47 @@ using UnityEngine;
 
 public class CallCameraShake : MonoBehaviour
 {
-    private GameObject mainCamera;
     private CameraShake cameraShake;
 
+    [Header("Constant Shake Settings")]
+    public bool onStart;
+    public bool onEnd;
 
-    void Start()
+    private void Start()
     {
-        mainCamera = GameObject.Find("Main Camera");
-        cameraShake = mainCamera.GetComponent<CameraShake>();
+        if (Camera.main != null)
+        {
+            cameraShake = Camera.main.GetComponent<CameraShake>();
+        }
+        if (cameraShake == null)
+        {
+            cameraShake = FindObjectOfType<CameraShake>();
+        }
     }
-    
+
     public void CallCameraShaker()
     {
-        cameraShake.Shake();
+        if (cameraShake != null) cameraShake.Shake();
     }
 
     public void CallHeavyCameraShaker()
     {
-        cameraShake.HeavyShake();
+        if (cameraShake != null) cameraShake.HeavyShake();
+    }
+
+    public void CallCameraShakerMethod()
+    {
+        if (cameraShake == null) return;
+
+        if (onStart)
+        {
+            cameraShake.ConstantlyShakeStart();
+        }
+
+        if (onEnd)
+        {
+            cameraShake.ConstantlyShakeStop();
+        }
     }
 }
+

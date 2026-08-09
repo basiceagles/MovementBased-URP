@@ -60,9 +60,7 @@ public class Settings : MonoBehaviour
     [Header("Settings")]
     public bool isMainMenu;
     public Volume postProcessVolume;
-    public CameraController cameraController;
     public CameraShake camShake;
-    public SpeedFOVEffect speedFovEffect;
     public DialogueUIReferences dialogueUIReferences;
     public KeyRebindManager keyRebindManager;
     public Camera mainCamera;
@@ -415,13 +413,9 @@ public class Settings : MonoBehaviour
 
             UnPauseAllAudioSource();
 
-            if (cameraController != null)
-            {
-                cameraController.enabled = true;
-            }
-
             if (playerController != null)
             {
+                playerController.SetCameraMovementEnabled(true);
                 playerController.SetMovementEnabled(true);
             }
         }
@@ -448,13 +442,9 @@ public class Settings : MonoBehaviour
 
             PauseAllAudioSource();
 
-            if (cameraController != null)
-            {
-                cameraController.enabled = false;
-            }
-
             if (playerController != null)
             {
+                playerController.SetCameraMovementEnabled(false);
                 playerController.SetMovementEnabled(false);
             }
         }
@@ -466,13 +456,9 @@ public class Settings : MonoBehaviour
         {
             Time.timeScale = 0f;
 
-            if (cameraController != null)
-            {
-                cameraController.enabled = false;
-            }
-
             if (playerController != null)
             {
+                playerController.SetCameraMovementEnabled(false);
                 playerController.SetMovementEnabled(false);
             }
 
@@ -514,13 +500,9 @@ public class Settings : MonoBehaviour
 
             UnPauseAllAudioSource();
 
-            if (cameraController != null)
-            {
-                cameraController.enabled = true;
-            }
-
             if (playerController != null)
             {
+                playerController.SetCameraMovementEnabled(true);
                 playerController.SetMovementEnabled(true);
             }
 
@@ -801,9 +783,9 @@ public class Settings : MonoBehaviour
 
     public void SetSensitivity(float sensitivity)
     {
-        if (cameraController != null)
+        if (playerController != null)
         {
-            cameraController.SetSensitivity(sensitivity);
+            playerController.SetSensitivity(sensitivity);
         }
 
         PlayerPrefs.SetFloat("Sensitivity", sensitivity);
@@ -831,9 +813,9 @@ public class Settings : MonoBehaviour
 
     public void SetCameraSpeedZoom(bool enabled)
     {
-        if (speedFovEffect != null)
+        if (playerController != null)
         {
-            speedFovEffect.shrinkMultiplier = enabled ? 3.5f : 0f;
+            playerController.shrinkMultiplier = enabled ? 3.5f : 0f;
         }
         
         PlayerPrefs.SetInt("CameraSpeedZoom", enabled ? 1 : 0);
@@ -841,9 +823,9 @@ public class Settings : MonoBehaviour
 
     public void SetCameraTilt(bool enabled)
     {
-        if (cameraController != null)
+        if (playerController != null)
         {
-            cameraController.tiltAmount = enabled ? 10f : 0f;
+            playerController.tiltAmount = enabled ? 10f : 0f;
         }
         
         PlayerPrefs.SetInt("CameraTilt", enabled ? 1 : 0);
