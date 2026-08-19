@@ -97,30 +97,40 @@ public class PlayerAudioSystem : MonoBehaviour
         }
     }
 
+    private static float lastGlobalFallSoundTime = -10f;
+    private const float FALL_SOUND_COOLDOWN = 0.5f;
+
     private void HandleAirAndFallSounds()
     {
         bool isJumping = playerController.isJumping;
         bool isGrounded = playerController.isGrounded;
 
-        if (wasInAir && isGrounded && !isJumping && !hasPlayedFallSound)
-        {
-            if (Time.time - lastJumpTime >= 0.5f && airTimeCounter >= 0.15f)
-            {
-                SoundManager.PlaySound(SoundType.FALL);
-                hasPlayedFallSound = true;
-            }
-        }
-
         if (!isGrounded)
         {
-            wasInAir = true;
-            hasPlayedFallSound = false;
             airTimeCounter += Time.deltaTime;
+            if (airTimeCounter > 0.15f)
+            {
+                wasInAir = true;
+                hasPlayedFallSound = false;
+            }
         }
-        else if (!isJumping)
+        else
         {
-            wasInAir = false;
-            airTimeCounter = 0f;
+            if (wasInAir && !isJumping && !hasPlayedFallSound)
+            {
+                if (Time.time - lastJumpTime >= 0.4f && airTimeCounter >= 0.2f && (Time.time - lastGlobalFallSoundTime >= FALL_SOUND_COOLDOWN))
+                {
+                    lastGlobalFallSoundTime = Time.time;
+                    hasPlayedFallSound = true;
+                    SoundManager.PlaySound(SoundType.FALL);
+                }
+            }
+
+            if (!isJumping)
+            {
+                wasInAir = false;
+                airTimeCounter = 0f;
+            }
         }
     }
 

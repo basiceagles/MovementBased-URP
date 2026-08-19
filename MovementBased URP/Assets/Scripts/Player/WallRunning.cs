@@ -3,67 +3,98 @@ using UnityEngine;
 public class WallRunning : MonoBehaviour
 {
     [Header("Wall Run Settings")]
-    [SerializeField] private float wallStickForce;
+    [SerializeField] private float wallStickForce = 8f;
+    [SerializeField] private float wallRunSpeed = 12f;
+    [SerializeField] private float wallRunAcceleration = 15f;
+    [SerializeField] private float wallRunDeceleration = 10f;
+    [SerializeField] private float wallRunBrakeDeceleration = 20f;
     
+    [Header("Wall Run Durations & Slip")]
+    [Tooltip("Длительность идеального зацепа на стене (секунды).")]
+    [SerializeField] private float idealGripDuration = 2f;
+    [Tooltip("Длительность окна соскальзывания перед полным падением (секунды).")]
+    [SerializeField] private float slipDuration = 2f;
+    [Tooltip("Максимальная скорость соскальзывания вниз.")]
+    [SerializeField] private float maxSlipSpeed = 12f;
+
     [Header("Wall Detection")]
     [SerializeField] private LayerMask wallLayer;
-    [SerializeField] private float sphereRadius = 0.6f;
+    [SerializeField] private float sphereRadius = 0.4f;
     
     [Header("Wall Jump Settings")]
-    [SerializeField] private float wallJumpHeight;
-    [SerializeField] private float wallJumpForce;
+    [SerializeField] private float wallJumpHeight = 7f;
+    [SerializeField] private float wallJumpForce = 15f;
     [SerializeField] private float wallJumpCooldown = 0.3f;
-    
+
+    [Header("Slide Detach Settings")]
+    [SerializeField] private KeyCode slideKey = KeyCode.LeftControl;
+    [SerializeField] private float slideDetachCooldown = 0.5f;
+
     [Header("Camera Tilt")]
-    [SerializeField] private float wallTiltAngle;
-    [SerializeField] private float tiltSpeed;
+    [SerializeField] private float wallTiltAngle = 15f;
+    [SerializeField] private float tiltSpeed = 5f;
     
     [Header("References")]
     [SerializeField] private Transform cam;
     [SerializeField] private JumpFallSounds jumpFallSounds;
-    
-    [Header("Wall Coverage")]
-    [SerializeField] private float minCoveragePercentage = 0.7f;
-    [SerializeField] private int coverageGridSize = 10;
-    
-    private Camera mainCam;
+
     private KeyCode jumpKey = KeyCode.Space;
 
     private PlayerController pc;
     private bool isWallRunning;
     private Vector3 wallNormal;
     private Vector3 wallFaceNormal;
+    private Vector3 wallForward;
     private bool isActivelyWallRunning;
     public bool IsWallRunning => isWallRunning;
     public bool IsActivelyWallRunning => isActivelyWallRunning;
     private float currentTilt;
     private float wallJumpTimer;
+    private float slideDetachTimer;
+    private float wallTimer;
+    private float currentWallRunSpeed;
     private Collider lastWall;
     private Collider currentWall;
+
+    private static readonly Collider[] wallBuffer = new Collider[16];
 
     private void Start()
     {
         pc = GetComponent<PlayerController>();
-        if (cam != null) mainCam = cam.GetComponent<Camera>();
-        if (mainCam == null) mainCam = Camera.main;
+        if (cam == null && Camera.main != null)
+        {
+            cam = Camera.main.transform;
+        }
     }
 
     private void Update()
     {
-        if (wallJumpTimer > 0)
+        if (wallJumpTimer > 0f)
         {
             wallJumpTimer -= Time.deltaTime;
+        }
+
+        if (slideDetachTimer > 0f)
+        {
+            slideDetachTimer -= Time.deltaTime;
         }
         
         if (isWallRunning)
         {
-            HandleWallRun();
-            ApplyWallTilt();
-            
+            if (Input.GetKeyDown(slideKey))
+            {
+                DetachWithSlide();
+                return;
+            }
+
             if (Input.GetKeyDown(jumpKey))
             {
                 WallJump();
+                return;
             }
+
+            HandleWallRun();
+            ApplyWallTilt();
         }
         else
         {
@@ -72,8 +103,6 @@ public class WallRunning : MonoBehaviour
         }
     }
 
-    private static readonly Collider[] wallBuffer = new Collider[16];
-
     private void FixedUpdate()
     {
         CheckForWalls();
@@ -81,7 +110,7 @@ public class WallRunning : MonoBehaviour
     
     private void CheckForWalls()
     {
-        if (wallJumpTimer > 0)
+        if (wallJumpTimer > 0f || slideDetachTimer > 0f)
         {
             if (isWallRunning)
             {
@@ -99,161 +128,279 @@ public class WallRunning : MonoBehaviour
             
             lastWall = null;
             currentTilt = 0f;
-            return;
-        }
-        
-        if (isWallRunning && !pc.CanWallRun)
-        {
-            StopWallRun();
+            wallTimer = 0f;
             return;
         }
         
         Vector3 origin = transform.position;
-        float currentRadius = isWallRunning ? sphereRadius * 1.5f : sphereRadius;
+        float currentRadius = sphereRadius;
+
+        // Если мы уже бежим по стене — проверяем, осталась ли стена сбоку от нас
+        if (isWallRunning)
+        {
+            // Пускаем луч строго перпендикулярно в плоскость стены, по которой бежим
+            if (Physics.Raycast(origin, -wallFaceNormal, out RaycastHit sideHit, sphereRadius + 0.6f, wallLayer))
+            {
+                // Стена рядом — обновляем нормаль плоскости
+                if (Mathf.Abs(Vector3.Dot(sideHit.normal, Vector3.up)) < 0.3f)
+                {
+                    wallNormal = sideHit.normal;
+                    wallFaceNormal = sideHit.normal;
+                    currentWall = sideHit.collider;
+                    return;
+                }
+            }
+
+            // Если стена сбоку закончилась (угол/край стены) — мгновенно открепляемся и летим по прямой/дуге
+            lastWall = currentWall;
+            slideDetachTimer = 0.2f;
+            StopWallRun();
+            return;
+        }
+
+        // Если мы еще не на стене — ищем ближайшую стену вокруг
         int hitCount = Physics.OverlapSphereNonAlloc(origin, currentRadius, wallBuffer, wallLayer);
-        bool wallFound = false;
-        
+        if (hitCount == 0) return;
+
+        Collider chosenWall = null;
+        float closestDist = float.MaxValue;
+
         for (int i = 0; i < hitCount; i++)
         {
             Collider wallCollider = wallBuffer[i];
             if (wallCollider == null) continue;
+            if (wallCollider == lastWall) continue;
 
-            Vector3 closestPoint = wallCollider.ClosestPoint(origin);
+            Vector3 pt = wallCollider.ClosestPoint(origin);
+            Vector3 dir = pt - origin;
+            float distSqr = dir.sqrMagnitude;
+            Vector3 dirNorm = dir.normalized;
+
+            if (Mathf.Abs(Vector3.Dot(dirNorm, Vector3.up)) < 0.3f)
+            {
+                if (distSqr < closestDist)
+                {
+                    closestDist = distSqr;
+                    chosenWall = wallCollider;
+                }
+            }
+        }
+
+        if (chosenWall != null)
+        {
+            Vector3 closestPoint = chosenWall.ClosestPoint(origin);
             Vector3 directionToWall = (closestPoint - origin).normalized;
             if (Mathf.Abs(Vector3.Dot(directionToWall, Vector3.up)) < 0.3f)
             {
-                if (wallCollider == lastWall)
+                if (Physics.Raycast(origin - directionToWall * 0.1f, directionToWall, out RaycastHit hit, currentRadius + 0.6f, wallLayer))
                 {
-                    continue;
-                }
-                
-                wallNormal = -directionToWall;
-                
-                if (Physics.Raycast(origin - directionToWall * 0.1f, directionToWall, out RaycastHit hit, currentRadius + 0.5f, wallLayer))
-                {
+                    wallNormal = hit.normal;
                     wallFaceNormal = hit.normal;
-                }
-                else
-                {
-                    wallFaceNormal = wallNormal;
-                }
+                    currentWall = chosenWall;
 
-                currentWall = wallCollider;
-                wallFound = true;
-                
-                if (!isWallRunning && CanStartWallRun(wallCollider))
-                {
-                    StartWallRun();
-                }
-                
-                if (isWallRunning && currentWall != lastWall)
-                {
-                    lastWall = null;
-                }
-                
-                break;
-            }
-        }
-        
-        if (!wallFound && isWallRunning)
-        {
-            StopWallRun();
-        }
-    }
-    
-    private bool CanStartWallRun(Collider wall)
-    {
-        bool hasEnoughSpeed = pc.CanWallRun;
-        bool notGrounded = !pc.grounded;
-        
-        if (!hasEnoughSpeed || !notGrounded) return false;
-        
-        return IsWallCoveringCamera(wall);
-    }
-
-    private bool IsWallCoveringCamera(Collider wall)
-    {
-        if (mainCam == null) return false;
-
-        int hits = 0;
-        int totalRays = coverageGridSize * coverageGridSize;
-        float step = 1.0f / coverageGridSize;
-
-        for (int x = 0; x < coverageGridSize; x++)
-        {
-            for (int y = 0; y < coverageGridSize; y++)
-            {
-                Ray ray = mainCam.ViewportPointToRay(new Vector3(x * step + step / 2f, y * step + step / 2f, 0));
-                
-                if (Physics.Raycast(ray, out RaycastHit hit, sphereRadius + 2f, wallLayer))
-                {
-                    if (hit.collider == wall)
+                    if (CanStartWallRun(chosenWall, hit.normal))
                     {
-                        hits++;
+                        StartWallRun();
                     }
                 }
             }
         }
+    }
+    
+    private bool CanStartWallRun(Collider wall, Vector3 normal)
+    {
+        if (pc.grounded || slideDetachTimer > 0f || wallJumpTimer > 0f) return false;
 
-        float coverage = (float)hits / totalRays;
-        return coverage >= minCoveragePercentage;
+        float vertical = Input.GetAxisRaw("Vertical");
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        
+        Vector3 camFwd = cam != null ? cam.forward : transform.forward;
+        Vector3 camRight = cam != null ? cam.right : transform.right;
+        Vector3 inputDir = (camFwd * vertical + camRight * horizontal);
+        inputDir.y = 0f;
+
+        // Не цепляемся, если игрок не нажимает кнопки движения
+        if (inputDir.sqrMagnitude < 0.01f)
+        {
+            return false;
+        }
+
+        Vector3 wallTangent = Vector3.Cross(normal, Vector3.up).normalized;
+        Vector3 lookDir = cam != null ? cam.forward : transform.forward;
+        lookDir.y = 0f;
+        lookDir.Normalize();
+
+        Vector3 forwardAlongWall = Vector3.Dot(lookDir, wallTangent) >= 0f ? wallTangent : -wallTangent;
+        float forwardInput = Vector3.Dot(inputDir.normalized, forwardAlongWall);
+
+        // Цепляемся только если есть направленное движение вперед вдоль стены
+        if (forwardInput <= 0.1f)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private void StartWallRun()
     {
         isWallRunning = true;
+        wallTimer = 0f;
+
+        wallForward = GetWallForward();
+        float speedInWallDirection = Vector3.Dot(pc.horizontalVelocity, wallForward);
+        currentWallRunSpeed = Mathf.Clamp(speedInWallDirection, 0f, wallRunSpeed);
+        if (currentWallRunSpeed < 2f && Input.GetAxisRaw("Vertical") > 0.1f)
+        {
+            currentWallRunSpeed = Mathf.Max(currentWallRunSpeed, 2f);
+        }
+
         pc.SetWallRunning(true);
     }
 
     private void StopWallRun()
     {
+        if (isWallRunning)
+        {
+            // Сохраняем чистый горизонтальный импульс бега вперед (без боковых сил и толчков)
+            Vector3 cleanForward = wallForward * currentWallRunSpeed;
+            pc.horizontalVelocity = new Vector3(cleanForward.x, 0f, cleanForward.z);
+        }
+
         isWallRunning = false;
+        isActivelyWallRunning = false;
+        wallTimer = 0f;
+        currentWallRunSpeed = 0f;
         pc.SetWallRunning(false);
+    }
+
+    private void DetachWithSlide()
+    {
+        slideDetachTimer = slideDetachCooldown;
+        lastWall = currentWall;
+        StopWallRun();
+    }
+
+    private Vector3 GetWallForward()
+    {
+        Vector3 wallTangent = Vector3.Cross(wallFaceNormal, Vector3.up).normalized;
+        Vector3 lookDir = cam != null ? cam.forward : transform.forward;
+        lookDir.y = 0f;
+        lookDir.Normalize();
+
+        if (Vector3.Dot(lookDir, wallTangent) < 0f)
+        {
+            return -wallTangent;
+        }
+        return wallTangent;
     }
 
     private void HandleWallRun()
     {
-        float vertical = Input.GetAxisRaw("Vertical");
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        
-        Vector3 inputDir = (cam.forward * vertical + cam.right * horizontal);
-        inputDir.y = 0;
-        inputDir.Normalize();
-        
-        if (inputDir.magnitude <= 0.1f)
+        wallTimer += Time.deltaTime;
+
+        float totalWallTime = idealGripDuration + slipDuration;
+        if (wallTimer > totalWallTime)
         {
-            isActivelyWallRunning = false;
+            lastWall = currentWall;
             StopWallRun();
             return;
         }
-        
-        Vector3 wallForward = Vector3.Cross(wallFaceNormal, Vector3.up);
-        Vector3 movement = -wallNormal * wallStickForce; 
-        
-        if (inputDir.magnitude > 0.1f)
+
+        if (wallTimer <= idealGripDuration)
         {
-            float forwardInput = Vector3.Dot(inputDir, wallForward);
-            if (pc.CanWallRun)
+            pc.verticalVelocity = 0f;
+        }
+        else
+        {
+            float slipProgress = (wallTimer - idealGripDuration) / slipDuration;
+            pc.verticalVelocity = -Mathf.Lerp(0f, maxSlipSpeed, slipProgress);
+        }
+
+        float vertical = Input.GetAxisRaw("Vertical");
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        
+        Vector3 camFwd = cam != null ? cam.forward : transform.forward;
+        Vector3 camRight = cam != null ? cam.right : transform.right;
+        Vector3 inputDir = (camFwd * vertical + camRight * horizontal);
+        inputDir.y = 0f;
+
+        wallForward = GetWallForward();
+
+        // Проверка препятствия/угла впереди: если уперлись в перпендикулярную стену, сбрасываем бег
+        Vector3 rayOrigin = transform.position;
+        float playerRadius = pc.controller != null ? pc.controller.radius : 0.5f;
+        float forwardCheckDist = playerRadius + 0.3f;
+        
+        if (Physics.SphereCast(rayOrigin, 0.15f, wallForward, out RaycastHit forwardHit, forwardCheckDist, wallLayer))
+        {
+            if (Vector3.Dot(forwardHit.normal, wallForward) < -0.2f)
             {
-                movement += wallForward * forwardInput * pc.runSpeed;
-                isActivelyWallRunning = true; 
-            }
-            else
-            {
-                isActivelyWallRunning = false;
+                // Достигли тупика/внутреннего угла — открепляемся и падаем прямо
+                lastWall = currentWall;
+                slideDetachTimer = 0.2f;
+                currentWallRunSpeed = 0f;
                 StopWallRun();
                 return;
             }
         }
-        
-        pc.horizontalVelocity = new Vector3(movement.x, 0f, movement.z);
-        pc.verticalVelocity = 0f; 
+
+        if (inputDir.sqrMagnitude > 0.01f)
+        {
+            inputDir.Normalize();
+            float forwardInput = Vector3.Dot(inputDir, wallForward);
+
+            if (forwardInput > 0.1f)
+            {
+                // Бег вперед по направлению взгляда
+                float targetSpeed = wallRunSpeed * Mathf.Clamp01(forwardInput);
+                currentWallRunSpeed = Mathf.MoveTowards(currentWallRunSpeed, targetSpeed, wallRunAcceleration * Time.deltaTime);
+            }
+            else if (forwardInput < -0.1f)
+            {
+                // Нажатие S (назад) — плавное торможение
+                currentWallRunSpeed = Mathf.MoveTowards(currentWallRunSpeed, 0f, wallRunBrakeDeceleration * Time.deltaTime);
+                if (currentWallRunSpeed <= 0.1f)
+                {
+                    currentWallRunSpeed = 0f;
+                    lastWall = currentWall;
+                    slideDetachTimer = 0.2f;
+                    StopWallRun();
+                    return;
+                }
+            }
+            else
+            {
+                // Вращение камеры / боковой ввод — плавное замедление без мгновенного срыва
+                currentWallRunSpeed = Mathf.MoveTowards(currentWallRunSpeed, 0f, wallRunDeceleration * Time.deltaTime);
+            }
+        }
+        else
+        {
+            // Нет ввода — плавное замедление до остановки
+            currentWallRunSpeed = Mathf.MoveTowards(currentWallRunSpeed, 0f, wallRunDeceleration * Time.deltaTime);
+            if (currentWallRunSpeed <= 0.1f)
+            {
+                currentWallRunSpeed = 0f;
+                lastWall = currentWall;
+                slideDetachTimer = 0.2f;
+                StopWallRun();
+                return;
+            }
+        }
+
+        currentWallRunSpeed = Mathf.Max(currentWallRunSpeed, 0f);
+        isActivelyWallRunning = currentWallRunSpeed > 0.5f;
+
+        // Чистое движение вдоль стены
+        Vector3 forwardVelocity = wallForward * currentWallRunSpeed;
+        pc.horizontalVelocity = new Vector3(forwardVelocity.x, 0f, forwardVelocity.z);
     }
 
     private void WallJump()
     {
-        Vector3 lookDir = cam.forward;
-        lookDir.y = 0;
+        Vector3 lookDir = cam != null ? cam.forward : transform.forward;
+        lookDir.y = 0f;
         lookDir.Normalize();
         
         pc.horizontalVelocity = lookDir * wallJumpForce;
@@ -263,9 +410,17 @@ public class WallRunning : MonoBehaviour
         lastWall = currentWall;
         
         pc.SetWallJumped();
-        StopWallRun();
+        
+        isWallRunning = false;
+        isActivelyWallRunning = false;
+        wallTimer = 0f;
+        currentWallRunSpeed = 0f;
+        pc.SetWallRunning(false);
 
-        jumpFallSounds.CallJumpSoundMethod();
+        if (jumpFallSounds != null)
+        {
+            jumpFallSounds.CallJumpSoundMethod();
+        }
     }
     
     private void ApplyWallTilt()
@@ -292,7 +447,7 @@ public class WallRunning : MonoBehaviour
             currentTilt = Mathf.Lerp(currentTilt, 0f, tiltSpeed * Time.deltaTime);
         }
         
-        if (!pc.grounded && Mathf.Abs(currentTilt) > 0.01f)
+        if (Mathf.Abs(currentTilt) > 0.001f || Mathf.Abs(transform.localEulerAngles.z) > 0.001f)
         {
             Vector3 rotation = transform.localEulerAngles;
             rotation.x = 0f;  
@@ -313,5 +468,10 @@ public class WallRunning : MonoBehaviour
     public void SetWallRunningKey(KeyCode newKey)
     {
         jumpKey = newKey;
+    }
+
+    public void SetSlideKey(KeyCode newKey)
+    {
+        slideKey = newKey;
     }
 }

@@ -186,6 +186,7 @@ public class KeyRebindManager : MonoBehaviour
         if(wallRunningScript != null)
         {
             wallRunningScript.SetWallRunningKey(jump.currentKey);
+            wallRunningScript.SetSlideKey(crouchSlide.currentKey);
         }
     }
 
